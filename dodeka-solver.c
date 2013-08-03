@@ -9,11 +9,7 @@
 #include "sudoku-mem.c"
 #include "sudoku-grids.c"
 #include "sudoku-solver.c"
-#if SYSTEM==WINDOWS
-#define SYSTEM_PAUSE system ("pause")
-#else
 #define SYSTEM_PAUSE
-#endif
 int main()
 {
 	t_board_p b;

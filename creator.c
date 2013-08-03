@@ -8,11 +8,7 @@
 #include "sudoku-mem.c"
 #include "sudoku-grids.c"
 #include "sudoku-solver.c"
-#if SYSTEM==WINDOWS
-#define SYSTEM_PAUSE system ("pause")
-#else
 #define SYSTEM_PAUSE
-#endif
 #define MAX_GRIDS 100
 #define MAX_DIST 1000
 #define MAX_NUM 10000
@@ -182,7 +178,7 @@ int CreateProblems(t_board_p b,t_params *p,int *cells,int *symbols,char *given,i
 			for(i=0;i<n;i++)
 				SetSymbolInCell(b,symbols[i],cells[i]);
 			Solve(b,0,FALSE);
-			if(GetNumRulesNGt2(b))
+			/*if(GetNumRulesNGt2(b))
 			{
 				sprintf(name[0],"%sN3x%02d-N2x%02d-%03d-%05d.html",p->diagonals?"D-":"",GetNumRulesNGt2(b),GetNumRulesN2(b),nCl-n, np+serial);
 				sprintf(name[1],"%sN3x%02d-N2x%02d-%03d-%05d-raw.txt",p->diagonals?"D-":"",GetNumRulesNGt2(b),GetNumRulesN2(b),nCl-n, np+serial);
@@ -202,7 +198,11 @@ int CreateProblems(t_board_p b,t_params *p,int *cells,int *symbols,char *given,i
 				sprintf(name[1],"%sN1-%03d-%05d-raw.txt",p->diagonals?"D-":"",nCl-n,np+serial);
 				sprintf(name[2],"%sN1-%03d-%05d-solution.html",p->diagonals?"D-":"",nCl-n,np+serial);
 				sprintf(name[3],"%sN1-%03d-%05d",p->diagonals?"D-":"",nCl-n,np+serial);
-			}
+			}*/
+			sprintf(name[0], "%05d.html", serial);
+			sprintf(name[1], "%05d-raw.txt", serial);
+			sprintf(name[2], "%05d-solution.html", serial);
+			sprintf(name[3], "%05d", serial);
 			pf=fopen(name[0],"wb");
 			if(!pf)
 			{
