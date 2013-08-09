@@ -14,7 +14,7 @@
 #include <boost/bind.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 #include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
+#include <boost/random/uniform_int.hpp>
 #include <boost/ref.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/shared_ptr.hpp>
@@ -39,7 +39,7 @@ private:
 	boost::scoped_array<size_t>  m_cells;
 	boost::scoped_array<size_t>  m_symbols;
 	boost::scoped_array<char>    m_given;
-	boost::random::mt19937       m_randon_generator;
+	boost::mt19937               m_random_generator;
 
 	size_t rnd(size_t max);
 	size_t rnd(size_t min, size_t max);
@@ -182,8 +182,8 @@ size_t BoardGenerator::rnd(size_t max) {
 }
 
 size_t BoardGenerator::rnd(size_t min, size_t max) {
-	boost::random::uniform_int_distribution<size_t> dist(min, max - 1);
-	return dist(m_randon_generator);
+	boost::uniform_int<size_t> dist(min, max - 1);
+	return dist(m_random_generator);
 }
 
 }  // anonymous namespace
