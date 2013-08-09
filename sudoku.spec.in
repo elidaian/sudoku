@@ -1,0 +1,49 @@
+Name:		sudoku
+Version:	@PROJECT_VERSION@
+Release:	1%{?dist}
+Summary:	Infrastructure for Sudoku puzzles
+
+License:	GPL
+URL:		http://elidaian.dnsd.me
+Source0:	@TARBALL_NAME@
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+
+BuildRequires:	python-devel python boost-devel gcc gcc-c++ swig
+Requires:	python
+
+%description
+Infrastructure for creating and solving Sudoku puzzles of varying grid sizes.
+
+%prep
+%setup -q
+cmake -DCMAKE_BUILD_TYPE=RELEASE \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DBIN_DIR=%{_bindir} \
+    -DLIB_DIR=%{_libdir}
+
+%build
+make %{?_smp_mflags}
+
+
+%install
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot}
+
+
+%clean
+rm -rf %{buildroot}
+
+
+%files
+%defattr(-,root,root,-)
+%doc
+%{_bindir}/creator
+%{_bindir}/solver
+%{_bindir}/dodeka-solver
+%{_libdir}/_pysudoku.so
+@PYTHON_SITE_PACKAGES@/pysudoku.py
+
+%changelog
+* Fri Aug 09 2013 Eli Daian <elidaian@gmail.com>
+- Created the package
+

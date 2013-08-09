@@ -12,5 +12,8 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import
                 OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+include (Package.cmake)
+make_rpm (1 0)
+
 add_subdirectory (src)
 
