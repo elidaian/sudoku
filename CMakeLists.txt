@@ -1,5 +1,16 @@
 cmake_minimum_required (VERSION 2.6)
 project (sudoku)
 
-add_subdirectory(src)
+find_package (SWIG REQUIRED)
+include (${SWIG_USE_FILE})
+
+find_package (PythonLibs REQUIRED)
+include_directories (${PYTHON_INCLUDE_PATH})
+
+find_package (PythonInterp REQUIRED)
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+                OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+add_subdirectory (src)
 

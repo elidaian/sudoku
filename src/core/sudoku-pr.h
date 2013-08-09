@@ -29,7 +29,7 @@ Latest versions: http://sourceforge.net/projects/sudoku-sensei
 #define _SUDOKU_PRIVATE_H_
 
 #include "sudoku-pub.h"
-#include "list.c"
+#include "list.h"
 
 #define DIRTY_FLAG    1
 #define SOLVED_FLAG   2

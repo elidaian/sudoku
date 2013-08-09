@@ -1,8 +1,10 @@
 
 set (COMMON_SOURCES list.c
+                    html-gen.c
                     sudoku-grids.c
                     sudoku-iface.c
-                    sudoku-mem.c)
+                    sudoku-mem.c
+                    sudoku-solver.c)
 set (COMMON_LIB sudoku)
 add_library (${COMMON_LIB} STATIC ${COMMON_SOURCES})
 
@@ -15,7 +17,11 @@ target_link_libraries (solver ${COMMON_LIB})
 add_executable (dodeka-solver dodeka-solver.c)
 target_link_libraries (dodeka-solver ${COMMON_LIB})
 
-set_target_properties(creator solver dodeka-solver
+set (EXECUTABLES creator solver dodeka-solver)
+
+set_target_properties(${EXECUTABLES}
                       PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
+install (TARGETS ${EXECUTABLES}
+         RUNTIME DESTINATION ${BIN_DIR})
