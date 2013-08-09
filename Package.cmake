@@ -12,8 +12,8 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
                      COMMAND cut "-d " -f2-
                      RESULT_VARIABLE TEAM_RC
                      OUTPUT_VARIABLE TEAM_LOCATION
-                     OUTPUT_STRIP_TRAILING_WHITESPACE)
-                     #ERROR_QUIET)
+                     OUTPUT_STRIP_TRAILING_WHITESPACE
+                     ERROR_QUIET)
     if (NOT ${TEAM_RC} EQUAL 0)
         message (WARNING " No team information found, disabling packing support")
         message (STATUS "eli: ${TEAM_RC}")
@@ -22,7 +22,8 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
                          COMMAND grep Revision 
                          COMMAND cut "-d " -f2
                          OUTPUT_VARIABLE TEAM_VERSION
-                         OUTPUT_STRIP_TRAILING_WHITESPACE)
+                         OUTPUT_STRIP_TRAILING_WHITESPACE
+                         OUTPUT_QUIET)
         set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${TEAM_VERSION})
 
         # set some variables
