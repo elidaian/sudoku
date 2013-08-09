@@ -40,7 +40,7 @@ rm -rf %{buildroot}
 %{_bindir}/creator
 %{_bindir}/solver
 %{_bindir}/dodeka-solver
-%{_libdir}/_pysudoku.so
+@PYTHON_SITE_PACKAGES@/_pysudoku.so
 @PYTHON_SITE_PACKAGES@/pysudoku.py
 
 %changelog
