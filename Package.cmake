@@ -10,11 +10,10 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
     execute_process (COMMAND svn info ${CMAKE_SOURCE_DIR}
                      COMMAND grep URL
                      COMMAND cut "-d " -f2-
-                     RESULT_VARIABLE TEAM_RC
                      OUTPUT_VARIABLE TEAM_LOCATION
                      OUTPUT_STRIP_TRAILING_WHITESPACE
                      ERROR_QUIET)
-    if (NOT ${TEAM_RC} EQUAL 0)
+    if ("${TEAM_LOCATION}" STREQUAL "")
         message (WARNING " No team information found, disabling packing support")
         message (STATUS "eli: ${TEAM_RC}")
     else ()
@@ -22,8 +21,7 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
                          COMMAND grep Revision 
                          COMMAND cut "-d " -f2
                          OUTPUT_VARIABLE TEAM_VERSION
-                         OUTPUT_STRIP_TRAILING_WHITESPACE
-                         OUTPUT_QUIET)
+                         OUTPUT_STRIP_TRAILING_WHITESPACE)
         set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${TEAM_VERSION})
 
         # set some variables
@@ -37,7 +35,7 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
 
         # add the tarball target
         add_custom_command (OUTPUT ${PACKING_DIRECTORY}/${TARBALL_NAME}
-                            COMMAND svn export ${TEAM_LOCATION} ${PACKAGE_FULL_NAME}
+                            COMMAND svn export ${TEAM_LOCATION} ${PACKAGE_FULL_NAME} > /dev/null
                             COMMAND tar czf ${TARBALL_NAME} ${PACKAGE_FULL_NAME}
                             WORKING_DIRECTORY ${PACKING_DIRECTORY}
                             COMMENT "Creating fresh source checkout tarball")
