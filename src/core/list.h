@@ -13,7 +13,7 @@ typedef struct s_list
 	int num;
 }
 t_list;
-#define GET_ELEM(TYPE,NODE,FIELD)((TYPE*)((int)(NODE)-(int)&((TYPE*)0)->FIELD))
+#define GET_ELEM(TYPE,NODE,FIELD)((TYPE*)((long)(NODE)-(long)&((TYPE*)0)->FIELD))
 #ifdef INLINE
 #undef INLINE
 #endif
