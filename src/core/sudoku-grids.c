@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<memory.h>
 #include "sudoku-pr.h"
+
 t_board *ConstructBasicBoard(int order,char diag)
 {
 	int n,row,col,cell,block,group;

@@ -5,10 +5,7 @@
 #include<ctype.h>
 #include "sudoku-pub.h"
 #include "html-gen.h"
-#include "sudoku-iface.c"
-#include "sudoku-mem.c"
-#include "sudoku-grids.c"
-#include "sudoku-solver.c"
+
 #define SYSTEM_PAUSE
 int main()
 {

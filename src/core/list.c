@@ -1,4 +1,5 @@
 #include "list.h"
+
 #ifndef NULL
 #define NULL 0
 #endif

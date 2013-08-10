@@ -28,6 +28,7 @@ Latest versions: http://sourceforge.net/projects/sudoku-sensei
 #include <stdlib.h>
 #include <memory.h>
 #include "sudoku-pr.h"
+
 //#include "html-gen.h"
 void PrintGPL(FILE *pf)
 {

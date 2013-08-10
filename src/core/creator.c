@@ -4,10 +4,7 @@
 #include<time.h>
 #include "sudoku-pub.h"
 #include "html-gen.h"
-#include "sudoku-iface.c"
-#include "sudoku-mem.c"
-#include "sudoku-grids.c"
-#include "sudoku-solver.c"
+
 #define SYSTEM_PAUSE
 #define MAX_GRIDS 100
 #define MAX_DIST 1000
