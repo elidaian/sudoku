@@ -10,7 +10,9 @@ set (FILES config.py
            server.py
            users.py)
 foreach (file ${FILES})
-    configure_file (${file} ${file} COPYONLY)
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/${file}
+                    ${CMAKE_CURRENT_BINARY_DIR}/${file}
+                    COPYONLY)
 endforeach ()
 
 add_custom_target (run-server
