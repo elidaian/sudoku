@@ -1,5 +1,6 @@
 
-set (FILES layout.html
+set (FILES create_board.html
+           layout.html
            login.html
            main_page.html
            register.html)

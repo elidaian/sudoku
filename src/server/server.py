@@ -111,7 +111,7 @@ def create_board():
     """
     Create a new board or some new boards.
     """
-    return "Not yet implemented"
+    return render_template("create_board.html")
 
 @app.route("/register", methods=["GET", "POST"])
 @must_login

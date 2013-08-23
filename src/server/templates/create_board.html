@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block scripts %}
+<script type="text/javascript">
+<!--
+function check_regular() {
+    if (document.getElementById("regular").checked) {
+        document.getElementById("width").disabled = true;
+        document.getElementById("width").value = 3;
+        document.getElementById("height").disabled = true;
+        document.getElementById("height").value = 3;
+    }
+}
+function check_dodeka() {
+    if (document.getElementById("dodeka").checked) {
+        document.getElementById("width").disabled = true;
+        document.getElementById("width").value = 4;
+        document.getElementById("height").disabled = true;
+        document.getElementById("height").value = 3;
+    }
+}
+function check_custom() {
+    if (document.getElementById("custom").checked) {
+        document.getElementById("width").disabled = false;
+        document.getElementById("height").disabled = false;
+    }
+}
+//-->
+</script>
+{% endblock %}
+{% block title %}Create a New Board{% endblock %}
+{% block body %}
+    {%- if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+    {%- endif %}
+    <form action="{{ url_for("create_board") }}" method="post">
+        <dl>
+            <dt>Board type:</dt>
+            <dd>
+                <input type="radio" name="type" value="regular" checked="true"
+                    class="radio" id="regular" onchange="check_regular()" />
+                <span class="radiolabel">
+                    Regular board (3 &times; 3 blocks, each 3 &times; 3 cells)
+                </span>
+            </dd>
+            <dd>
+                <input type="radio" name="type" value="dodeka" class="radio"
+                    id="dodeka" onchange="check_dodeka()" />
+                <span class="radiolabel">
+                    Dodeka board (3 &times; 4 blocks, each 4 &times; 3 cells)
+                </span>
+            </dd>
+            <dd>
+                <input type="radio" name="type" value="custom" class="radio"
+                    id="custom" onchange="check_custom()" />
+                <span class="radiolabel">
+                    Custom board:
+                    <dl>
+                        <dt>Block width:</dt>
+                        <dd><input type="number" name="width" id="width" /></dd>
+                        <dt>Block height:</dt>
+                        <dd><input type="number" name="height" id="height" /></dd>
+                    </dl>
+                </span>
+            </dd>
+            <dt>Number of boards to create:</dt>
+            <dd><input type="number" name="count" value="1" /></dd>
+            <dd><input type="submit" value="Create" /></dd>
+        </dl>
+    </form>
+    <script type="text/javascript">
+    <!--
+    check_regular();
+    //-->
+    </script>
+{% endblock %}

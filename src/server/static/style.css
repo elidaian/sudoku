@@ -21,3 +21,5 @@ h2              { font-size: 1.2em; }
 .copyright      { text-align: center; font-style: italic; font-weight: bold;
                   border-top: 2px solid #eee; font-family: 'Times';
                   margin-top: 2em; }
+.radio          { float: left; }
+.radiolabel     { display: block; margin-left: 1.5em; }

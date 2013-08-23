@@ -15,5 +15,6 @@ endforeach ()
 
 add_custom_target (run-server
                    ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/server
+                   DEPENDS _pysudoku
                    COMMENT "Setting up server")
 
