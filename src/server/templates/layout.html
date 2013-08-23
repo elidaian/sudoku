@@ -19,6 +19,7 @@
         {%- if session.user.allow_other_user_boards() %}
             <p><a href="{{ url_for("other_user") }}">View other user's boards</a></p>
         {%- endif %}
+        <p><a href="{{ url_for("reset") }}">Reset</a></p>
         <p><a href="{{ url_for("logout") }}">Log out</a></p>
     {%- endif %}
     </div>

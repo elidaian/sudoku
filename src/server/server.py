@@ -134,8 +134,7 @@ def register_user():
             permissions = []
             for permission in users.UserPermission.PERMISSIONS:
                 if request.form.has_key(permission.name) and \
-                        request.form[permission.name] == permission.flag:
-                    flash("Adding %s" % permission.name)
+                        request.form[permission.name] == str(permission.flag):
                     permissions.append(permission)
             
             message, status = db.register_user(g.db, username, password, display,
@@ -155,6 +154,16 @@ def other_user():
     View other user's boards.
     """
     return "Not yet implemented"
+
+@app.route('/reset')
+@must_login
+def reset():
+    """
+    Reset the DB.
+    """
+    init_db("eli", "eli")
+    flash("The DB has been reset")
+    return redirect(url_for("logout"))
 
 if __name__ == "__main__":
     app.run()
