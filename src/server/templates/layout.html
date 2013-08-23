@@ -24,6 +24,7 @@
     {%- endif %}
     </div>
     <div class="main">
+        <h2>{%- block title %}{%- endblock %}</h2>
         {%- for message in get_flashed_messages() %}
             <div class="flash">{{ message }}</div>
         {%- endfor %}
