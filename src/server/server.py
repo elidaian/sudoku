@@ -17,9 +17,12 @@ from flask import url_for
 from functools import wraps
 import os
 
+import pysudoku
+
 import config
 import db
 import users
+import util
 
 app = Flask(__name__)
 app.config.from_object(config)
@@ -103,15 +106,44 @@ def logout():
     if session.has_key("user"):
         del session["user"]
     session["logged_in"] = False
+    flash("You have been logged out")
     return redirect(url_for("main_page"))
 
-@app.route("/create_board")
+@app.route("/create_board", methods=["GET", "POST"])
 @must_login
 def create_board():
     """
     Create a new board or some new boards.
     """
-    return render_template("create_board.html")
+    error = None
+    if request.method == "POST":
+        try:
+            board_type = request.form["type"]
+            if board_type == "regular":
+                width = 3
+                height = 3
+            elif board_type == "dodeka":
+                width = 4
+                height = 3
+            elif board_type == "custom":
+                width = int(request.form["width"])
+                height = int(request.form["height"])
+            else:
+                raise util.ErrorWithMessage, "Invalid board type"
+            count = int(request.form["count"])
+            
+            boards = pysudoku.create_board(width, height, count)
+            board_ids = [db.insert_board(g.db, session["user"].id, board)
+                         for board in boards]
+            g.db.commit()
+            flash("Created boards %s" % ", ".join(map(str, board_ids)))
+        except util.ErrorWithMessage as e:
+            error = e.message
+        except (KeyError, ValueError):
+            error = "Invalid request data"
+        except:
+            error = "Internal server error"
+    return render_template("create_board.html", error=error)
 
 @app.route("/register", methods=["GET", "POST"])
 @must_login

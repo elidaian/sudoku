@@ -41,6 +41,9 @@ private:
 	boost::scoped_array<char>    m_given;
 	boost::mt19937               m_random_generator;
 
+	size_t                       m_block_width;
+	size_t                       m_block_height;
+
 	size_t rnd(size_t max);
 	size_t rnd(size_t min, size_t max);
 };
@@ -52,7 +55,9 @@ BoardGenerator::BoardGenerator(size_t block_width, size_t block_height):
 		m_num_symbols(m_board != NULL ? GetNumSymbols(m_board) : 0),
 		m_cells(new size_t[m_num_cells]),
 		m_symbols(new size_t[m_num_cells]),
-		m_given(new char[m_num_cells]) {
+		m_given(new char[m_num_cells]),
+		m_block_width(block_width),
+		m_block_height(block_height) {
 	if (m_board == NULL) {
 		throw std::bad_alloc();
 	}
@@ -174,7 +179,7 @@ Board BoardGenerator::generate(size_t) {
 	GetBoardRaw(m_board, m_given.get(), NULL, " X");
 	std::string solution(m_given.get(), m_num_cells);
 
-	return Board(problem, solution);
+	return Board(problem, solution, m_block_width, m_block_height);
 }
 
 size_t BoardGenerator::rnd(size_t max) {
@@ -188,15 +193,20 @@ size_t BoardGenerator::rnd(size_t min, size_t max) {
 
 }  // anonymous namespace
 
-Board::Board(const std::string& solution):
+Board::Board(const std::string& solution, size_t block_width, size_t block_height):
 		m_problem(solution),
-		m_solution(solution) {
+		m_solution(solution),
+		m_block_width(block_width),
+		m_block_height(block_height) {
 	// Nothing here
 }
 
-Board::Board(const std::string& problem, const std::string& solution):
+Board::Board(const std::string& problem, const std::string& solution,
+		size_t block_width, size_t block_heght):
 		m_problem(problem),
-		m_solution(solution) {
+		m_solution(solution),
+		m_block_width(block_width),
+		m_block_height(block_heght) {
 	// Nothing here
 }
 
@@ -206,6 +216,14 @@ const std::string& Board::get_problem() const {
 
 const std::string& Board::get_solution() const {
 	return m_solution;
+}
+
+size_t Board::get_block_width() const {
+	return m_block_width;
+}
+
+size_t Board::get_block_height() const {
+	return m_block_height;
 }
 
 std::vector<Board> create_board(size_t block_width, size_t block_height,

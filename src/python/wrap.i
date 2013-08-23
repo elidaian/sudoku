@@ -17,8 +17,12 @@ Allows generating standard and custom sudoku board using the Python interpreter.
 %}
 
 %feature("autodoc", "1");
+%nodefaultctor Board;
 
 %include "std_string.i"
 %include "std_vector.i"
 %include "wrap.h"
- 
+
+%ignore std::vector<Board>::vector(size_type);
+%ignore std::vector<Board>::resize(size_type); 
+%template(BoardVec) std::vector<Board>;

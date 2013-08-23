@@ -8,7 +8,8 @@ set (FILES config.py
            db.py
            schema.sql
            server.py
-           users.py)
+           users.py
+           util.py)
 foreach (file ${FILES})
     configure_file (${CMAKE_CURRENT_SOURCE_DIR}/${file}
                     ${CMAKE_CURRENT_BINARY_DIR}/${file}
