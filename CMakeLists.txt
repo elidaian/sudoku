@@ -14,6 +14,8 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import
 
 include (Package.cmake)
 make_rpm (1 0)
+ 
+include (PythonDirs.cmake)
 
 add_subdirectory (src)
 
