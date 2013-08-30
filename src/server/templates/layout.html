@@ -13,6 +13,7 @@
     {%- if session.logged_in %}
         {%- if session.user.allow_create_board() %}
             <p><a href="{{ url_for("create_board") }}">Create board</a></p>
+            <p><a href="{{ url_for("view_board") }}">View board</a></p>
         {%- endif %}
         {%- if session.user.allow_register_user() %}
             <p><a href="{{ url_for("register_user") }}">Register user</a></p>

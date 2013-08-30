@@ -26,12 +26,23 @@ insert into boards(uid, problem, solution, block_width, block_height)
 values (:uid, :problem, :solution, :block_width, :block_height)
 """
 
+LIST_USER_BOARDS = """
+select id, create_time, block_width, block_height from boards
+where uid = :uid
+"""
+
+GET_USER_BOARD = """
+select problem, solution, block_width, block_height from boards
+where id = :id and uid = :uid
+"""
+
 def connect_db(app):
     """
     Create a new DB connection.
     """
     db = sqlite3.connect(app.config["DATABASE"])
     db.row_factory = sqlite3.Row
+    db.text_factory = str
     return db
 
 def hash_password(password):
@@ -81,6 +92,19 @@ def insert_board(db, uid, board):
     cur = db.cursor()
     cur.execute(INSERT_BOARD, details)
     return cur.lastrowid
+
+def list_user_boards(db, uid):
+    details = {"uid": uid}
+    cur = db.cursor()
+    cur.execute(LIST_USER_BOARDS, details)
+    return cur.fetchall()
+
+def get_user_board(db, board_id, uid):
+    details = {"id": board_id,
+               "uid": uid}
+    cur = db.cursor()
+    cur.execute(GET_USER_BOARD, details)
+    return cur.fetchone()
 
 def init_db(app, root_user, root_password):
     """

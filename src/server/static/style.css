@@ -23,3 +23,21 @@ h2              { font-size: 1.2em; }
                   margin-top: 2em; }
 .radio          { float: left; }
 .radiolabel     { display: block; margin-left: 1.5em; }
+
+.topnav         { list-style-type: none; margin: 0px 0px 20px; padding: 0;
+                  text-align: center; font-size: x-large; }
+.topnav li      { display: inline; background-color: #dddddd; }
+
+.head           { font-size: 20pt; font-weight: bold; text-align: center; }
+.board          { border-collapse: collapse; border: 4pt solid black;
+                  width: 420px; height: 420px; }
+.board tr       { height: 4%; }
+.board td       { width: 33%; }
+.inboard        { border-collapse: collapse; border: 2pt solid black;
+                  width: 100%; height: 100%; }
+.inboard tr     { height: 33%; }
+.inboard td     { border: 1pt solid black; padding: 0pt; font-size: 20pt;
+                  text-align: center; width: 25%; }
+.board_id       { text-align: center; font-style: italic; }
+.pagebreak      { page-break-before: always; }
+

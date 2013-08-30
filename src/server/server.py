@@ -15,6 +15,7 @@ from flask import request
 from flask import session
 from flask import url_for
 from functools import wraps
+import itertools
 import os
 
 import pysudoku
@@ -24,6 +25,12 @@ import db
 import users
 import util
 
+### CONSTANTS ###
+
+BOARD_MODES = util.enum("INSITE", "PRINT", "PDF")
+
+### FUNCTIONS ###
+
 app = Flask(__name__)
 app.config.from_object(config)
 
@@ -32,6 +39,13 @@ def init_db(root_user, root_password):
     Initialize the application DB.
     """
     db.init_db(app, root_user, root_password)
+
+def get_board_from_board_row(board_row):
+    """
+    Get a Board object from a board row (from the DB).
+    """
+    return pysudoku.Board(board_row["problem"], board_row["solution"],
+                          board_row["block_width"], board_row["block_height"])
 
 @app.before_request
 def open_db():
@@ -54,11 +68,11 @@ def must_login(func):
     Wraps a page that requires a logged in viewer.
     """
     @wraps(func)
-    def wrapped():
+    def wrapped(*args, **kwargs):
         if not session.get("logged_in"):
             return redirect(url_for("login", next=request.url))
         else:
-            return func()
+            return func(*args, **kwargs)
     return wrapped
 
 @app.route("/")
@@ -136,7 +150,11 @@ def create_board():
             board_ids = [db.insert_board(g.db, session["user"].id, board)
                          for board in boards]
             g.db.commit()
-            flash("Created boards %s" % ", ".join(map(str, board_ids)))
+            session["last_boards"] = board_ids
+            if len(board_ids) == 1:
+                flash("Created one board")
+            else:
+                flash("Created %d boards" % len(board_ids))
         except util.ErrorWithMessage as e:
             error = e.message
         except (KeyError, ValueError):
@@ -145,14 +163,114 @@ def create_board():
             error = "Internal server error"
     return render_template("create_board.html", error=error)
 
+@app.route("/view")
+@must_login
+def view_board():
+    """
+    View a board.
+    """
+    if request.args.has_key("board_id"):
+        return redirect(url_for("view_specific_board",
+                                board_id=request.args["board_id"],
+                                solution=request.args.get("solution", "0")))
+    
+    return render_template("view_board.html", function="main")
+
+@app.route("/view/list", defaults={"many": 0})
+@app.route("/view/list/<int:many>")
+@must_login
+def list_boards(many):
+    """
+    List the available user boards.
+    """
+    
+    boards = db.list_user_boards(g.db, session["user"].id)
+    return render_template("view_board.html", boards=boards,
+                           function="list_many" if many else "list")
+
+@app.route("/view/last")
+@must_login
+def view_last_boards():
+    """
+    View the last created boards.
+    """
+    if not session.has_key("last_boards"):
+        flash("You have not created any board in this session")
+        return redirect(url_for("view_board"))
+    session["requested_boards"] = session["last_boards"]
+    return redirect(url_for("view_board_set"))
+
+@app.route("/view/<int:board_id>",
+           defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
+@app.route("/view/<int:board_id>/<int:solution>",
+           defaults={"mode": BOARD_MODES.INSITE})
+@app.route("/view/<int:board_id>/<int:solution>/<int:mode>")
+@must_login
+def view_specific_board(board_id, solution, mode):
+    """
+    View a board.
+    """
+    
+    solution = bool(solution)
+    
+    board_row = db.get_user_board(g.db, board_id, session["user"].id)
+    if board_row is None:
+        flash("Board not found")
+        return redirect(url_for("main_page"))
+    board = get_board_from_board_row(board_row)
+    
+    if mode == BOARD_MODES.INSITE:
+        return render_template("view_board.html", function="view", board=board,
+                               id=board_id, is_solution=solution, modes=BOARD_MODES)
+    elif mode == BOARD_MODES.PRINT:
+        return render_template("print_board.html", multi_board=False, board=board,
+                               id=board_id, is_solution=solution)
+    elif mode == BOARD_MODES.PDF:
+        return "not implemented"
+    else:
+        flash("Invalid mode")
+        return redirect(url_for("main_page"))
+
+@app.route("/view/custom", methods=["GET", "POST"],
+           defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
+@app.route("/view/custom/<int:solution>",
+           defaults={"mode": BOARD_MODES.INSITE})
+@app.route("/view/custom/<int:solution>/<int:mode>")
+@must_login
+def view_board_set(solution, mode):
+    if request.method == "POST":
+        board_ids = [int(board_id) for board_id in request.form.iterkeys()
+                     if board_id.isdigit()]
+        board_ids.sort()
+        session["requested_boards"] = board_ids
+    elif session.has_key("requested_boards"):
+        board_ids = session["requested_boards"]
+    else:
+        return redirect(url_for("list_boards", many=1))
+    
+    solution = bool(solution)
+    board_rows = [(db.get_user_board(g.db, board_id, session["user"].id), board_id)
+                  for board_id in board_ids]
+    boards = [(get_board_from_board_row(board_row), board_id)
+              for board_row, board_id in board_rows if board_row]
+    
+    if mode == BOARD_MODES.INSITE:
+        return render_template("view_board.html", function="view_many", boards=boards,
+                               id=board_id, is_solution=solution, modes=BOARD_MODES)
+    elif mode == BOARD_MODES.PRINT:
+        return render_template("print_board.html", multi_board=True, boards=boards,
+                               id=board_id, is_solution=solution)
+    elif mode == BOARD_MODES.PDF:
+        return "not implemented"
+    else:
+        flash("Invalid mode")
+        return redirect(url_for("main_page"))
+
 @app.route("/register", methods=["GET", "POST"])
 @must_login
 def register_user():
     """
     Register a new user account.
-    """
-    """
-    Show the login page and handle login requests.
     """
     error = None
     if request.method == "POST":

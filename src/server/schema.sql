@@ -11,6 +11,7 @@ drop table if exists boards;
 create table boards (
     id integer primary key autoincrement,
     uid integer not null,
+    create_time timestamp default current_timestamp,
     problem text not null,
     solution text not null,
     block_width integer not null,

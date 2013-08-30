@@ -226,6 +226,27 @@ size_t Board::get_block_height() const {
 	return m_block_height;
 }
 
+char Board::get(size_t x, size_t y, bool solution) const {
+	if (solution) {
+		return get_solution(x, y);
+	} else {
+		return get_problem(x, y);
+	}
+}
+
+char Board::get_problem(size_t x, size_t y) const {
+	return m_problem[calc_index(x, y)];
+}
+
+char Board::get_solution(size_t x, size_t y) const {
+	return m_solution[calc_index(x, y)];
+}
+
+size_t Board::calc_index(size_t x, size_t y) const {
+	size_t line_width = m_block_width * m_block_height;
+	return x + y * line_width;
+}
+
 std::vector<Board> create_board(size_t block_width, size_t block_height,
 		size_t num_boards) {
 	BoardGenerator generator(block_width, block_height);

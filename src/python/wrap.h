@@ -22,12 +22,18 @@ public:
 
 	size_t get_block_width() const;
 	size_t get_block_height() const;
+
+	char get(size_t x, size_t y, bool solution) const;
+	char get_problem(size_t x, size_t y) const;
+	char get_solution(size_t x, size_t y) const;
 private:
 	std::string m_problem;
 	std::string m_solution;
 
 	size_t      m_block_width;
 	size_t      m_block_height;
+
+	size_t calc_index(size_t x, size_t y) const;
 };
 
 std::vector<Board> create_board(size_t block_width, size_t block_height,
