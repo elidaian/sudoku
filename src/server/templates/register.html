@@ -17,7 +17,7 @@
             {%- for permission in users.UserPermission.PERMISSIONS %}
                 <dd><input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"/>{{ permission.description }}</dd>
             {%- endfor %}
-            <dd><input type="submit" value="Login" /></dd>
+            <dd><input type="submit" value="Register" /></dd>
         </dl>
     </form>
 {% endblock %}
