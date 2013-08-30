@@ -58,16 +58,16 @@
 {%- endif %}
 {%- elif function == "view_many" %}
 <ul class="topnav">
-    <li><a href="{{ url_for("view_board_set", solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
-    <li><a href="{{ url_for("view_board_set", solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
+    <li><a href="{{ url_for("view_board_set", boards=boards_str, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
+    <li><a href="{{ url_for("view_board_set", boards=boards_str, solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
 </ul>
 {%- for board, id in boards %}
 {{ html_board(board, id, False, is_solution) }}
 {%- endfor %}
 {%- if is_solution %}
-<p>You may always check out the <a href="{{ url_for("view_board_set", solution=0) }}">real problems</a>.</p>
+<p>You may always check out the <a href="{{ url_for("view_board_set", boards=boards_str,  solution=0) }}">real problems</a>.</p>
 {%- else %}
-<p>You may always check out the <a href="{{ url_for("view_board_set", solution=1) }}">solutions</a>.</p>
+<p>You may always check out the <a href="{{ url_for("view_board_set", boards=boards_str, solution=1) }}">solutions</a>.</p>
 {%- endif %}
 {%- endif %}
 {% endblock %}

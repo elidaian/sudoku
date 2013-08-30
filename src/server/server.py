@@ -5,6 +5,7 @@ server.py
      Author: eli
 """
 
+import cPickle
 from flask import g
 from flask import Flask
 from flask import flash
@@ -197,8 +198,8 @@ def view_last_boards():
     if not session.has_key("last_boards"):
         flash("You have not created any board in this session")
         return redirect(url_for("view_board"))
-    session["requested_boards"] = session["last_boards"]
-    return redirect(url_for("view_board_set"))
+    boards = cPickle.dumps(session["last_boards"])
+    return redirect(url_for("view_board_set", boards=boards))
 
 @app.route("/view/<int:board_id>",
            defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
@@ -242,9 +243,13 @@ def view_board_set(solution, mode):
         board_ids = [int(board_id) for board_id in request.form.iterkeys()
                      if board_id.isdigit()]
         board_ids.sort()
-        session["requested_boards"] = board_ids
-    elif session.has_key("requested_boards"):
-        board_ids = session["requested_boards"]
+    elif request.args.has_key("boards"):
+        try:
+            pickled = request.args["boards"].decode('base64').decode('zlib')
+            board_ids = cPickle.loads(pickled)
+        except:
+            flash("Unknown boards")
+            return redirect(url_for("list_boards", many=1))
     else:
         return redirect(url_for("list_boards", many=1))
     
@@ -253,10 +258,12 @@ def view_board_set(solution, mode):
                   for board_id in board_ids]
     boards = [(get_board_from_board_row(board_row), board_id)
               for board_row, board_id in board_rows if board_row]
+    boards_str = cPickle.dumps(board_ids).encode('zlib').encode('base64')
     
     if mode == BOARD_MODES.INSITE:
         return render_template("view_board.html", function="view_many", boards=boards,
-                               id=board_id, is_solution=solution, modes=BOARD_MODES)
+                               id=board_id, is_solution=solution, modes=BOARD_MODES,
+                               boards_str=boards_str)
     elif mode == BOARD_MODES.PRINT:
         return render_template("print_board.html", multi_board=True, boards=boards,
                                id=board_id, is_solution=solution)
