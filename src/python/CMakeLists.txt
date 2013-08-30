@@ -1,6 +1,8 @@
 
 include_directories (${CMAKE_SOURCE_DIR}/src/core ${CMAKE_CURRENT_SOURCE_DIR})
-set_source_files_properties (wrap.i PROPERTIES CPLUSPLUS ON)
+set_source_files_properties (wrap.i PROPERTIES
+                             CPLUSPLUS ON
+                             SWIG_MODULE_NAME pysudoku)
 swig_add_module (pysudoku python wrap.i wrap.cc)
 swig_link_libraries (pysudoku ${PYTHON_LIBRARIES} sudoku)
 
