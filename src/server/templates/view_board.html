@@ -5,9 +5,11 @@
 {%- if function == "main" %}
 <p>Please select an option:</p>
 <ul>
-    {%- if session.last_boards %}
-    <li><a href="{{ url_for("view_last_boards") }}">View the last created board</a>.</li>
-    {%- endif %}
+    {%- if session.last_boards -%}
+    <li><a href="{{ url_for("view_last_boards") }}">View the last created board
+    {%- if session.last_boards|length > 1 -%}s{% endif -%}
+    </a>.</li>
+    {%- endif -%}
     <li><a href="{{ url_for("list_boards") }}">View a specific board</a>.</li>
     <li><a href="{{ url_for("list_boards", many=1) }}">View a set of boards</a>.</li>
 </ul>
@@ -70,4 +72,4 @@
 <p>You may always check out the <a href="{{ url_for("view_board_set", boards=boards_str, solution=1) }}">solutions</a>.</p>
 {%- endif %}
 {%- endif %}
-{% endblock %}
+{%- endblock %}

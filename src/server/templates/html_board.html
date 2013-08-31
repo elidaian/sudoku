@@ -1,8 +1,8 @@
 {%- macro html_board(board, id, to_print, is_solution) %}
-{%- if to_print %}
+{%- if to_print -%}
 <div class="head">Eli Daian's Sudoku</div>
 <center>
-{%- endif %}
+{%- endif -%}
 <table class="board">
     {%- for blocks_row in range(board.get_block_width()) %}
     {%- set row1 = board.get_block_height() * blocks_row %}
@@ -15,7 +15,7 @@
                 {%- set row = row1 + inblock_row %}
                 <tr>
                     {%- for inblock_col in range(board.get_block_width()) %}
-                    {%- set col = col1 + inblock_col %}
+                    {%- set col = col1 + inblock_col -%}
                     <td>{{ board.get(col, row, is_solution) }}</td>
                     {%- endfor %}
                 </tr>

@@ -6,6 +6,7 @@ add_subdirectory (templates)
 
 set (FILES config.py
            db.py
+           pdf_renderer.py
            schema.sql
            server.py
            users.py

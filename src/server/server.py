@@ -9,20 +9,18 @@ import cPickle
 from flask import g
 from flask import Flask
 from flask import flash
-from flask import make_response
 from flask import redirect
 from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
 from functools import wraps
-import itertools
-import os
 
 import pysudoku
 
 import config
 import db
+import pdf_renderer
 import users
 import util
 
@@ -34,6 +32,8 @@ BOARD_MODES = util.enum("INSITE", "PRINT", "PDF")
 
 app = Flask(__name__)
 app.config.from_object(config)
+
+texenv = pdf_renderer.create_env(app)
 
 def init_db(root_user, root_password):
     """
@@ -198,7 +198,7 @@ def view_last_boards():
     if not session.has_key("last_boards"):
         flash("You have not created any board in this session")
         return redirect(url_for("view_board"))
-    boards = cPickle.dumps(session["last_boards"])
+    boards = cPickle.dumps(session["last_boards"]).encode('zlib').encode('base64')
     return redirect(url_for("view_board_set", boards=boards))
 
 @app.route("/view/<int:board_id>",
@@ -227,7 +227,9 @@ def view_specific_board(board_id, solution, mode):
         return render_template("print_board.html", multi_board=False, board=board,
                                id=board_id, is_solution=solution)
     elif mode == BOARD_MODES.PDF:
-        return "not implemented"
+        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv, board=board,
+                                                id=board_id, is_solution=solution,
+                                                multi_board=False)
     else:
         flash("Invalid mode")
         return redirect(url_for("main_page"))
@@ -253,6 +255,10 @@ def view_board_set(solution, mode):
     else:
         return redirect(url_for("list_boards", many=1))
     
+    if len(board_ids) == 1:
+        return redirect(url_for("view_specific_board", board_id=board_ids[0],
+                                solution=solution, mode=mode))
+    
     solution = bool(solution)
     board_rows = [(db.get_user_board(g.db, board_id, session["user"].id), board_id)
                   for board_id in board_ids]
@@ -268,7 +274,10 @@ def view_board_set(solution, mode):
         return render_template("print_board.html", multi_board=True, boards=boards,
                                id=board_id, is_solution=solution)
     elif mode == BOARD_MODES.PDF:
-        return "not implemented"
+        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+                                                boards=boards, id=board_id,
+                                                is_solution=solution,
+                                                multi_board=True)
     else:
         flash("Invalid mode")
         return redirect(url_for("main_page"))
