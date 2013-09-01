@@ -13,12 +13,19 @@ BuildRequires: boost-devel gcc gcc-c++
 Infrastructure for creating and solving Sudoku puzzles of varying grid sizes.
 
 %package python
-BuildRequires:python-devel python swig
+BuildRequires: python-devel python swig
 Requires:	python %{name} = %{version}
 Summary:    Python wrapping for the infrastructure.
 
 %description python
 Python wrapping for the sudoku infrastructure.
+
+%package server
+Requires: %{name}-python = %{version} texlive-latex
+Summary:    Web server for clients to use this infrastructure.
+
+%description server
+Web server for clients to use the sudoku infrastructure.
 
 %prep
 %setup -q
@@ -49,10 +56,17 @@ rm -rf %{buildroot}
 %{_libdir}/libsudoku.so
 
 %files python
+%defattr(-,root,root,-)
 @PYTHON_SITE_PACKAGES@/_pysudoku.so
 @PYTHON_SITE_PACKAGES@/pysudoku.py
 
+%files server
+%defattr(-,root,root,-)
+
 %changelog
+* Sun Sep 01 2013 Eli Daian <elidaian@gmail.com>
+- Added the python and server subpackages.
+
 * Fri Aug 09 2013 Eli Daian <elidaian@gmail.com>
 - Created the package
 
