@@ -7,12 +7,18 @@ License:	GPL
 URL:		http://elidaian.dnsd.me
 Source0:	@TARBALL_NAME@
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-
-BuildRequires:	python-devel python boost-devel gcc gcc-c++ swig
-Requires:	python
+BuildRequires: boost-devel gcc gcc-c++
 
 %description
 Infrastructure for creating and solving Sudoku puzzles of varying grid sizes.
+
+%package python
+BuildRequires:python-devel python swig
+Requires:	python %{name} = %{version}
+Summary:    Python wrapping for the infrastructure.
+
+%description python
+Python wrapping for the sudoku infrastructure.
 
 %prep
 %setup -q
@@ -41,6 +47,8 @@ rm -rf %{buildroot}
 %{_bindir}/solver
 %{_bindir}/dodeka-solver
 %{_libdir}/libsudoku.so
+
+%files python
 @PYTHON_SITE_PACKAGES@/_pysudoku.so
 @PYTHON_SITE_PACKAGES@/pysudoku.py
 
