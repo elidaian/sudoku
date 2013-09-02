@@ -64,20 +64,26 @@ def close_db(exception):
     if conn is not None:
         conn.close()
 
-def must_login(func):
+def must_login(permission=None):
     """
     Wraps a page that requires a logged in viewer.
+    If permission is given, the viewing user must have the given permission.
     """
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        if not session.get("logged_in"):
-            return redirect(url_for("login", next=request.url))
-        else:
-            return func(*args, **kwargs)
-    return wrapped
+    def wrapper(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            if not session.get("logged_in"):
+                return redirect(url_for("login", next=request.url))
+            elif permission is not None and not session["user"].has_permission(permission):
+                flash("Permission denied")
+                return redirect(url_for("main_page"))
+            else:
+                return func(*args, **kwargs)
+        return wrapped
+    return wrapper
 
 @app.route("/")
-@must_login
+@must_login()
 def main_page():
     """
     Application root.
@@ -125,7 +131,7 @@ def logout():
     return redirect(url_for("main_page"))
 
 @app.route("/create_board", methods=["GET", "POST"])
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def create_board():
     """
     Create a new board or some new boards.
@@ -165,7 +171,7 @@ def create_board():
     return render_template("create_board.html", error=error)
 
 @app.route("/view")
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def view_board():
     """
     View a board.
@@ -179,7 +185,7 @@ def view_board():
 
 @app.route("/view/list", defaults={"many": 0})
 @app.route("/view/list/<int:many>")
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def list_boards(many):
     """
     List the available user boards.
@@ -190,7 +196,7 @@ def list_boards(many):
                            function="list_many" if many else "list")
 
 @app.route("/view/last")
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def view_last_boards():
     """
     View the last created boards.
@@ -206,7 +212,7 @@ def view_last_boards():
 @app.route("/view/<int:board_id>/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/view/<int:board_id>/<int:solution>/<int:mode>")
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def view_specific_board(board_id, solution, mode):
     """
     View a board.
@@ -239,7 +245,7 @@ def view_specific_board(board_id, solution, mode):
 @app.route("/view/custom/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/view/custom/<int:solution>/<int:mode>")
-@must_login
+@must_login(users.PERM_CREATE_BOARD)
 def view_board_set(solution, mode):
     if request.method == "POST":
         board_ids = [int(board_id) for board_id in request.form.iterkeys()
@@ -284,7 +290,7 @@ def view_board_set(solution, mode):
         return redirect(url_for("main_page"))
 
 @app.route("/register", methods=["GET", "POST"])
-@must_login
+@must_login(users.PERM_REGISTER_USER)
 def register_user():
     """
     Register a new user account.
@@ -315,7 +321,7 @@ def register_user():
     return render_template("register.html", users=users, error=error)
 
 @app.route("/other")
-@must_login
+@must_login()
 def other_user():
     """
     View other user's boards.
@@ -323,7 +329,7 @@ def other_user():
     return "Not yet implemented"
 
 @app.route('/reset')
-@must_login
+@must_login()
 def reset():
     """
     Reset the DB.
