@@ -2,4 +2,7 @@
 {% block title %}Welcome{% endblock %}
 {% block body %}
 Welcome to Eli Daian Sudoku website.<br />
+{%- if not session.logged_in %}
+<a href="{{ url_for("login") }}">Login</a> in order to begin.<br />
+{%- endif %}
 {%- endblock %}

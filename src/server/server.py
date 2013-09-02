@@ -83,7 +83,6 @@ def must_login(permission=None):
     return wrapper
 
 @app.route("/")
-@must_login()
 def main_page():
     """
     Application root.

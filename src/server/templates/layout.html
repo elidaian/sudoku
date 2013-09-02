@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="page">
-    <h1>Eli Daian Sudoku</h1>
+    <h1><a href="{{ url_for("main_page") }}" class="main_link">Eli Daian Sudoku</a></h1>
     <div class="metanav">
     {%- if session.logged_in %}
         {%- if session.user.allow_create_board() %}
