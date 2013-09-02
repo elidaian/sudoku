@@ -5,7 +5,7 @@ pdf_renderer.py
      Author: eli
 """
 
-from flask import Response
+from flask import send_file
 import os
 import shutil
 import subprocess
@@ -26,7 +26,7 @@ def create_env(app):
     texenv.comment_end_string = '=))'
     return texenv
 
-def make_pdf(tex):
+def make_pdf(tex, filename):
     """
     Make a PDF file from the given source.
     """
@@ -43,16 +43,14 @@ def make_pdf(tex):
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.communicate()
         
-        with open(pdf_file, "rb") as f:
-            return f.read()
+        return send_file(pdf_file, as_attachment=True,
+                         attachment_filename=filename)
     finally:
         shutil.rmtree(tmp_dir)
 
-def render_pdf_template(template, texenv, **kwargs):
+def render_pdf_template(template, texenv, filename=None, **kwargs):
     """
     Render a pdf template.
     """
     tex = texenv.get_template(template).render(**kwargs)
-#     return tex
-    pdf = make_pdf(tex)
-    return Response(pdf, mimetype="application/pdf")
+    return make_pdf(tex, filename)

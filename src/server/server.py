@@ -227,8 +227,8 @@ def view_specific_board(board_id, solution, mode):
         return render_template("print_board.html", multi_board=False, board=board,
                                id=board_id, is_solution=solution)
     elif mode == BOARD_MODES.PDF:
-        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv, board=board,
-                                                id=board_id, is_solution=solution,
+        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv, filename="board.pdf",
+                                                board=board, id=board_id, is_solution=solution,
                                                 multi_board=False)
     else:
         flash("Invalid mode")
@@ -275,6 +275,7 @@ def view_board_set(solution, mode):
                                id=board_id, is_solution=solution)
     elif mode == BOARD_MODES.PDF:
         return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+                                                filename="boards.pdf",
                                                 boards=boards, id=board_id,
                                                 is_solution=solution,
                                                 multi_board=True)
