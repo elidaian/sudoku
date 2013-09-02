@@ -1,26 +1,17 @@
 ((* macro pdf_board(board, id, is_solution) *))
+((*- set total_size = board.get_block_width() * board.get_block_height() *))
 \pagestyle{empty}
 \begin{center}
 {\huge Eli Daian's Sudoku}
 
+\vspace{1em}
+
 \begin{tikzpicture}[yscale=-1]
 % Draw the table grid
-\foreach \i in {0, ((( board.get_block_width() ))), ..., ((( board.get_block_width() * board.get_block_height() )))}
-    \draw[very thick] (\i, 0) -- (\i, ((( board.get_block_width() * board.get_block_height() ))));
-\foreach \i in {0, ((( board.get_block_height() ))), ..., ((( board.get_block_width() * board.get_block_height() )))}
-    \draw[very thick] (0, \i) -- ( ((( board.get_block_width() * board.get_block_height() ))), \i);
-\foreach \i in {0, ..., ((( board.get_block_width() - 1 )))} {
-    ((*- for blocks_col in range(1, board.get_block_height()) *))
-    \draw ( ((( board.get_block_height() ))) * \i + ((( blocks_col ))), 0) --
-        ( ((( board.get_block_height() ))) * \i + ((( blocks_col ))), ((( board.get_block_width() * board.get_block_height() ))));
-    ((*- endfor *))
-};
-\foreach \i in {0, ..., ((( board.get_block_height() -1 )))} {
-    ((*- for blocks_row in range(1, board.get_block_width()) *))
-    \draw (0, ((( board.get_block_width() ))) * \i + ((( blocks_row )))) --
-        ( ((( board.get_block_width() * board.get_block_height() ))), ((( board.get_block_width() ))) * \i + ((( blocks_row ))));
-    ((*- endfor *))
-};
+\draw[very thick] (0, 0)
+        grid[xstep=((( board.get_block_width() ))), ystep=(((board.get_block_height() )))]
+                ( ((( total_size ))) , ((( total_size ))) );
+\draw (0, 0) grid ( ((( total_size ))) , ((( total_size ))) );
 
 % Draw the cell data
 ((*- for row in range(board.get_block_width() * board.get_block_height()) *))
