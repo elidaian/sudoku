@@ -1,22 +1,36 @@
 {%- extends "layout.html" %}
 {%- from "html_board.html" import html_board %}
+{%- macro disp_user(display, username) -%}
+{% if display %}{{ display }}{% else %}{{ username }}{% endif %}
+{%- endmacro %}
 {%- block title %}View Board{% endblock %}
 {%- block body %}
+{%- if root %}
+{%- set list_func = "list_other_boards" %}
+{%- set view_func = "other_user" %}
+{%- set view_specific_func = "other_specific_board" %}
+{%- set view_set_func = "other_board_set" %}
+{%- else %}
+{%- set list_func = "list_boards" %}
+{%- set view_func = "view_board" %}
+{%- set view_specific_func = "view_specific_board" %}
+{%- set view_set_func = "view_board_set" %}
+{%- endif %}
 {%- if function == "main" %}
 <p>Please select an option:</p>
 <ul>
-    {%- if session.last_boards -%}
+    {%- if session.last_boards and not root -%}
     <li><a href="{{ url_for("view_last_boards") }}">View the last created board
     {%- if session.last_boards|length > 1 -%}s{% endif -%}
     </a>.</li>
     {%- endif -%}
-    <li><a href="{{ url_for("list_boards") }}">View a specific board</a>.</li>
-    <li><a href="{{ url_for("list_boards", many=1) }}">View a set of boards</a>.</li>
+    <li><a href="{{ url_for(list_func) }}">View a specific board</a>.</li>
+    <li><a href="{{ url_for(list_func, many=1) }}">View a set of boards</a>.</li>
 </ul>
 {%- elif function == "list" %}
 <p>You have {{ boards|length }} boards.</p>
 <p>Please select a board to watch:</p>
-<form action="{{ url_for("view_board") }}" method="GET">
+<form action="{{ url_for(view_func) }}" method="GET">
     I want to check board #<input type="number" name="board_id" />.<br />
     <input type="checkbox" name="solution" value="1" />Let me see the solution.<br />
     <input type="submit" value="Go!" />
@@ -26,22 +40,24 @@
     {%- for board in boards %}
     <li>
         #{{ board.id }} - {{ board.block_width }} &times; {{ board.block_height }} board, created on {{ board.create_time }}
-        <a href="{{ url_for("view_specific_board", board_id=board.id) }}">Problem</a>
-        <a href="{{ url_for("view_specific_board", board_id=board.id, solution=1) }}">Solution</a>
+        <a href="{{ url_for(view_specific_func, board_id=board.id) }}">Problem</a>
+        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=1) }}">Solution</a>
+        {% if root %} [{{ disp_user(board.display, board.username) }}]{% endif -%}
     </li>
     {%- endfor %}
 </ul>
 {%- elif function == "list_many" %}
 <p>You have {{ boards|length }} boards.</p>
 <p>Please select the boards you would like to see:</p>
-<form action="{{ url_for("view_board_set") }}" method="POST">
+<form action="{{ url_for(view_set_func) }}" method="POST">
     <ul>
         {%- for board in boards %}
         <li>
             <input type="checkbox" name="{{ board.id }}" value="1" />
             #{{ board.id }} - {{ board.block_width }} &times; {{ board.block_height }} board, created on {{ board.create_time }}
-            <a href="{{ url_for("view_specific_board", board_id=board.id) }}">Problem</a>
-            <a href="{{ url_for("view_specific_board", board_id=board.id, solution=1) }}">Solution</a>
+            <a href="{{ url_for(view_specific_func, board_id=board.id) }}">Problem</a>
+            <a href="{{ url_for(view_specific_func, board_id=board.id, solution=1) }}">Solution</a>
+            {% if root %} [{{ disp_user(board.display, board.username) }}]{% endif -%}
         </li>
         {%- endfor %}
     </ul>
@@ -49,27 +65,27 @@
 </form>
 {%- elif function == "view" %}
 <ul class="topnav">
-    <li><a href="{{ url_for("view_specific_board", board_id=id, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
-    <li><a href="{{ url_for("view_specific_board", board_id=id, solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
+    <li><a href="{{ url_for(view_specific_func, board_id=id, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
+    <li><a href="{{ url_for(view_specific_func, board_id=id, solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
 </ul>
 {{ html_board(board, id, False, is_solution) }}
 {%- if is_solution %}
-<p>You may always check out the <a href="{{ url_for("view_specific_board", board_id=id, solution=0) }}">real problem</a>.</p>
+<p>You may always check out the <a href="{{ url_for(view_specific_func, board_id=id, solution=0) }}">real problem</a>.</p>
 {%- else %}
-<p>You may always check out the <a href="{{ url_for("view_specific_board", board_id=id, solution=1) }}">solution</a>.</p>
+<p>You may always check out the <a href="{{ url_for(view_specific_func, board_id=id, solution=1) }}">solution</a>.</p>
 {%- endif %}
 {%- elif function == "view_many" %}
 <ul class="topnav">
-    <li><a href="{{ url_for("view_board_set", boards=boards_str, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
-    <li><a href="{{ url_for("view_board_set", boards=boards_str, solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
+    <li><a href="{{ url_for(view_set_func, boards=boards_str, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
+    <li><a href="{{ url_for(view_set_func, boards=boards_str, solution=1 if is_solution else 0, mode=modes.PDF) }}" target="_blank">PDF</a><li>
 </ul>
 {%- for board, id in boards %}
 {{ html_board(board, id, False, is_solution) }}
 {%- endfor %}
 {%- if is_solution %}
-<p>You may always check out the <a href="{{ url_for("view_board_set", boards=boards_str,  solution=0) }}">real problems</a>.</p>
+<p>You may always check out the <a href="{{ url_for(view_set_func, boards=boards_str,  solution=0) }}">real problems</a>.</p>
 {%- else %}
-<p>You may always check out the <a href="{{ url_for("view_board_set", boards=boards_str, solution=1) }}">solutions</a>.</p>
+<p>You may always check out the <a href="{{ url_for(view_set_func, boards=boards_str, solution=1) }}">solutions</a>.</p>
 {%- endif %}
 {%- endif %}
 {%- endblock %}

@@ -82,6 +82,81 @@ def must_login(permission=None):
         return wrapped
     return wrapper
 
+def view_one_board(board_id, board_row, solution, mode, root):
+    """
+    View a single board.
+    """
+    solution = bool(solution)
+    
+    if board_row is None:
+        flash("Board not found")
+        return redirect(url_for("main_page"))
+    board = get_board_from_board_row(board_row)
+    
+    if mode == BOARD_MODES.INSITE:
+        return render_template("view_board.html", function="view", board=board,
+                               id=board_id, is_solution=solution, modes=BOARD_MODES,
+                               root=root)
+    elif mode == BOARD_MODES.PRINT:
+        return render_template("print_board.html", multi_board=False, board=board,
+                               id=board_id, is_solution=solution)
+    elif mode == BOARD_MODES.PDF:
+        filename = "solution.pdf" if solution else "board.pdf"
+        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+                                                filename=filename,
+                                                board=board, id=board_id,
+                                                is_solution=solution,
+                                                multi_board=False)
+    else:
+        flash("Invalid mode")
+        return redirect(url_for("main_page"))
+
+def parse_board_ids(list_func):
+    """
+    Parse the requested board IDs.
+    """
+    if request.method == "POST":
+        board_ids = [int(board_id) for board_id in request.form.iterkeys()
+                     if board_id.isdigit()]
+        board_ids.sort()
+    elif request.args.has_key("boards"):
+        try:
+            pickled = request.args["boards"].decode('base64').decode('zlib')
+            board_ids = cPickle.loads(pickled)
+        except:
+            flash("Unknown boards")
+            return redirect(url_for(list_func, many=1))
+    else:
+        return redirect(url_for(list_func, many=1))
+    return board_ids
+
+def view_many_boards(board_ids, board_rows, solution, mode, root):
+    """
+    View many boards.
+    """
+    solution = bool(solution)
+    boards = [(get_board_from_board_row(board_row), board_id)
+              for board_row, board_id in board_rows if board_row]
+    boards_str = cPickle.dumps(board_ids).encode('zlib').encode('base64')
+    
+    if mode == BOARD_MODES.INSITE:
+        return render_template("view_board.html", function="view_many", boards=boards,
+                               id=board_id, is_solution=solution, modes=BOARD_MODES,
+                               boards_str=boards_str, root=root)
+    elif mode == BOARD_MODES.PRINT:
+        return render_template("print_board.html", multi_board=True, boards=boards,
+                               id=board_id, is_solution=solution)
+    elif mode == BOARD_MODES.PDF:
+        filename = "solutions.pdf" if solution else "boards.pdf"
+        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+                                                filename=filename,
+                                                boards=boards, id=board_id,
+                                                is_solution=solution,
+                                                multi_board=True)
+    else:
+        flash("Invalid mode")
+        return redirect(url_for("main_page"))
+
 @app.route("/")
 def main_page():
     """
@@ -183,7 +258,7 @@ def view_board():
                                 board_id=request.args["board_id"],
                                 solution=request.args.get("solution", "0")))
     
-    return render_template("view_board.html", function="main")
+    return render_template("view_board.html", function="main", root=False)
 
 @app.route("/view/list", defaults={"many": 0})
 @app.route("/view/list/<int:many>")
@@ -195,7 +270,7 @@ def list_boards(many):
     
     boards = db.list_user_boards(g.db, session["user"].id)
     return render_template("view_board.html", boards=boards,
-                           function="list_many" if many else "list")
+                           function="list_many" if many else "list", root=False)
 
 @app.route("/view/last")
 @must_login(users.PERM_CREATE_BOARD)
@@ -219,28 +294,8 @@ def view_specific_board(board_id, solution, mode):
     """
     View a board.
     """
-    
-    solution = bool(solution)
-    
     board_row = db.get_user_board(g.db, board_id, session["user"].id)
-    if board_row is None:
-        flash("Board not found")
-        return redirect(url_for("main_page"))
-    board = get_board_from_board_row(board_row)
-    
-    if mode == BOARD_MODES.INSITE:
-        return render_template("view_board.html", function="view", board=board,
-                               id=board_id, is_solution=solution, modes=BOARD_MODES)
-    elif mode == BOARD_MODES.PRINT:
-        return render_template("print_board.html", multi_board=False, board=board,
-                               id=board_id, is_solution=solution)
-    elif mode == BOARD_MODES.PDF:
-        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv, filename="board.pdf",
-                                                board=board, id=board_id, is_solution=solution,
-                                                multi_board=False)
-    else:
-        flash("Invalid mode")
-        return redirect(url_for("main_page"))
+    return view_one_board(board_id, board_row, solution, mode, False)
 
 @app.route("/view/custom", methods=["GET", "POST"],
            defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
@@ -249,47 +304,16 @@ def view_specific_board(board_id, solution, mode):
 @app.route("/view/custom/<int:solution>/<int:mode>")
 @must_login(users.PERM_CREATE_BOARD)
 def view_board_set(solution, mode):
-    if request.method == "POST":
-        board_ids = [int(board_id) for board_id in request.form.iterkeys()
-                     if board_id.isdigit()]
-        board_ids.sort()
-    elif request.args.has_key("boards"):
-        try:
-            pickled = request.args["boards"].decode('base64').decode('zlib')
-            board_ids = cPickle.loads(pickled)
-        except:
-            flash("Unknown boards")
-            return redirect(url_for("list_boards", many=1))
-    else:
-        return redirect(url_for("list_boards", many=1))
-    
+    board_ids = parse_board_ids("list_boards")
+    if type(board_ids) is not list:
+        return board_ids        # this is a redirection
     if len(board_ids) == 1:
         return redirect(url_for("view_specific_board", board_id=board_ids[0],
                                 solution=solution, mode=mode))
     
-    solution = bool(solution)
     board_rows = [(db.get_user_board(g.db, board_id, session["user"].id), board_id)
                   for board_id in board_ids]
-    boards = [(get_board_from_board_row(board_row), board_id)
-              for board_row, board_id in board_rows if board_row]
-    boards_str = cPickle.dumps(board_ids).encode('zlib').encode('base64')
-    
-    if mode == BOARD_MODES.INSITE:
-        return render_template("view_board.html", function="view_many", boards=boards,
-                               id=board_id, is_solution=solution, modes=BOARD_MODES,
-                               boards_str=boards_str)
-    elif mode == BOARD_MODES.PRINT:
-        return render_template("print_board.html", multi_board=True, boards=boards,
-                               id=board_id, is_solution=solution)
-    elif mode == BOARD_MODES.PDF:
-        return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
-                                                filename="boards.pdf",
-                                                boards=boards, id=board_id,
-                                                is_solution=solution,
-                                                multi_board=True)
-    else:
-        flash("Invalid mode")
-        return redirect(url_for("main_page"))
+    return view_many_boards(board_ids, board_rows, solution, mode, False)
 
 @app.route("/register", methods=["GET", "POST"])
 @must_login(users.PERM_REGISTER_USER)
@@ -323,12 +347,58 @@ def register_user():
     return render_template("register.html", users=users, error=error)
 
 @app.route("/other")
-@must_login()
+@must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_user():
     """
     View other user's boards.
     """
-    return "Not yet implemented"
+    if request.args.has_key("board_id"):
+        return redirect(url_for("other_specific_board",
+                                board_id=request.args["board_id"],
+                                solution=request.args.get("solution", "0")))
+    
+    return render_template("view_board.html", function="main", root=True)
+
+@app.route("/other/list", defaults={"many": 0})
+@app.route("/other/list/<int:many>")
+@must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
+def list_other_boards(many):
+    """
+    List all the boards of the other users.
+    """
+    boards = db.list_all_boards(g.db)
+    return render_template("view_board.html", boards=boards,
+                           function="list_many" if many else "list", root=True)
+
+@app.route("/other/<int:board_id>",
+           defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
+@app.route("/other/<int:board_id>/<int:solution>",
+           defaults={"mode": BOARD_MODES.INSITE})
+@app.route("/other/<int:board_id>/<int:solution>/<int:mode>")
+@must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
+def other_specific_board(board_id, solution, mode):
+    """
+    View a specific board of other users.
+    """
+    board_row = db.get_board(g.db, board_id)
+    return view_one_board(board_id, board_row, solution, mode, True)
+
+@app.route("/other/custom", methods=["GET", "POST"],
+           defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
+@app.route("/other/custom/<int:solution>",
+           defaults={"mode": BOARD_MODES.INSITE})
+@app.route("/other/custom/<int:solution>/<int:mode>")
+@must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
+def other_board_set(solution, mode):
+    board_ids = parse_board_ids("list_other_boards")
+    if type(board_ids) is not list:
+        return board_ids        # this is a redirection
+    if len(board_ids) == 1:
+        return redirect(url_for("other_specific_board", board_id=board_ids[0],
+                                solution=solution, mode=mode))
+    
+    board_rows = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
+    return view_many_boards(board_ids, board_rows, solution, mode, True)
 
 @app.route('/reset')
 @must_login()

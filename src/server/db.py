@@ -36,6 +36,16 @@ select problem, solution, block_width, block_height from boards
 where id = :id and uid = :uid
 """
 
+LIST_ALL_BOARDS = """
+select boards.id, create_time, block_width, block_height, users.username, users.display
+from boards join users on boards.uid = users.id
+"""
+
+GET_BOARD = """
+select problem, solution, block_width, block_height from boards
+where id = :id
+"""
+
 def connect_db(app):
     """
     Create a new DB connection.
@@ -104,6 +114,17 @@ def get_user_board(db, board_id, uid):
                "uid": uid}
     cur = db.cursor()
     cur.execute(GET_USER_BOARD, details)
+    return cur.fetchone()
+
+def list_all_boards(db):
+    cur = db.cursor()
+    cur.execute(LIST_ALL_BOARDS)
+    return cur.fetchall()
+
+def get_board(db, board_id):
+    details = {"id": board_id}
+    cur = db.cursor()
+    cur.execute(GET_BOARD, details)
     return cur.fetchone()
 
 def init_db(app, root_user, root_password):
