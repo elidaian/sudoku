@@ -15,7 +15,11 @@
             <dd><input type="text" name="display" /></dd>
             <dt>Permissions:</dt>
             {%- for permission in users.UserPermission.PERMISSIONS %}
-                <dd><input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"/>{{ permission.description }}</dd>
+                <dd>
+                    <input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"
+                    {%- if permission.is_default %} checked="checked" {% endif %} />
+                    {{ permission.description }}
+                </dd>
             {%- endfor %}
             <dd><input type="submit" value="Register" /></dd>
         </dl>

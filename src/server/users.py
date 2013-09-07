@@ -13,7 +13,7 @@ class UserPermission(object):
     PERMISSIONS = []
     _curr_permission_bit = 1
     
-    def __init__(self, name, description):
+    def __init__(self, name, description, is_default):
         """
         Construct a permission given its description.
         """
@@ -21,6 +21,7 @@ class UserPermission(object):
         self.name = name
         self.description = description
         self.flag = UserPermission._curr_permission_bit
+        self.is_default = is_default
         
         UserPermission.PERMISSIONS.append(self)
         UserPermission._curr_permission_bit <<= 1
@@ -53,10 +54,10 @@ class UserPermission(object):
         return self.flag == other.flag
 
 # Define the permissions
-PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards")
-PERM_REGISTER_USER = UserPermission("REGISTER_USERS", "Register new users")
+PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards", True)
+PERM_REGISTER_USER = UserPermission("REGISTER_USERS", "Register new users", False)
 PERM_SHOW_OTHER_USER_BOARDS = UserPermission("SHOW_OTHER_USERS_BOARDS",
-                                             "Show other user\'s boards")
+                                             "Show other user\'s boards", False)
 
 class User(object):
     """
