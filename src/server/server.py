@@ -136,6 +136,7 @@ def create_board():
     Create a new board or some new boards.
     """
     error = None
+    just_created = False
     if request.method == "POST":
         try:
             board_type = request.form["type"]
@@ -161,13 +162,15 @@ def create_board():
                 flash("Created one board")
             else:
                 flash("Created %d boards" % len(board_ids))
+            just_created = True
         except util.ErrorWithMessage as e:
             error = e.message
         except (KeyError, ValueError):
             error = "Invalid request data"
         except:
             error = "Internal server error"
-    return render_template("create_board.html", error=error)
+    return render_template("create_board.html", error=error,
+                           just_created=just_created)
 
 @app.route("/view")
 @must_login(users.PERM_CREATE_BOARD)

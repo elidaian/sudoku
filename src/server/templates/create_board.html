@@ -30,7 +30,12 @@ function check_custom() {
 {% block title %}Create a New Board{% endblock %}
 {% block body %}
 {%- if error %}
-    <p class="error"><strong>Error:</strong> {{ error }}
+<p class="error"><strong>Error:</strong> {{ error }}
+{%- endif %}
+{%- if just_created %}
+<p>Click here to <a href="{{ url_for("view_last_boards") }}">see</a> the created board
+{%- if session.last_boards|length != 1 %}s{% endif -%}
+.</p>
 {%- endif %}
 <form action="{{ url_for("create_board") }}" method="post">
     <dl>
