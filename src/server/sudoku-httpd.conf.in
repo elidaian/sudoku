@@ -1,8 +1,6 @@
 
-LoadModule wsgi_module modules/mod_wsgi.so
-
 <VirtualHost *:80>
-    WSGIDaemonProcess sudoku user=sudoku group=sudoku threads=5
+    WSGIDaemonProcess sudoku user=sudoku_server group=sudoku_server threads=5
     WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
 
     <Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>
