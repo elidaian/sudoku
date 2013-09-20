@@ -18,7 +18,6 @@ from functools import wraps
 
 import pysudoku
 
-import config
 import db
 import pdf_renderer
 import users
