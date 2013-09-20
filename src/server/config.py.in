@@ -1,6 +1,6 @@
 import os
 
-DATABASE = "/tmp/sudoku.db"
+DATABASE = "@DB_FILE@"
 DEBUG = True
 SECRET_KEY = os.urandom(32)
 APPLICATION_ROOT = @APPLICATION_ROOT@
