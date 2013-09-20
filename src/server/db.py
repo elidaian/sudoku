@@ -21,6 +21,41 @@ insert into users(username, password, display, permissions)
 values (:username, :password, :display, :permissions)
 """
 
+LIST_USERS = """
+select id, username, display from users
+"""
+
+GET_USER_DETAILS = """
+select username, display, permissions,
+    (select count(*) from boards where uid = users.id) as num_boards from users
+where users.id = :user_id
+"""
+
+EDIT_USER_WITH_PASSWORD = """
+update users
+set password = :password,
+    display = :display,
+    permissions = :permissions
+where id = :user_id
+"""
+
+EDIT_USER_WITHOUT_PASSWORD = """
+update users
+set display = :display,
+    permissions = :permissions
+where id = :user_id
+"""
+
+DELETE_USER = """
+delete from users
+where id = :user_id
+"""
+
+DELETE_USER_BOARDS = """
+delete from boards
+where uid = :user_id
+"""
+
 INSERT_BOARD = """
 insert into boards(uid, problem, solution, block_width, block_height)
 values (:uid, :problem, :solution, :block_width, :block_height)
@@ -88,6 +123,54 @@ def register_user(db, username, password, display, permissions):
         return "User %s successfully created!" % (display if display else username), True
     except sqlite3.IntegrityError as e:
         return "Unable to register %s" % username, False
+
+def list_users(db):
+    """
+    List the existing users.
+    """
+    cur = db.cursor()
+    cur.execute(LIST_USERS)
+    return cur.fetchall()
+
+def get_user_details(db, user_id):
+    """
+    Get the details of a user.
+    """
+    details = {"user_id": user_id}
+    cur = db.cursor()
+    cur.execute(GET_USER_DETAILS, details)
+    return cur.fetchone()
+
+def edit_user_with_password(db, user_id, password, display, permissions):
+    """
+    Edit a user and set its password.
+    """
+    details = {"user_id"    : user_id,
+               "password"   : hash_password(password),
+               "display"    : display,
+               "permissions": users.UserPermission.get_mask(permissions)}
+    db.execute(EDIT_USER_WITH_PASSWORD, details)
+    db.commit()
+
+def edit_user_without_password(db, user_id, display, permissions):
+    """
+    Edit a user without changing its password.
+    """
+    details = {"user_id"     : user_id,
+               "display"     : display,
+               "permissions" : users.UserPermission.get_mask(permissions)}
+    db.execute(EDIT_USER_WITHOUT_PASSWORD, details)
+    db.commit()
+
+def delete_user(db, user_id):
+    """
+    Delete a user and his boards.
+    """
+    details = {"user_id": user_id}
+    cur = db.cursor()
+    cur.execute(DELETE_USER, details)
+    cur.execute(DELETE_USER_BOARDS, details)
+    db.commit()
 
 def insert_board(db, uid, board):
     """

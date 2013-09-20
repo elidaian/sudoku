@@ -15,13 +15,13 @@
             <p><a href="{{ url_for("create_board") }}">Create board</a></p>
             <p><a href="{{ url_for("view_board") }}">View board</a></p>
         {%- endif %}
-        {%- if session.user.allow_register_user() %}
+        {%- if session.user.allow_manage_users() %}
             <p><a href="{{ url_for("register_user") }}">Register user</a></p>
+            <p><a href="{{ url_for("manage_users") }}">Manage users</a></p>
         {%- endif %}
         {%- if session.user.allow_other_user_boards() %}
             <p><a href="{{ url_for("other_user") }}">View other user's boards</a></p>
         {%- endif %}
-        <p><a href="{{ url_for("reset") }}">Reset</a></p>
         <p><a href="{{ url_for("logout") }}">Log out</a></p>
     {%- endif %}
     </div>

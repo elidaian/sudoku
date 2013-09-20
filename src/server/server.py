@@ -35,12 +35,6 @@ app.config.from_object(config)
 
 texenv = pdf_renderer.create_env(app)
 
-def init_db(root_user, root_password):
-    """
-    Initialize the application DB.
-    """
-    db.init_db(app, root_user, root_password)
-
 def get_board_from_board_row(board_row):
     """
     Get a Board object from a board row (from the DB).
@@ -316,7 +310,7 @@ def view_board_set(solution, mode):
     return view_many_boards(board_ids, board_rows, solution, mode, False)
 
 @app.route("/register", methods=["GET", "POST"])
-@must_login(users.PERM_REGISTER_USER)
+@must_login(users.PERM_MANAGE_USERS)
 def register_user():
     """
     Register a new user account.
@@ -326,6 +320,10 @@ def register_user():
         try:
             username = request.form["username"]
             password = request.form["password"]
+            password2 = request.form["password2"]
+            if password != password2:
+                error = "Passwords do not match"
+                return render_template("register.html", users=users, error=error)
             display = request.form["display"]
             if not display:
                 display = None
@@ -345,6 +343,95 @@ def register_user():
         except KeyError:
             error = "Missing username or password"
     return render_template("register.html", users=users, error=error)
+
+@app.route("/manage")
+@must_login(users.PERM_MANAGE_USERS)
+def manage_users():
+    """
+    Manage the other users.
+    """
+    users = db.list_users(g.db)
+    return render_template("manage.html", function="main", users=users)
+
+@app.route("/manage/<int:user_id>", methods=["GET", "POST"])
+@must_login(users.PERM_MANAGE_USERS)
+def edit_user(user_id):
+    """
+    Edit a user.
+    """
+    error = None
+    
+    if request.method == "POST":
+        try:
+            password = request.form["password"]
+            if password != "":
+                has_password = True
+                password2 = request.form["password2"]
+                if password != password2:
+                    flash("Passwords mismatch")
+                    return redirect(url_for(edit_user, user_id=user_id))
+            else:
+                has_password = False
+            display = request.form["display"]
+            if not display:
+                display = None
+            
+            permissions = []
+            for permission in users.UserPermission.PERMISSIONS:
+                if request.form.has_key(permission.name) and \
+                        request.form[permission.name] == str(permission.flag):
+                    permissions.append(permission)
+            
+            if has_password:
+                db.edit_user_with_password(g.db, user_id, password, display, permissions)
+            else:
+                db.edit_user_without_password(g.db, user_id, display, permissions)
+            
+            flash("User updated successfully")
+        except KeyError:
+            error = "Invalid sent form"
+    
+    user_details = db.get_user_details(g.db, user_id)
+    if not user_details:
+        flash("User not found")
+        return redirect(url_for("manage_users"))
+    user = users.User(user_id, user_details["username"],
+                      user_details["display"], user_details["permissions"])
+    
+    return render_template("manage.html", error=error, function="edit",
+                           user_id=user_id, user=user, user_details=user_details,
+                           users=users)
+
+@app.route("/manage/delete/<int:user_id>", methods=["GET", "POST"])
+@must_login(users.PERM_MANAGE_USERS)
+def delete_user(user_id):
+    """
+    Delete a user.
+    """
+    error = None
+    
+    user_details = db.get_user_details(g.db, user_id)
+    if not user_details:
+        flash("User not found")
+        return redirect(url_for("manage_users"))
+    user = users.User(user_id, user_details["username"],
+                      user_details["display"], user_details["permissions"])
+    
+    if request.method == "POST":
+        try:
+            user_id2 = int(request.form["user_id"])
+            approved = int(request.form["approved"])
+            if user_id != user_id2 or approved != 1:
+                raise RuntimeError
+            
+            db.delete_user(g.db, user_id)
+            flash("User %s has been deleted successfully" % user.display)
+            return redirect(url_for("manage_users"))
+        except:
+            error = "Unknown data received"
+    
+    return render_template("manage.html", error=error, function="delete",
+                           user_id=user_id, user=user, user_details=user_details)
 
 @app.route("/other")
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
@@ -399,16 +486,6 @@ def other_board_set(solution, mode):
     
     board_rows = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, True)
-
-@app.route('/reset')
-@must_login()
-def reset():
-    """
-    Reset the DB.
-    """
-    init_db("eli", "eli")
-    flash("The DB has been reset")
-    return redirect(url_for("logout"))
 
 if __name__ == "__main__":
     app.run()

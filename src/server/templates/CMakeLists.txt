@@ -4,6 +4,7 @@ set (FILES create_board.html
            layout.html
            login.html
            main_page.html
+           manage.html
            pdf_board.tex
            print_board.html
            register.html

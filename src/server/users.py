@@ -55,7 +55,7 @@ class UserPermission(object):
 
 # Define the permissions
 PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards", True)
-PERM_REGISTER_USER = UserPermission("REGISTER_USERS", "Register new users", False)
+PERM_MANAGE_USERS = UserPermission("MANAGE_USERS", "Manage users", False)
 PERM_SHOW_OTHER_USER_BOARDS = UserPermission("SHOW_OTHER_USERS_BOARDS",
                                              "Show other user\'s boards", False)
 
@@ -89,11 +89,11 @@ class User(object):
         """
         return self.has_permission(PERM_CREATE_BOARD)
     
-    def allow_register_user(self):
+    def allow_manage_users(self):
         """
-        Returns True if this user is allowed to register new users.
+        Returns True if this user is allowed to manage other users.
         """
-        return self.has_permission(PERM_REGISTER_USER)
+        return self.has_permission(PERM_MANAGE_USERS)
     
     def allow_other_user_boards(self):
         """
