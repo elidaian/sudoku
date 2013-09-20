@@ -21,7 +21,7 @@ Summary:    Python wrapping for the infrastructure.
 Python wrapping for the sudoku infrastructure.
 
 %package server
-Requires: %{name}-python = %{version} texlive-latex
+Requires: %{name}-python = %{version} texlive-latex httpd
 Summary:    Web server for clients to use this infrastructure.
 
 %description server
@@ -32,7 +32,9 @@ Web server for clients to use the sudoku infrastructure.
 cmake -DCMAKE_BUILD_TYPE=RELEASE \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DBIN_DIR=%{_bindir} \
-    -DLIB_DIR=%{_libdir}
+    -DLIB_DIR=%{_libdir} \
+    -DSTATE_DIR=%{_localstatedir} \
+    -DCONF_DIR=%{_sysconfdir}
 
 %build
 make %{?_smp_mflags}
@@ -45,6 +47,18 @@ make install DESTDIR=%{buildroot}
 
 %clean
 rm -rf %{buildroot}
+
+
+%pre server
+getent group sudoku_server >/dev/null || groupadd -g 67 -r sudoku_server
+getent passwd sudoku_server >/dev/null || \
+    useradd -r -u 67 -g sudoku_server -s /sbin/nologin \
+        -d %{_localstatedir}/www/usage -c "Sudoku" sudoku_server
+exit 0
+
+
+%post server
+service httpd restart
 
 
 %files
@@ -63,8 +77,14 @@ rm -rf %{buildroot}
 %files server
 %defattr(-,root,root,-)
 @PYTHON_SITE_PACKAGES@/sudoku_server
+%config(noreplace) %{_sysconfdir}/sudoku.conf
+%config(noreplate) %{_sysconfdir}/httpd/conf.d/sudoku-http.conf
+%attr(-, sudoku_server, sudoku_server) %{_localstatedir}/www/sudoku
 
 %changelog
+* Fri Sep 20 2013 Eli Daian <elidaian@gmail.com>
+- Added infrastructure for mod_wsgi package.
+
 * Sun Sep 01 2013 Eli Daian <elidaian@gmail.com>
 - Added the python and server subpackages.
 

@@ -31,7 +31,7 @@ BOARD_MODES = util.enum("INSITE", "PRINT", "PDF")
 ### FUNCTIONS ###
 
 app = Flask(__name__)
-app.config.from_object(config)
+app.config.from_envvar("SUDOKU_SERVER_CONF_FILE")
 
 texenv = pdf_renderer.create_env(app)
 

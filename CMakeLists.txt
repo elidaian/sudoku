@@ -17,5 +17,14 @@ make_rpm (1 0)
  
 include (PythonDirs.cmake)
 
+function (set_if_unset name value)
+    if (NOT DEFINED ${name})
+        set (${name} ${value} PARENT_SCOPE)
+    endif ()
+endfunction ()
+
+set_if_unset (STATE_DIR "/var")
+set_if_unset (CONF_DIR "/etc")
+
 add_subdirectory (src)
 

@@ -13,5 +13,13 @@ function (add_python_executable exec source)
     file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}
           "#!${PYTHON_EXECUTABLE}\nimport sys\nsys.path.extend('${PYTHON_DIRS}'.split(';'))\nexecfile('${ABS_SOURCE}')\n")
     execute_process (COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME})
+
+    if ("${ARGN}" STREQUAL "INSTALL")
+        install (FILES ${ABS_SOURCE}
+                 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                             GROUP_READ GROUP_EXECUTE
+                             WORLD_READ WORLD_EXECUTE
+                 DESTINATION ${BIN_DIR})
+    endif ()
 endfunction()
 

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 configure_server.py
 
@@ -9,8 +11,12 @@ import getpass
 import optparse
 import os
 
-import db
-from server import app
+try:
+    import db
+    from server import app
+except ImportError:
+    from sudoku_server import app
+    import sudoku_server.db as db
 
 def init_db(root_user, root_password):
     """
