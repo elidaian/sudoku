@@ -58,10 +58,14 @@ exit 0
 
 
 %post server
+generate-secret-key
+chown sudoku_server:sudoku_server %{_sysconfdir}/sudoku/key
+chmod 600 %{_sysconfdir}/sudoku/key
 service httpd restart
 
 
 %postun server
+rm -f %{_sysconfdir}/sudoku/key
 service httpd restart
 
 
@@ -81,8 +85,10 @@ service httpd restart
 %files server
 %defattr(-,root,root,-)
 %{_bindir}/configure-server
+%{_bindir}/generate-secret-key
 @PYTHON_SITE_PACKAGES@/sudoku_server
-%config(noreplace) %{_sysconfdir}/sudoku.conf
+%{_sysconfdir}/sudoku
+%config(noreplace) %{_sysconfdir}/sudoku/sudoku.conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/sudoku-httpd.conf
 %attr(-, sudoku_server, sudoku_server) %{_localstatedir}/www/sudoku
 

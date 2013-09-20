@@ -1,7 +1,14 @@
-import os
+
+def readfile(filename):
+    try:
+        with open(filename, "r") as f:
+            return f.read()
+    except:
+        return "" # The key must be configured!
 
 DATABASE = "@DB_FILE@"
 DEBUG = True
-SECRET_KEY = os.urandom(32)
+SECRET_KEY_FILE = "@SECRET_KEY_FILE@"
+SECRET_KEY = readfile(SECRET_KEY_FILE)
 APPLICATION_ROOT = @APPLICATION_ROOT@
 REQUIRE_SSL = @REQUIRE_SSL@
