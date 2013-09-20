@@ -4,8 +4,6 @@ LoadModule wsgi_module modules/mod_wsgi.so
 <Location /sudoku>
     SSLRequireSSL
 
-    WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
-
     <Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>
         WSGIProcessGroup sudoku
         WSGIApplicationGroup %{GLOBAL}
