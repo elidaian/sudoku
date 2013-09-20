@@ -61,6 +61,10 @@ exit 0
 service httpd restart
 
 
+%postun server
+service httpd restart
+
+
 %files
 %defattr(-,root,root,-)
 %doc
