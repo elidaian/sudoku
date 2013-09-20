@@ -1,15 +1,13 @@
 
 WSGISocketPrefix /var/run/wsgi
 
-<VirtualHost *:80>
-    WSGIDaemonProcess sudoku user=sudoku_server group=sudoku_server threads=5
-    WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
+WSGIDaemonProcess sudoku user=sudoku_server group=sudoku_server threads=5
+WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
 
-    <Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>
-        WSGIProcessGroup sudoku
-        WSGIApplicationGroup %{GLOBAL}
-        Order deny,allow
-        Allow from all
-    </Directory>
-</VirtualHost>
+<Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>
+    WSGIProcessGroup sudoku
+    WSGIApplicationGroup %{GLOBAL}
+    Order deny,allow
+    Allow from all
+</Directory>
 
