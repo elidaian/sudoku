@@ -60,7 +60,7 @@ add_custom_target (run-server
 install (FILES ${FILES} ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py
          DESTINATION ${PYTHON_SITE_PACKAGES}/sudoku_server)
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/sudoku.conf
-         DESTINATION ${CONF_DIR})
+         DESTINATION ${CONF_DIR}/sudoku)
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/sudoku-httpd.conf
          DESTINATION ${CONF_DIR}/httpd/conf.d)
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/sudoku.wsgi
