@@ -15,11 +15,13 @@ function (add_python_executable exec source)
     execute_process (COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME})
 
     if ("${ARGN}" STREQUAL "INSTALL")
+        get_filename_component (INST_EXEC_NAME ${exec} NAME_WE)
         install (FILES ${ABS_SOURCE}
                  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                              GROUP_READ GROUP_EXECUTE
                              WORLD_READ WORLD_EXECUTE
-                 DESTINATION ${BIN_DIR})
+                 DESTINATION ${BIN_DIR}
+                 RENAME ${INST_EXEC_NAME})
     endif ()
 endfunction()
 
