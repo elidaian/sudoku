@@ -58,7 +58,7 @@ exit 0
 
 
 %post server
-generate-secret-key
+SUDOKU_SERVER_CONF_FILE=%{_sysconfdir}/sudoku/sudoku.conf generate-secret-key
 chown sudoku_server:sudoku_server %{_sysconfdir}/sudoku/key
 chmod 600 %{_sysconfdir}/sudoku/key
 service httpd restart
