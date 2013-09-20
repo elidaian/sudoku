@@ -57,6 +57,19 @@ def close_db(exception):
     if conn is not None:
         conn.close()
 
+def sslify(func):
+    """
+    Redirects the viewer to the SSL version of the site if the configuration
+    requires it.
+    """
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        if app.config["REQUIRE_SSL"]:
+            if request.url.startswith("http://"):
+                return redirect(request.url.replace("http://", "https://", 1))
+        return func(*args, **kwargs)
+    return wrapped
+
 def must_login(permission=None):
     """
     Wraps a page that requires a logged in viewer.
@@ -151,6 +164,7 @@ def view_many_boards(board_ids, board_rows, solution, mode, root):
         return redirect(url_for("main_page"))
 
 @app.route("/")
+@sslify
 def main_page():
     """
     Application root.
@@ -161,6 +175,7 @@ def main_page():
     return render_template("main_page.html")
 
 @app.route("/login", methods=["GET", "POST"])
+@sslify
 def login():
     """
     Show the login page and handle login requests.
@@ -187,17 +202,19 @@ def login():
     return render_template("login.html", error=error)
 
 @app.route("/logout")
+@sslify
 def logout():
     """
     Log out and end the current session (if any).
     """
     if session.has_key("user"):
+        flash("You have been logged out")
         del session["user"]
     session["logged_in"] = False
-    flash("You have been logged out")
     return redirect(url_for("main_page"))
 
 @app.route("/create_board", methods=["GET", "POST"])
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def create_board():
     """
@@ -241,6 +258,7 @@ def create_board():
                            just_created=just_created)
 
 @app.route("/view")
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def view_board():
     """
@@ -255,6 +273,7 @@ def view_board():
 
 @app.route("/view/list", defaults={"many": 0})
 @app.route("/view/list/<int:many>")
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def list_boards(many):
     """
@@ -266,6 +285,7 @@ def list_boards(many):
                            function="list_many" if many else "list", root=False)
 
 @app.route("/view/last")
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def view_last_boards():
     """
@@ -282,6 +302,7 @@ def view_last_boards():
 @app.route("/view/<int:board_id>/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/view/<int:board_id>/<int:solution>/<int:mode>")
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def view_specific_board(board_id, solution, mode):
     """
@@ -295,6 +316,7 @@ def view_specific_board(board_id, solution, mode):
 @app.route("/view/custom/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/view/custom/<int:solution>/<int:mode>")
+@sslify
 @must_login(users.PERM_CREATE_BOARD)
 def view_board_set(solution, mode):
     board_ids = parse_board_ids("list_boards")
@@ -309,6 +331,7 @@ def view_board_set(solution, mode):
     return view_many_boards(board_ids, board_rows, solution, mode, False)
 
 @app.route("/register", methods=["GET", "POST"])
+@sslify
 @must_login(users.PERM_MANAGE_USERS)
 def register_user():
     """
@@ -344,6 +367,7 @@ def register_user():
     return render_template("register.html", users=users, error=error)
 
 @app.route("/manage")
+@sslify
 @must_login(users.PERM_MANAGE_USERS)
 def manage_users():
     """
@@ -353,6 +377,7 @@ def manage_users():
     return render_template("manage.html", function="main", users=users)
 
 @app.route("/manage/<int:user_id>", methods=["GET", "POST"])
+@sslify
 @must_login(users.PERM_MANAGE_USERS)
 def edit_user(user_id):
     """
@@ -402,6 +427,7 @@ def edit_user(user_id):
                            users=users)
 
 @app.route("/manage/delete/<int:user_id>", methods=["GET", "POST"])
+@sslify
 @must_login(users.PERM_MANAGE_USERS)
 def delete_user(user_id):
     """
@@ -433,6 +459,7 @@ def delete_user(user_id):
                            user_id=user_id, user=user, user_details=user_details)
 
 @app.route("/other")
+@sslify
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_user():
     """
@@ -447,6 +474,7 @@ def other_user():
 
 @app.route("/other/list", defaults={"many": 0})
 @app.route("/other/list/<int:many>")
+@sslify
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def list_other_boards(many):
     """
@@ -461,6 +489,7 @@ def list_other_boards(many):
 @app.route("/other/<int:board_id>/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/other/<int:board_id>/<int:solution>/<int:mode>")
+@sslify
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_specific_board(board_id, solution, mode):
     """
@@ -474,6 +503,7 @@ def other_specific_board(board_id, solution, mode):
 @app.route("/other/custom/<int:solution>",
            defaults={"mode": BOARD_MODES.INSITE})
 @app.route("/other/custom/<int:solution>/<int:mode>")
+@sslify
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_board_set(solution, mode):
     board_ids = parse_board_ids("list_other_boards")

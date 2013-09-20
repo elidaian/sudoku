@@ -8,11 +8,13 @@ add_subdirectory (templates)
 
 set(DB_FILE "${CMAKE_CURRENT_BINARY_DIR}/sudoku.db")
 set(APPLICATION_ROOT None)
+set(REQUIRE_SSL False)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.py.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.py)
 
 set(DB_FILE "${STATE_DIR}/www/sudoku/sudoku.db")
 set(APPLICATION_ROOT "\"/sudoku\"")
+set(REQUIRE_SSL True)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.py.in
                ${CMAKE_CURRENT_BINARY_DIR}/sudoku.conf)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/sudoku-httpd.conf.in
