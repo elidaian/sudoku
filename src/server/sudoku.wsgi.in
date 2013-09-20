@@ -1,5 +1,5 @@
 import os
-os.environ["SUDOKU_SERVER_CONF_FILE"] = "@CONF_DIR@/sudoku.conf"
+os.environ["SUDOKU_SERVER_CONF_FILE"] = "@CONF_DIR@/sudoku/sudoku.conf"
 
 from sudoku_server import app as application
 
