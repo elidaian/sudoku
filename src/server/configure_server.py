@@ -5,8 +5,8 @@ configure_server.py
      Author: eli
 """
 
-import argparse
 import getpass
+import optparse
 import os
 
 import db
@@ -22,15 +22,17 @@ def create_parser():
     """
     Create an argument parser.
     """
-    parser = argparse.ArgumentParser(description="Initialize server DB with a root user")
-    parser.add_argument("-u", "--user",
-                        default=os.environ.get("USER", None),
-                        metavar="USERNAME",
-                        dest="user")
-    parser.add_argument("-p", "--password",
-                        default=os.environ.get("PASSWORD", None),
-                        metavar="PASSWORD",
-                        dest="password")
+    parser = optparse.OptionParser(description="Initialize server DB with a root user")
+    parser.add_option("-u", "--user",
+                      default=os.environ.get("USER", None),
+                      metavar="USERNAME",
+                      dest="user",
+                      help="Root user name")
+    parser.add_option("-p", "--password",
+                      default=os.environ.get("PASSWORD", None),
+                      metavar="PASSWORD",
+                      dest="password",
+                      help="Root password (or - to read from tty)")
     return parser
 
 def get_username_and_password(args):
@@ -53,7 +55,7 @@ def main():
     """
     Main entry point.
     """
-    args = create_parser().parse_args()
+    args, _ = create_parser().parse_args()
     user, password = get_username_and_password(args)
     
     print "Initializing DB..."
