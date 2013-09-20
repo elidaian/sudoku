@@ -78,7 +78,7 @@ service httpd restart
 %defattr(-,root,root,-)
 @PYTHON_SITE_PACKAGES@/sudoku_server
 %config(noreplace) %{_sysconfdir}/sudoku.conf
-%config(noreplate) %{_sysconfdir}/httpd/conf.d/sudoku-http.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/sudoku-http.conf
 %attr(-, sudoku_server, sudoku_server) %{_localstatedir}/www/sudoku
 
 %changelog
