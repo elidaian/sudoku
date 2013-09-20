@@ -1,8 +1,9 @@
 
 LoadModule wsgi_module modules/mod_wsgi.so
 
-<Location /sudoku>
-    SSLRequireSSL
+<VirtualHost *:80>
+    WSGIDaemonProcess sudoku user=sudoku group=sudoku threads=5
+    WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
 
     <Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>
         WSGIProcessGroup sudoku
@@ -10,5 +11,5 @@ LoadModule wsgi_module modules/mod_wsgi.so
         Order deny,allow
         Allow from all
     </Directory>
-</Location>
+</VirtualHost>
 
