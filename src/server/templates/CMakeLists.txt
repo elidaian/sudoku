@@ -14,3 +14,7 @@ foreach (file ${FILES})
                     ${CMAKE_CURRENT_BINARY_DIR}/${file}
                     COPYONLY)
 endforeach()
+
+install (FILES ${FILES}
+         DESTINATION ${PYTHON_SITE_PACKAGES}/sudoku_server/templates)
+

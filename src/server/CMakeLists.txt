@@ -29,3 +29,6 @@ add_custom_target (run-server
                    DEPENDS _pysudoku
                    COMMENT "Setting up server")
 
+install (FILES ${FILES}
+         DESTINATION ${PYTHON_SITE_PACKAGES}/sudoku_server)
+

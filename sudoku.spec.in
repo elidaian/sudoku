@@ -62,6 +62,7 @@ rm -rf %{buildroot}
 
 %files server
 %defattr(-,root,root,-)
+@PYTHON_SITE_PACKAGES@/sudoku_server
 
 %changelog
 * Sun Sep 01 2013 Eli Daian <elidaian@gmail.com>
