@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Eli Daian Sudoku</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="style.css") }}" />
+{%- block scripts %}{%- endblock %}
+</head>
+<body>
+<div class="page">
+    <h1><a href="{{ url_for("main_page") }}" class="main_link">Eli Daian Sudoku</a></h1>
+    <div class="metanav">
+    {%- if session.logged_in %}
+        {%- if session.user.allow_create_board() %}
+            <p><a href="{{ url_for("create_board") }}">Create board</a></p>
+            <p><a href="{{ url_for("view_board") }}">View board</a></p>
+        {%- endif %}
+        {%- if session.user.allow_manage_users() %}
+            <p><a href="{{ url_for("register_user") }}">Register user</a></p>
+            <p><a href="{{ url_for("manage_users") }}">Manage users</a></p>
+        {%- endif %}
+        {%- if session.user.allow_other_user_boards() %}
+            <p><a href="{{ url_for("other_user") }}">View other user's boards</a></p>
+        {%- endif %}
+        <p><a href="{{ url_for("logout") }}">Log out</a></p>
+    {%- endif %}
+    </div>
+    <div class="main">
+        <h2>{%- block title %}{%- endblock %}</h2>
+        {%- for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {%- endfor %}
+        {%- if session.logged_in %}
+            <p>Hello {{ session.user.display }}!</p>
+        {%- endif %}
+        {%- block body %}{%- endblock %}
+    </div>
+    <div class="copyright">
+        &copy; Eli Daian, 2013
+    </div>
+</div>
+</body>
+</html>

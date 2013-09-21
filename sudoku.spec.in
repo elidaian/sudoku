@@ -1,0 +1,96 @@
+Name:		sudoku
+Version:	@PROJECT_VERSION@
+Release:	1%{?dist}
+Summary:	Infrastructure for Sudoku puzzles
+
+License:	GPL
+URL:		http://elidaian.dnsd.me
+Source0:	@TARBALL_NAME@
+BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildRequires: boost-devel gcc gcc-c++
+
+%description
+Infrastructure for creating and solving Sudoku puzzles of varying grid sizes.
+
+%package python
+BuildRequires: python-devel python swig
+Requires:	python %{name} = %{version}
+Summary:    Python wrapping for the infrastructure.
+
+%description python
+Python wrapping for the sudoku infrastructure.
+
+%package server
+Requires: %{name}-python = %{version} texlive-latex httpd
+Summary:    Web server for clients to use this infrastructure.
+
+%description server
+Web server for clients to use the sudoku infrastructure.
+
+%prep
+%setup -q
+cmake -DCMAKE_BUILD_TYPE=RELEASE \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DBIN_DIR=%{_bindir} \
+    -DLIB_DIR=%{_libdir} \
+    -DSTATE_DIR=%{_localstatedir} \
+    -DCONF_DIR=%{_sysconfdir}
+
+%build
+make %{?_smp_mflags}
+
+
+%install
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot}
+
+
+%clean
+rm -rf %{buildroot}
+
+
+%post server
+SUDOKU_SERVER_CONF_FILE=%{_sysconfdir}/sudoku/sudoku.conf generate-secret-key
+chown apache:apache %{_sysconfdir}/sudoku/key
+chmod 600 %{_sysconfdir}/sudoku/key
+service httpd restart
+
+
+%postun server
+rm -f %{_sysconfdir}/sudoku/key
+service httpd restart
+
+
+%files
+%defattr(-,root,root,-)
+%doc
+%{_bindir}/creator
+%{_bindir}/solver
+%{_bindir}/dodeka-solver
+%{_libdir}/libsudoku.so
+
+%files python
+%defattr(-,root,root,-)
+@PYTHON_SITE_PACKAGES@/_pysudoku.so
+@PYTHON_SITE_PACKAGES@/pysudoku.py
+
+%files server
+%defattr(-,root,root,-)
+%{_bindir}/configure-server
+%{_bindir}/generate-secret-key
+@PYTHON_SITE_PACKAGES@/sudoku_server
+%{_sysconfdir}/sudoku
+%config(noreplace) %{_sysconfdir}/sudoku/sudoku.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/sudoku-httpd.conf
+%attr(-, apache, apache) %{_localstatedir}/www/sudoku
+
+%changelog
+* Fri Sep 20 2013 Eli Daian <elidaian@gmail.com>
+- Added infrastructure for mod_wsgi package.
+
+* Sun Sep 01 2013 Eli Daian <elidaian@gmail.com>
+- Added the python and server subpackages.
+
+* Fri Aug 09 2013 Eli Daian <elidaian@gmail.com>
+- Created the package
+

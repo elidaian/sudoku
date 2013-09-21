@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block body %}
+{%- if error %}
+<p class="error"><strong>Error:</strong> {{ error }}
+{%- endif %}
+{%- if function == "main" %}
+<p><a href="{{ url_for("register_user") }}">Register</a> a new user.</p>
+<p>Slect a user to view:</p>
+<ul>
+    {%- for user in users -%}
+    <li>
+        {% if user.display -%}
+        {{ user.display }} ({{ user.username }}):
+        {%- else -%}
+        {{ user.username }}:
+        {%- endif %}
+        <a href="{{ url_for("edit_user", user_id=user.id) }}">Edit</a>
+        <a href="{{ url_for("delete_user", user_id=user.id) }}">Delete</a>
+    </li>
+    {%- endfor %}
+</ul>
+{%- elif function == "edit" %}
+<p>Editing {{ user.display }}.</p>
+<p>This user has {{ user_details.num_boards }} boards.</p>
+<form action="{{ url_for("edit_user", user_id=user_id) }}" method="post">
+    This is the user information:
+    <dl>
+        <dt>Username:</dt>
+        <dd><input type="text" name="username" value="{{ user_details.username }}" disabled="disabled" /></dd>
+        <dt>Change password:</dt>
+        <dd><input type="password" name="password" /></dd>
+        <dt>Password (again):</dt>
+        <dd><input type="password" name="password2" /></dd>
+        <dt>Display name:</dt>
+        <dd><input type="text" name="display" value="{{ user_details.display if user_details.display else "" }}" /></dd>
+        <dt>Permissions:</dt>
+        {%- for permission in users.UserPermission.PERMISSIONS %}
+            <dd>
+                <input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"
+                {%- if user.has_permission(permission) %} checked="checked" {% endif %} />
+                {{ permission.description }}
+            </dd>
+        {%- endfor %}
+        <dd><input type="submit" value="Save changes" /></dd>
+    </dl>
+</form>
+<p>In addition, you may also <a href="{{ url_for("delete_user", user_id=user_id) }}">delete</a> this user.</p>
+{%- elif function == "delete" %}
+<p>Deleting {{ user.display }}.</p>
+<p>This user has {{ user_details.num_boards }} boards.</p>
+<form action="{{ url_for("delete_user", user_id=user_id) }}" method="post">
+    Are you sure you want to delete {{ user.display }}?<br />
+    <input type="hidden" name="user_id" value="{{ user_id }}" />
+    <input type="hidden" name="approved" value="1" />
+    <input type="submit" value="Yes" />
+</form>
+{%- endif %}
+{%- endblock %}
