@@ -13,7 +13,7 @@ execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 include (Package.cmake)
-make_rpm (1 0)
+make_rpm (1 1)
  
 include (PythonDirs.cmake)
 
