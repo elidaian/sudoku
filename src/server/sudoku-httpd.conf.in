@@ -1,7 +1,7 @@
 
 WSGISocketPrefix /var/run/wsgi
 
-WSGIDaemonProcess sudoku user=sudoku_server group=sudoku_server threads=5
+WSGIDaemonProcess sudoku
 WSGIScriptAlias /sudoku @STATE_DIR@/www/sudoku/sudoku.wsgi
 
 <Directory @STATE_DIR@/www/sudoku/sudoku.wsgi>

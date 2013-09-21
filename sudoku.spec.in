@@ -49,17 +49,17 @@ make install DESTDIR=%{buildroot}
 rm -rf %{buildroot}
 
 
-%pre server
-getent group sudoku_server >/dev/null || groupadd -g 67 -r sudoku_server
-getent passwd sudoku_server >/dev/null || \
-    useradd -r -u 67 -g sudoku_server -s /sbin/nologin \
-        -d %{_localstatedir}/www/usage -c "Sudoku" sudoku_server
-exit 0
+# %pre server
+# getent group apache >/dev/null || groupadd -g 67 -r apache
+# getent passwd apache >/dev/null || \
+#     useradd -r -u 67 -g apache -s /sbin/nologin \
+#         -d %{_localstatedir}/www/usage -c "Sudoku" apache
+# exit 0
 
 
 %post server
 SUDOKU_SERVER_CONF_FILE=%{_sysconfdir}/sudoku/sudoku.conf generate-secret-key
-chown sudoku_server:sudoku_server %{_sysconfdir}/sudoku/key
+chown apache:apache %{_sysconfdir}/sudoku/key
 chmod 600 %{_sysconfdir}/sudoku/key
 service httpd restart
 
@@ -86,11 +86,11 @@ service httpd restart
 %defattr(-,root,root,-)
 %{_bindir}/configure-server
 %{_bindir}/generate-secret-key
-@PYTHON_SITE_PACKAGES@/sudoku_server
+@PYTHON_SITE_PACKAGES@/apache
 %{_sysconfdir}/sudoku
 %config(noreplace) %{_sysconfdir}/sudoku/sudoku.conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/sudoku-httpd.conf
-%attr(-, sudoku_server, sudoku_server) %{_localstatedir}/www/sudoku
+%attr(-, apache, apache) %{_localstatedir}/www/sudoku
 
 %changelog
 * Fri Sep 20 2013 Eli Daian <elidaian@gmail.com>
