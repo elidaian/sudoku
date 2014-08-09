@@ -16,7 +16,7 @@
                 <tr>
                     {%- for inblock_col in range(board.get_block_width()) %}
                     {%- set col = col1 + inblock_col -%}
-                    <td>{{ board.get(col, row, is_solution) }}</td>
+                    <td>{{ (board.get(col, row, is_solution) if  board.get(col, row, is_solution) != ' ' else '&nbsp;')|safe }}</td>
                     {%- endfor %}
                 </tr>
                 {%- endfor %}
