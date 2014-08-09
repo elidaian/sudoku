@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Register a New User{% endblock %}
+{% block body %}
+    {%- if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+    {%- endif %}
+    <form action="{{ url_for("register_user") }}" method="post">
+        Please specify the new user information:
+        <dl>
+            <dt>Username:</dt>
+            <dd><input type="text" name="username" /></dd>
+            <dt>Password:</dt>
+            <dd><input type="password" name="password" /></dd>
+            <dt>Password (again):</dt>
+            <dd><input type="password" name="password2" /></dd>
+            <dt>Display name:</dt>
+            <dd><input type="text" name="display" /></dd>
+            <dt>Permissions:</dt>
+            {%- for permission in users.UserPermission.PERMISSIONS %}
+                <dd>
+                    <input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"
+                    {%- if permission.is_default %} checked="checked" {% endif %} />
+                    {{ permission.description }}
+                </dd>
+            {%- endfor %}
+            <dd><input type="submit" value="Register" /></dd>
+        </dl>
+    </form>
+{%- endblock %}

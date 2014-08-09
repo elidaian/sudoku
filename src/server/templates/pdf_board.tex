@@ -1,0 +1,43 @@
+((* macro pdf_board(board, id, is_solution) *))
+((*- set total_size = board.get_block_width() * board.get_block_height() *))
+\pagestyle{empty}
+\begin{center}
+{\huge Eli Daian's Sudoku}
+
+\vspace{1em}
+
+\begin{tikzpicture}[yscale=-1]
+% Draw the table grid
+\draw[line width=2pt] (0, 0)
+        grid[xstep=((( board.get_block_width() ))), ystep=(((board.get_block_height() )))]
+                ( ((( total_size ))) , ((( total_size ))) );
+\draw[line width=1pt] (0, 0) grid ( ((( total_size ))) , ((( total_size ))) );
+
+% Draw the cell data
+((*- for row in range(board.get_block_width() * board.get_block_height()) *))
+((*- for col in range(board.get_block_width() * board.get_block_height()) *))
+\node at ( ((( row + 0.5 ))), ((( col + 0.5 ))) ) {\huge \sffamily ((( board.get(row, col, is_solution) )))};
+((*- endfor *))
+((*- endfor *))
+\end{tikzpicture}
+
+\emph{\#((( id )))}
+\end{center}
+((* endmacro *))
+
+\documentclass[a4paper, oneside]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{tikz}
+
+\begin{document}
+
+((*- if multi_board *))
+((*- for board, id in boards *))
+((( pdf_board(board, id, is_solution) )))
+\pagebreak
+((*- endfor *))
+((*- else *))
+((( pdf_board(board, id, is_solution) )))
+((*- endif *))
+
+\end{document}
