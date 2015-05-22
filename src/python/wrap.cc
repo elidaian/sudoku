@@ -7,6 +7,7 @@
 
 #include "wrap.h"
 
+#include <ctime>
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
@@ -56,6 +57,7 @@ BoardGenerator::BoardGenerator(size_t block_width, size_t block_height):
 		m_cells(new size_t[m_num_cells]),
 		m_symbols(new size_t[m_num_cells]),
 		m_given(new char[m_num_cells]),
+		m_random_generator(std::time(NULL)),
 		m_block_width(block_width),
 		m_block_height(block_height) {
 	if (m_board == NULL) {
@@ -161,7 +163,7 @@ Board BoardGenerator::generate(size_t) {
 				m_symbols[n] = GetSymbolOfCell(m_board, cell);
 				m_cells[n] = cell;
 				m_given[n] = 1;
-				++n;
+				// ++n;
 			}
 		}
 	}
