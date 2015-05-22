@@ -73,6 +73,8 @@ service httpd restart
 %defattr(-,root,root,-)
 @PYTHON_SITE_PACKAGES@/_pysudoku.so
 @PYTHON_SITE_PACKAGES@/pysudoku.py
+@PYTHON_SITE_PACKAGES@/pysudoku.pyc
+@PYTHON_SITE_PACKAGES@/pysudoku.pyo
 
 %files server
 %defattr(-,root,root,-)
