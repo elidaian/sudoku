@@ -87,6 +87,12 @@ service httpd restart
 %attr(-, apache, apache) %{_localstatedir}/www/sudoku
 
 %changelog
+* Set Jun 13 2015 Eli Daian <elidaian@gmail.com>
+- Added a feature that allows switching to another board in a board view.
+
+* Sat Jun 06 2015 Eli Daian <elidaian@gmail.com>
+- Fixed the bug that kept creating the same random boards.
+
 * Fri Sep 20 2013 Eli Daian <elidaian@gmail.com>
 - Added infrastructure for mod_wsgi package.
 
