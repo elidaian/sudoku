@@ -74,6 +74,14 @@
 {%- else %}
 <p>You may always check out the <a href="{{ url_for(view_specific_func, board_id=id, solution=1) }}">solution</a>.</p>
 {%- endif %}
+<br/>
+<form action="{{ url_for(view_func) }}" method="GET">
+    <h3>View another board:</h3>
+    <br/>
+    I want to check board #<input type="number" name="board_id" value="{{ id }}" />.<br />
+    <input type="checkbox" name="solution" value="1" {% if is_solution %}checked="checked"{% endif %} />Let me see the solution.<br />
+    <input type="submit" value="Go!" />
+</form>
 {%- elif function == "view_many" %}
 <ul class="topnav">
     <li><a href="{{ url_for(view_set_func, boards=boards_str, solution=1 if is_solution else 0, mode=modes.PRINT) }}" target="_blank">Print</a><li>
