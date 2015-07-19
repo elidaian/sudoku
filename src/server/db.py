@@ -16,6 +16,11 @@ select id, display, permissions from users
 where username = :username and password = :password
 """
 
+USER_QUERY = """
+select username, display, permissions from users
+where id = :id
+"""
+
 REGISTER_USER = """
 insert into users(username, password, display, permissions)
 values (:username, :password, :display, :permissions)
@@ -107,6 +112,21 @@ def login(db, username, password):
                           entry["permissions"])
     else:
         return None
+
+def get_user(user_id):
+    """
+    Get user information (if available) given the user id, or None if
+    this user does not exist.
+    """
+    info = {"id": user_id}
+    cur = db.execute(USER_QUERY, info)
+    entry = cur.fetchone()
+    if entry is not None:
+        return users.User(user_id, entry["username"], entry["display"],
+                          entry["permissions"])
+    else:
+        return None
+
 
 def register_user(db, username, password, display, permissions):
     """

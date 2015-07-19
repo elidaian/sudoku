@@ -80,7 +80,7 @@ def must_login(permission=None):
         def wrapped(*args, **kwargs):
             if not session.get("logged_in"):
                 return redirect(url_for("login", next=request.url))
-            elif permission is not None and not session["user"].has_permission(permission):
+            elif permission is not None and not db.get_user(session["user"]).has_permission(permission):
                 flash("Permission denied")
                 return redirect(url_for("main_page"))
             else:
@@ -192,7 +192,7 @@ def login():
             else:
                 flash("You were logged in successfully!")
                 session["logged_in"] = True
-                session["user"] = user
+                session["user"] = user.id
                 
                 if request.args.get("next", None):
                     return redirect(request.args["next"])
@@ -239,7 +239,7 @@ def create_board():
             count = int(request.form["count"])
             
             boards = pysudoku.create_board(width, height, count)
-            board_ids = [db.insert_board(g.db, session["user"].id, board)
+            board_ids = [db.insert_board(g.db, session["user"], board)
                          for board in boards]
             g.db.commit()
             session["last_boards"] = board_ids
@@ -280,7 +280,7 @@ def list_boards(many):
     List the available user boards.
     """
     
-    boards = db.list_user_boards(g.db, session["user"].id)
+    boards = db.list_user_boards(g.db, session["user"])
     return render_template("view_board.html", boards=boards,
                            function="list_many" if many else "list", root=False)
 
@@ -308,7 +308,7 @@ def view_specific_board(board_id, solution, mode):
     """
     View a board.
     """
-    board_row = db.get_user_board(g.db, board_id, session["user"].id)
+    board_row = db.get_user_board(g.db, board_id, session["user"])
     return view_one_board(board_id, board_row, solution, mode, False)
 
 @app.route("/view/custom", methods=["GET", "POST"],
@@ -326,7 +326,7 @@ def view_board_set(solution, mode):
         return redirect(url_for("view_specific_board", board_id=board_ids[0],
                                 solution=solution, mode=mode))
     
-    board_rows = [(db.get_user_board(g.db, board_id, session["user"].id), board_id)
+    board_rows = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
                   for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, False)
 
