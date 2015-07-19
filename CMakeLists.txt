@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project (sudoku)
 
+# Force use of Python 2.x
+set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4)
+
 find_package (SWIG REQUIRED)
 include (${SWIG_USE_FILE})
 
