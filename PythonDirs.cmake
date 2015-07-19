@@ -10,8 +10,14 @@ endfunction()
 function (add_python_executable exec source)
     get_filename_component (ABS_SOURCE ${source} ABSOLUTE)
     get_filename_component (EXEC_NAME ${exec} NAME)
-    file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}
-          "#!${PYTHON_EXECUTABLE}\nimport sys\nsys.path.extend('${PYTHON_DIRS}'.split(';'))\nexecfile('${ABS_SOURCE}')\n")
+    
+    # Write the executable script
+    set (SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME}")
+    file (WRITE  ${SCRIPT} "#!${PYTHON_EXECUTABLE}\n")
+    file (APPEND ${SCRIPT} "import sys\n")
+    file (APPEND ${SCRIPT} "sys.path.extend('${PYTHON_DIRS}'.split(';'))\n")
+    file (APPEND ${SCRIPT} "execfile('${ABS_SOURCE}')\n")
+
     execute_process (COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME})
 
     if ("${ARGN}" STREQUAL "INSTALL")
