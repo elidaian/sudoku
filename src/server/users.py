@@ -53,6 +53,15 @@ class UserPermission(object):
         """
         return self.flag == other.flag
 
+def permissions_to_mask(permissions):
+    """
+    Create a mask of permissions given the permissions list.
+    """
+    res = 0
+    for permission in permissions:
+        res |= permission.flag
+    return res
+
 # Define the permissions
 PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards", True)
 PERM_MANAGE_USERS = UserPermission("MANAGE_USERS", "Manage users", False)
@@ -105,10 +114,10 @@ class User(object):
         """
         Returns a jsonable object with the same data as this user.
         """
-        return {"id"        : id,
-                "username"  : username,
-                "display"   : display,
-                "permisions": permissions}
+        return {"id"        : self.id,
+                "username"  : self.username,
+                "display"   : self.display,
+                "permisions": permissions_to_mask(self.permissions)}
 
 def user_from_json(json):
     """
