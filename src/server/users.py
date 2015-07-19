@@ -101,3 +101,18 @@ class User(object):
         """
         return self.has_permission(PERM_SHOW_OTHER_USER_BOARDS)
     
+    def to_json(self):
+        """
+        Returns a jsonable object with the same data as this user.
+        """
+        return {"id"        : id,
+                "username"  : username,
+                "display"   : display,
+                "permisions": permissions}
+
+def user_from_json(json):
+    """
+    Create a User object from its representing json.
+    """
+    return User(json["id"], json["username"], json["display"], json["permissions"])
+
