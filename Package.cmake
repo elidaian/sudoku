@@ -7,21 +7,32 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
     endforeach ()
 
     # add SVN information
+    extract_svn_revision()
+    if (NOT ${TEAM_FOUND})
+        # try git information -- TODO
+        message (WARNING " No team information found, disabling packing support")
+    endif ()
+
+endfunction ()
+
+function (extract_svn_revision)
     execute_process (COMMAND svn info ${CMAKE_SOURCE_DIR}
                      COMMAND grep URL
                      COMMAND cut "-d " -f2-
                      OUTPUT_VARIABLE TEAM_LOCATION
                      OUTPUT_STRIP_TRAILING_WHITESPACE
                      ERROR_QUIET)
-    if ("${TEAM_LOCATION}" STREQUAL "")
-        message (WARNING " No team information found, disabling packing support")
-    else ()
+    if (NOT "${TEAM_LOCATION}" STREQUAL "")
+        set (TEAM_FOUND TRUE PARENT_SCOPE)
+
         execute_process (COMMAND svn info ${TEAM_LOCATION}
                          COMMAND grep Revision 
                          COMMAND cut "-d " -f2
                          OUTPUT_VARIABLE TEAM_VERSION
                          OUTPUT_STRIP_TRAILING_WHITESPACE)
         set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${TEAM_VERSION})
+
+        message (INFO "Found SVN, project version is ${PROJECT_VERSION}")
 
         # set some variables
         set (PACKAGE_FULL_NAME ${PROJECT_NAME}-${PROJECT_VERSION})
@@ -53,6 +64,9 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
                            WORKING_DIRECTORY ${PACKING_DIRECTORY}
                            DEPENDS ${PACKING_DIRECTORY}/${TARBALL_NAME}
                            COMMENT "Creating RPM package")
+    else ()
+        set (TEAM_FOUND FALSE PARENT_SCOPE)
     endif ()
-
 endfunction ()
+
+ 
