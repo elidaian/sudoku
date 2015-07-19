@@ -15,7 +15,6 @@ function (make_rpm MAJOR_VERSION MINOR_VERSION)
                      ERROR_QUIET)
     if ("${TEAM_LOCATION}" STREQUAL "")
         message (WARNING " No team information found, disabling packing support")
-        message (STATUS "eli: ${TEAM_RC}")
     else ()
         execute_process (COMMAND svn info ${TEAM_LOCATION}
                          COMMAND grep Revision 
