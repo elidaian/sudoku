@@ -7,7 +7,7 @@ users.py
 
 class UserPermission(object):
     """
-    Described a permission for an operation for an user.
+    Describes a permission for an operation for an user.
     """
     
     PERMISSIONS = []
