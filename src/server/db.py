@@ -113,7 +113,7 @@ def login(db, username, password):
     else:
         return None
 
-def get_user(user_id):
+def get_user(db, user_id):
     """
     Get user information (if available) given the user id, or None if
     this user does not exist.
