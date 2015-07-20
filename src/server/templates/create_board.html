@@ -29,15 +29,62 @@ function check_custom() {
 {%- endblock %}
 {% block title %}Create a New Board{% endblock %}
 {% block body %}
-{%- if error %}
-<p class="error"><strong>Error:</strong> {{ error }}
-{%- endif %}
 {%- if just_created %}
-<p>Click here to <a href="{{ url_for("view_last_boards") }}">see</a> the created board
+<div class="row">Click here to <a href="{{ url_for("view_last_boards") }}">see</a> the created board
 {%- if session.last_boards|length != 1 %}s{% endif -%}
-.</p>
+.</div>
 {%- endif %}
-<form action="{{ url_for("create_board") }}" method="post">
+<form action="{{ url_for("create_board") }}" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Board Type</label>
+        <div class="col-sm-10">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="type" value="regular" checked="true"
+                        id="regular" onchange="check_regular()" />
+                    Regular board <small>3 &times; 3 blocks, each 3 &times; 3 cells</small>
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="type" value="dodeka" id="dodeka" onchange="check_dodeka()" />
+                    Dodeka board <small>3 &times; 4 blocks, each 4 &times; 3 cells</small>
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="type" value="custom" id="custom" onchange="check_custom()" />
+                    Custom board:
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="width" class="col-sm-2 control-label">Block width</label>
+                            <div class="col-sm-10">
+                                <input type="number" name="width" id="width" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="height" class="col-sm-2 control-label">Block height</label>
+                            <div class="col-sm-10">
+                                <input type="number" name="height" id="height" />
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="count" class="col-sm-2 control-label">Number of boards to create</label>
+        <div class="col-sm-10">
+            <input type="number" name="count" id="count" value="1" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" value="Create" />
+        </div>
+    </div>
+<!--
     <dl>
         <dt>Board type:</dt>
         <dd>
@@ -71,6 +118,7 @@ function check_custom() {
         <dd><input type="number" name="count" value="1" /></dd>
         <dd><input type="submit" value="Create" /></dd>
     </dl>
+-->
 </form>
 <script type="text/javascript">
 <!--
