@@ -6,12 +6,13 @@ server.py
 """
 
 import cPickle
-from flask import g
 from flask import Flask
 from flask import flash
+from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_from_directory
 from flask import session
 from flask import url_for
 from functools import wraps
@@ -531,6 +532,13 @@ def other_board_set(solution, mode):
     
     board_rows = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, True)
+
+@app.route("/fonts/<path:filename>")
+def get_font(filename):
+    """
+    Get a file from the fonts directory.
+    """
+    return send_from_directory("fonts", filename)
 
 if __name__ == "__main__":
     app.run()
