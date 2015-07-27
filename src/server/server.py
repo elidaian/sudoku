@@ -350,6 +350,10 @@ def register_user():
             username = request.form["username"]
             password = request.form["password"]
             password2 = request.form["password2"]
+            if username == "":
+                flash("Username cannot be empty", "danger")
+                return render_template("register.html", users=users,
+                                       curr_user=curr_user)
             if password != password2:
                 flash("Passwords do not match", "warning")
                 return render_template("register.html", users=users,
