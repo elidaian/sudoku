@@ -22,31 +22,59 @@
     {%- endfor %}
 </ul>
 {%- elif function == "edit" %}
-<p>Editing {{ user.display }}.</p>
-<p>This user has {{ user_details.num_boards }} boards.</p>
-<form action="{{ url_for("edit_user", user_id=user_id) }}" method="post">
-    This is the user information:
-    <dl>
-        <dt>Username:</dt>
-        <dd><input type="text" name="username" value="{{ user_details.username }}" disabled="disabled" /></dd>
-        <dt>Change password:</dt>
-        <dd><input type="password" name="password" /></dd>
-        <dt>Password (again):</dt>
-        <dd><input type="password" name="password2" /></dd>
-        <dt>Display name:</dt>
-        <dd><input type="text" name="display" value="{{ user_details.display if user_details.display else "" }}" /></dd>
-        <dt>Permissions:</dt>
-        {%- for permission in users.UserPermission.PERMISSIONS %}
-            <dd>
-                <input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"
-                {%- if user.has_permission(permission) %} checked="checked" {% endif %} />
-                {{ permission.description }}
-            </dd>
-        {%- endfor %}
-        <dd><input type="submit" value="Save changes" /></dd>
-    </dl>
+<div class="alert alert-info">Editing {{ user.display }}.</div>
+<div class="row">This user has {{ user_details.num_boards }} boards.</div>
+<form action="{{ url_for("edit_user", user_id=user_id) }}" method="post" class="form-horizontal">
+    <div class="row">This is the user information:</div>
+    <div class="form-group">
+        <label for="username" class="col-sm-2 control-label">Username</label>
+        <div class="col-sm-10">
+            <input type="text" name="username" id="username" placeholder="Username"
+                   value="{{ user_details.username }}" disabled="disabled" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="col-sm-2 control-label">Change password</label>
+        <div class="col-sm-10">
+            <input type="password" name="password" id="password" placeholder="New password" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password2" class="col-sm-2 control-label">Password (again)</label>
+        <div class="col-sm-10">
+            <input type="password" name="password2" id="password2" placeholder="New password" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="display" class="col-sm-2 control-label">Display name</label>
+        <div class="col-sm-10">
+            <input type="text" name="display" id="display" placeholder="Display name"
+                    value="{{ user_details.display or "" }}" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Permissions</label>
+        <div class="col-sm-10">
+            {%- for permission in users.UserPermission.PERMISSIONS %}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="{{ permission.name }}" value="{{ permission.flag }}"
+                               {%- if user.has_permission(permission) %} checked="checked" {% endif %} />
+                        {{ permission.description }}
+                    </label>
+                </div>
+            {%- endfor %}
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" value="Save Changes" />
+        </div>
+    </div>
 </form>
-<p>In addition, you may also <a href="{{ url_for("delete_user", user_id=user_id) }}">delete</a> this user.</p>
+<div class="row">
+    In addition, you may also <a href="{{ url_for("delete_user", user_id=user_id) }}">delete</a> this user.
+</div>
 {%- elif function == "delete" %}
 <div class="alert alert-warning">Deleting {{ user.display }}.</div>
 <div class="alert alert-info">This user has {{ user_details.num_boards }} boards.</div>
