@@ -5,6 +5,7 @@ add_python_executable (configure-server ${CMAKE_CURRENT_BINARY_DIR}/configure_se
 add_python_executable (generate-secret-key ${CMAKE_CURRENT_SOURCE_DIR}/generate_secret_key.py
                        INSTALL)
 
+add_subdirectory (fonts)
 add_subdirectory (static)
 add_subdirectory (templates)
 

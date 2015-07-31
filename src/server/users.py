@@ -7,7 +7,7 @@ users.py
 
 class UserPermission(object):
     """
-    Described a permission for an operation for an user.
+    Describes a permission for an operation for an user.
     """
     
     PERMISSIONS = []
@@ -52,6 +52,15 @@ class UserPermission(object):
         Checks the equality of this object to other object.
         """
         return self.flag == other.flag
+
+def permissions_to_mask(permissions):
+    """
+    Create a mask of permissions given the permissions list.
+    """
+    res = 0
+    for permission in permissions:
+        res |= permission.flag
+    return res
 
 # Define the permissions
 PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards", True)
@@ -101,3 +110,18 @@ class User(object):
         """
         return self.has_permission(PERM_SHOW_OTHER_USER_BOARDS)
     
+    def to_json(self):
+        """
+        Returns a jsonable object with the same data as this user.
+        """
+        return {"id"        : self.id,
+                "username"  : self.username,
+                "display"   : self.display,
+                "permisions": permissions_to_mask(self.permissions)}
+
+def user_from_json(json):
+    """
+    Create a User object from its representing json.
+    """
+    return User(json["id"], json["username"], json["display"], json["permissions"])
+

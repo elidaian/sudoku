@@ -6,12 +6,13 @@ server.py
 """
 
 import cPickle
-from flask import g
 from flask import Flask
 from flask import flash
+from flask import g
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_from_directory
 from flask import session
 from flask import url_for
 from functools import wraps
@@ -80,8 +81,8 @@ def must_login(permission=None):
         def wrapped(*args, **kwargs):
             if not session.get("logged_in"):
                 return redirect(url_for("login", next=request.url))
-            elif permission is not None and not session["user"].has_permission(permission):
-                flash("Permission denied")
+            elif permission is not None and not db.get_user(g.db, session["user"]).has_permission(permission):
+                flash("Permission denied", "danger")
                 return redirect(url_for("main_page"))
             else:
                 return func(*args, **kwargs)
@@ -95,14 +96,15 @@ def view_one_board(board_id, board_row, solution, mode, root):
     solution = bool(solution)
     
     if board_row is None:
-        flash("Board not found")
+        flash("Board not found", "warning")
         return redirect(url_for("main_page"))
     board = get_board_from_board_row(board_row)
     
     if mode == BOARD_MODES.INSITE:
+        user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view", board=board,
                                id=board_id, is_solution=solution, modes=BOARD_MODES,
-                               root=root)
+                               root=root, curr_user=user)
     elif mode == BOARD_MODES.PRINT:
         return render_template("print_board.html", multi_board=False, board=board,
                                id=board_id, is_solution=solution)
@@ -114,7 +116,7 @@ def view_one_board(board_id, board_row, solution, mode, root):
                                                 is_solution=solution,
                                                 multi_board=False)
     else:
-        flash("Invalid mode")
+        flash("Invalid mode", "warning")
         return redirect(url_for("main_page"))
 
 def parse_board_ids(list_func):
@@ -130,7 +132,7 @@ def parse_board_ids(list_func):
             pickled = request.args["boards"].decode('base64').decode('zlib')
             board_ids = cPickle.loads(pickled)
         except:
-            flash("Unknown boards")
+            flash("Unknown boards", "warning")
             return redirect(url_for(list_func, many=1))
     else:
         return redirect(url_for(list_func, many=1))
@@ -146,9 +148,10 @@ def view_many_boards(board_ids, board_rows, solution, mode, root):
     boards_str = cPickle.dumps(board_ids).encode('zlib').encode('base64')
     
     if mode == BOARD_MODES.INSITE:
+        user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards,
                                id=board_id, is_solution=solution, modes=BOARD_MODES,
-                               boards_str=boards_str, root=root)
+                               boards_str=boards_str, root=root, curr_user=user)
     elif mode == BOARD_MODES.PRINT:
         return render_template("print_board.html", multi_board=True, boards=boards,
                                id=board_id, is_solution=solution)
@@ -160,7 +163,7 @@ def view_many_boards(board_ids, board_rows, solution, mode, root):
                                                 is_solution=solution,
                                                 multi_board=True)
     else:
-        flash("Invalid mode")
+        flash("Invalid mode", "warning")
         return redirect(url_for("main_page"))
 
 @app.route("/")
@@ -170,9 +173,11 @@ def main_page():
     Application root.
     Displays available boards, and link for board generation.
     """
-#     if not session.get("logged_in"):
-#         return redirect(url_for("login"))
-    return render_template("main_page.html")
+    if session.get("logged_in", False):
+        user = db.get_user(g.db, session["user"])
+    else:
+        user = None
+    return render_template("main_page.html", curr_user=user)
 
 @app.route("/login", methods=["GET", "POST"])
 @sslify
@@ -180,7 +185,6 @@ def login():
     """
     Show the login page and handle login requests.
     """
-    error = None
     if request.method == "POST":
         try:
             username = request.form["username"]
@@ -188,18 +192,18 @@ def login():
             
             user = db.login(g.db, username, password)
             if user is None:
-                error = "Invalid login credentials"
+                flash("Invalid login credentials", "danger")
             else:
-                flash("You were logged in successfully!")
+                flash("You were logged in successfully!", "success")
                 session["logged_in"] = True
-                session["user"] = user
+                session["user"] = user.id
                 
                 if request.args.get("next", None):
                     return redirect(request.args["next"])
                 return redirect(url_for("main_page"))
         except KeyError:
-            error = "Missing username or password"
-    return render_template("login.html", error=error)
+            flash("Missing username or password", "info")
+    return render_template("login.html")
 
 @app.route("/logout")
 @sslify
@@ -208,7 +212,7 @@ def logout():
     Log out and end the current session (if any).
     """
     if session.has_key("user"):
-        flash("You have been logged out")
+        flash("You have been logged out", "success")
         del session["user"]
     session["logged_in"] = False
     return redirect(url_for("main_page"))
@@ -220,7 +224,6 @@ def create_board():
     """
     Create a new board or some new boards.
     """
-    error = None
     just_created = False
     if request.method == "POST":
         try:
@@ -239,23 +242,24 @@ def create_board():
             count = int(request.form["count"])
             
             boards = pysudoku.create_board(width, height, count)
-            board_ids = [db.insert_board(g.db, session["user"].id, board)
+            board_ids = [db.insert_board(g.db, session["user"], board)
                          for board in boards]
             g.db.commit()
             session["last_boards"] = board_ids
             if len(board_ids) == 1:
-                flash("Created one board")
+                flash("Created one board", "success")
             else:
-                flash("Created %d boards" % len(board_ids))
+                flash("Created %d boards" % len(board_ids), "success")
             just_created = True
         except util.ErrorWithMessage as e:
-            error = e.message
+            flash(e.message, "danger")
         except (KeyError, ValueError):
-            error = "Invalid request data"
+            flash("Invalid request data", "danger")
         except:
-            error = "Internal server error"
-    return render_template("create_board.html", error=error,
-                           just_created=just_created)
+            flash("Internal server error", "danger")
+    user = db.get_user(g.db, session["user"])
+    return render_template("create_board.html", just_created=just_created,
+                           curr_user=user)
 
 @app.route("/view")
 @sslify
@@ -269,7 +273,9 @@ def view_board():
                                 board_id=request.args["board_id"],
                                 solution=request.args.get("solution", "0")))
     
-    return render_template("view_board.html", function="main", root=False)
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", function="main", root=False,
+                           curr_user=user)
 
 @app.route("/view/list", defaults={"many": 0})
 @app.route("/view/list/<int:many>")
@@ -280,9 +286,11 @@ def list_boards(many):
     List the available user boards.
     """
     
-    boards = db.list_user_boards(g.db, session["user"].id)
+    boards = db.list_user_boards(g.db, session["user"])
+    user = db.get_user(g.db, session["user"])
     return render_template("view_board.html", boards=boards,
-                           function="list_many" if many else "list", root=False)
+                           function="list_many" if many else "list", root=False,
+                           curr_user=user)
 
 @app.route("/view/last")
 @sslify
@@ -292,7 +300,7 @@ def view_last_boards():
     View the last created boards.
     """
     if not session.has_key("last_boards"):
-        flash("You have not created any board in this session")
+        flash("You have not created any board in this session", "info")
         return redirect(url_for("view_board"))
     boards = cPickle.dumps(session["last_boards"]).encode('zlib').encode('base64')
     return redirect(url_for("view_board_set", boards=boards))
@@ -308,7 +316,7 @@ def view_specific_board(board_id, solution, mode):
     """
     View a board.
     """
-    board_row = db.get_user_board(g.db, board_id, session["user"].id)
+    board_row = db.get_user_board(g.db, board_id, session["user"])
     return view_one_board(board_id, board_row, solution, mode, False)
 
 @app.route("/view/custom", methods=["GET", "POST"],
@@ -326,7 +334,7 @@ def view_board_set(solution, mode):
         return redirect(url_for("view_specific_board", board_id=board_ids[0],
                                 solution=solution, mode=mode))
     
-    board_rows = [(db.get_user_board(g.db, board_id, session["user"].id), board_id)
+    board_rows = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
                   for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, False)
 
@@ -337,15 +345,20 @@ def register_user():
     """
     Register a new user account.
     """
-    error = None
+    curr_user = db.get_user(g.db, session["user"])
     if request.method == "POST":
         try:
             username = request.form["username"]
             password = request.form["password"]
             password2 = request.form["password2"]
+            if username == "":
+                flash("Username cannot be empty", "danger")
+                return render_template("register.html", users=users,
+                                       curr_user=curr_user)
             if password != password2:
-                error = "Passwords do not match"
-                return render_template("register.html", users=users, error=error)
+                flash("Passwords do not match", "warning")
+                return render_template("register.html", users=users,
+                                       curr_user=curr_user)
             display = request.form["display"]
             if not display:
                 display = None
@@ -358,13 +371,10 @@ def register_user():
             
             message, status = db.register_user(g.db, username, password, display,
                                                permissions)
-            if status:
-                flash(message)
-            else:
-                error = message
+            flash(message, "success" if status else "danger")
         except KeyError:
-            error = "Missing username or password"
-    return render_template("register.html", users=users, error=error)
+            flash("Missing username or password", "warning")
+    return render_template("register.html", users=users, curr_user=curr_user)
 
 @app.route("/manage")
 @sslify
@@ -374,7 +384,9 @@ def manage_users():
     Manage the other users.
     """
     users = db.list_users(g.db)
-    return render_template("manage.html", function="main", users=users)
+    curr_user = db.get_user(g.db, session["user"])
+    return render_template("manage.html", function="main", users=users,
+                           curr_user=curr_user)
 
 @app.route("/manage/<int:user_id>", methods=["GET", "POST"])
 @sslify
@@ -383,7 +395,6 @@ def edit_user(user_id):
     """
     Edit a user.
     """
-    error = None
     
     if request.method == "POST":
         try:
@@ -392,7 +403,7 @@ def edit_user(user_id):
                 has_password = True
                 password2 = request.form["password2"]
                 if password != password2:
-                    flash("Passwords mismatch")
+                    flash("Passwords mismatch", "warning")
                     return redirect(url_for(edit_user, user_id=user_id))
             else:
                 has_password = False
@@ -411,20 +422,21 @@ def edit_user(user_id):
             else:
                 db.edit_user_without_password(g.db, user_id, display, permissions)
             
-            flash("User updated successfully")
+            flash("User updated successfully", "success")
         except KeyError:
-            error = "Invalid sent form"
+            flash("Invalid sent form", "danger")
     
     user_details = db.get_user_details(g.db, user_id)
     if not user_details:
-        flash("User not found")
+        flash("User not found", "danger")
         return redirect(url_for("manage_users"))
     user = users.User(user_id, user_details["username"],
                       user_details["display"], user_details["permissions"])
+    curr_user = db.get_user(g.db, session["user"])
     
-    return render_template("manage.html", error=error, function="edit",
-                           user_id=user_id, user=user, user_details=user_details,
-                           users=users)
+    return render_template("manage.html", function="edit", user_id=user_id,
+                           user=user, user_details=user_details,
+                           users=users, curr_user=curr_user)
 
 @app.route("/manage/delete/<int:user_id>", methods=["GET", "POST"])
 @sslify
@@ -433,11 +445,10 @@ def delete_user(user_id):
     """
     Delete a user.
     """
-    error = None
     
     user_details = db.get_user_details(g.db, user_id)
     if not user_details:
-        flash("User not found")
+        flash("User not found", "danger")
         return redirect(url_for("manage_users"))
     user = users.User(user_id, user_details["username"],
                       user_details["display"], user_details["permissions"])
@@ -450,13 +461,15 @@ def delete_user(user_id):
                 raise RuntimeError
             
             db.delete_user(g.db, user_id)
-            flash("User %s has been deleted successfully" % user.display)
+            flash("User %s has been deleted successfully" % user.display, "success")
             return redirect(url_for("manage_users"))
         except:
-            error = "Unknown data received"
+            flash("Unknown data received", "danger")
     
-    return render_template("manage.html", error=error, function="delete",
-                           user_id=user_id, user=user, user_details=user_details)
+    curr_user = db.get_user(g.db, session["user"])
+    return render_template("manage.html", function="delete", user_id=user_id,
+                           user=user, user_details=user_details,
+                           curr_user=curr_user)
 
 @app.route("/other")
 @sslify
@@ -470,7 +483,9 @@ def other_user():
                                 board_id=request.args["board_id"],
                                 solution=request.args.get("solution", "0")))
     
-    return render_template("view_board.html", function="main", root=True)
+    curr_user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", function="main", root=True,
+                           curr_user=curr_user)
 
 @app.route("/other/list", defaults={"many": 0})
 @app.route("/other/list/<int:many>")
@@ -481,8 +496,10 @@ def list_other_boards(many):
     List all the boards of the other users.
     """
     boards = db.list_all_boards(g.db)
+    curr_user = db.get_user(g.db, session["user"])
     return render_template("view_board.html", boards=boards,
-                           function="list_many" if many else "list", root=True)
+                           function="list_many" if many else "list", root=True,
+                           curr_user=curr_user)
 
 @app.route("/other/<int:board_id>",
            defaults={"solution": 0, "mode": BOARD_MODES.INSITE})
@@ -507,6 +524,12 @@ def other_specific_board(board_id, solution, mode):
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_board_set(solution, mode):
     board_ids = parse_board_ids("list_other_boards")
+    if request.method == "POST":
+        try:
+            solution = int(request.form.get("solution", 0))
+        except:
+            pass
+
     if type(board_ids) is not list:
         return board_ids        # this is a redirection
     if len(board_ids) == 1:
@@ -515,6 +538,13 @@ def other_board_set(solution, mode):
     
     board_rows = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, True)
+
+@app.route("/fonts/<path:filename>")
+def get_font(filename):
+    """
+    Get a file from the fonts directory.
+    """
+    return send_from_directory("fonts", filename)
 
 if __name__ == "__main__":
     app.run()
