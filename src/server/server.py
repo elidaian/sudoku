@@ -524,6 +524,12 @@ def other_specific_board(board_id, solution, mode):
 @must_login(users.PERM_SHOW_OTHER_USER_BOARDS)
 def other_board_set(solution, mode):
     board_ids = parse_board_ids("list_other_boards")
+    if request.method == "POST":
+        try:
+            solution = int(request.form.get("solution", 0))
+        except:
+            pass
+
     if type(board_ids) is not list:
         return board_ids        # this is a redirection
     if len(board_ids) == 1:
