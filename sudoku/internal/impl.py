@@ -92,6 +92,13 @@ class Cell(object):
         '''
         return self._possible_symbols
 
+    def get_num_possible_symbols(self):
+        '''
+        :return: The number of possible symbols for this cell.
+        :rtype: int
+        '''
+        return len(self._possible_symbols)
+
     def get_possible_symbol(self):
         '''
         Get the only possible symbol for this cell. If more than one symbol is

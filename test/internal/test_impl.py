@@ -107,7 +107,7 @@ def test_cell_group_update_possible_symbols_full_group(alphabet10):
     group = CellGroup(set(cells))
 
     for cell in cells:
-        assert len(cell.get_possible_symbols()) == 0
+        assert cell.get_num_possible_symbols() == 0
 
 def test_cell_group_update_possible_symbols_empty_group(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
