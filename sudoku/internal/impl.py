@@ -11,19 +11,29 @@ class Cell(object):
     A sudoku board cell.
     '''
 
-    def __init__(self, x, y, symbol=None):
+    def __init__(self, x, y, alphabet, symbol=None):
         '''
         Create a new cell.
         :param x: The X coordinate of this cell.
         :type x: int
         :param y: The Y coordinate of this cell.
         :type y: int
+        :param alphabet: The possible symbols in the board.
+        :type alphabet: str
         :param symbol: The cell value, or ``None`` if unknown.
         :type symbol: str or None
         '''
         self.x = x
         self.y = y
+        self.alphabet = alphabet
         self.symbol = symbol
+
+        self._groups = []
+        self._possible_symbols = set(alphabet)
+
+        if symbol:
+            assert symbol in alphabet, "Illegal symbol given"
+            self._possible_symbols.remove(symbol)
 
     def __repr__(self):
         '''
@@ -38,7 +48,60 @@ class Cell(object):
         :param symbol: The new symbol, or ``None``.
         :type symbol: str
         '''
+
+        if symbol == self.symbol:
+            return
+
+        assert symbol in self._possible_symbols, "Illegal symbol given"
         self.symbol = symbol
+
+        for group in self._groups:
+            group.update_taken_symbols()
+        for group in self._groups:
+            group.update_possible_symbols()
+
+    def add_group(self, group):
+        '''
+        Add this cell to a group.
+        :param group: The group this cell is now part of.
+        :type group: CellGroup
+        '''
+        self._groups.append(group)
+
+    def update_possible_symbols(self):
+        '''
+        Update the possible symbols for this cell, looking at the taken symbols
+        in all other groups.
+        '''
+
+        taken_symbols = set()
+        possible_symbols = set(self.alphabet)
+
+        # Look at the taken symbols
+        for group in self._groups:
+            taken_symbols = taken_symbols.union(group.taken_symbols())
+        
+        self._possible_symbols = possible_symbols.difference(taken_symbols)
+
+    def get_possible_symbols(self):
+        '''
+        Get the set of possible symbols for this cell.
+        :note: The set of possible symbols might not be up to date.
+        :return: The set of possible symbols for this cell.
+        :rtype: set of string
+        '''
+        return self._possible_symbols
+
+    def get_possible_symbol(self):
+        '''
+        Get the only possible symbol for this cell. If more than one symbol is
+        possible, an exception will be raised.
+        :return: The only possible symbol.
+        :rtype: str
+        '''
+        assert len(self._possible_symbols) == 1, 'There is more than one possible symbol'
+        for symbol in self._possible_symbols:
+            return symbol
 
     def is_empty(self):
         '''
@@ -60,6 +123,10 @@ class CellGroup(object):
         :type cells: set of Cell
         '''
         self._cells = cells or set()
+        for cell in self._cells:
+            cell.add_group(self)
+        self.update_taken_symbols()
+        self.update_possible_symbols()
 
     def add(self, cell):
         '''
@@ -68,6 +135,9 @@ class CellGroup(object):
         :type cell: Cell
         '''
         self._cells.add(cell)
+        cell.add_group(self)
+        self.update_taken_symbols()
+        self.update_possible_symbols()
 
     def is_valid(self):
         '''
@@ -85,26 +155,52 @@ class CellGroup(object):
 
         return True
 
+    def taken_symbols(self):
+        '''
+        :return: A set of the taken symbols in this cell group.
+        :rtype: set of strings.
+        '''
+        
+        return self._taken_symbols
+
+    def update_taken_symbols(self):
+        '''
+        Update the set of taken symbols in this cell group.
+        '''
+        self._taken_symbols = set(cell.symbol for cell in self._cells if cell.symbol)
+    
+    def update_possible_symbols(self):
+        '''
+        Update the possible symbols of each cell in this cell group.
+        '''
+        for cell in self._cells:
+            cell.update_possible_symbols()
+
 
 class BoardImpl(object):
     '''
     A full implementation of a sudoku board.
     '''
 
-    def __init__(self, block_width, block_height):
+    def __init__(self, block_width, block_height, alphabet):
         '''
         Create an empty board with the given dimensions.
         :param block_width: The block width of the board.
         :type block_width: int
         :param block_height: The block height of the board.
         :type block_height: int
+        :param alphabet: The possible symbols in the board.
+        :type alphabet: str
         '''
 
         self._block_width = block_width
         self._block_height = block_height
+        self._alphabet = alphabet
+
+        assert len(alphabet) == self.rows
 
         # Create the board cells
-        self._cells = [[Cell(x, y) for y in xrange(self.cols)] for x in xrange(self.rows)]
+        self._cells = [[Cell(x, y, self._alphabet) for y in xrange(self.cols)] for x in xrange(self.rows)]
 
         # Create the board groups
         self._groups = []
