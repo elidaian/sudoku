@@ -8,12 +8,8 @@ def test_cell_legal_alphabet(alphabet):
     cell = Cell(0, 0, alphabet, '2')
 
 def test_cell_illegal_alphabet(alphabet):
-    try:
+    with pytest.raises(AssertionError):
         cell = Cell(0, 0, alphabet, 'A')
-    except AssertionError:
-        pass
-    else:
-        pytest.fail('Exception should be raised')
 
 def test_cell_set_symbol_legal(alphabet):
     cell = Cell(0, 0, alphabet)
@@ -24,22 +20,14 @@ def test_cell_set_symbol_legal(alphabet):
 def test_cell_set_symbol_illegal1(alphabet):
     cell = Cell(0, 0, alphabet, '2')
 
-    try:
+    with pytest.raises(AssertionError):
         cell.set_symbol('a')
-    except AssertionError:
-        pass
-    else:
-        pytest.fail('Exception should be raised')
 
 def test_cell_set_symbol_illegal2(alphabet):
     cell = Cell(0, 0, alphabet)
 
-    try:
+    with pytest.raises(AssertionError):
         cell.set_symbol('a')
-    except AssertionError:
-        pass
-    else:
-        pytest.fail('Exception should be raised')
 
 def test_cell_set_symbol_legal1(alphabet):
     cell = Cell(0, 0, alphabet, '2')
