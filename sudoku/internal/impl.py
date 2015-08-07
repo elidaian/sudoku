@@ -81,7 +81,7 @@ class Cell(object):
         # Look at the taken symbols
         for group in self._groups:
             taken_symbols = taken_symbols.union(group.taken_symbols())
-        
+
         self._possible_symbols = possible_symbols.difference(taken_symbols)
 
     def get_possible_symbols(self):
@@ -168,7 +168,7 @@ class CellGroup(object):
         :return: A set of the taken symbols in this cell group.
         :rtype: set of strings.
         '''
-        
+
         return self._taken_symbols
 
     def update_taken_symbols(self):
@@ -176,7 +176,7 @@ class CellGroup(object):
         Update the set of taken symbols in this cell group.
         '''
         self._taken_symbols = set(cell.symbol for cell in self._cells if cell.symbol)
-    
+
     def update_possible_symbols(self):
         '''
         Update the possible symbols of each cell in this cell group.
@@ -364,3 +364,15 @@ class BoardImpl(object):
         '''
         row, col = pos
         return self._cells[row][col].symbol
+
+    def copy(self):
+        '''
+        :return: A new :class:`BoardImpl` object, that is an exact copy of this object.
+        :rtype: :class:`BoardImpl`
+        '''
+
+        board = BoardImpl(self._block_width, self._block_height, self._alphabet)
+        for cell in self._iter_cells():
+            if cell.symbol:
+                board[cell.x, cell.y] = cell.symbol
+        return board
