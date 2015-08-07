@@ -646,12 +646,12 @@ def test_board_copy2(board):
 
 
 def test_board_copy3(board):
-    board[0, 3] = '2'
-    board[1, 0] = '4'
-    board[1, 3] = '1'
-    board[2, 0] = '3'
-    board[2, 1] = '1'
-    board[3, 1] = '4'
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 1] = '3'
+    board[2, 1] = '2'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
 
     board2 = board.copy()
 
@@ -683,3 +683,71 @@ def test_board_copy4(board):
     for row in xrange(4):
         for col in xrange(4):
             assert board[row, col] == board2[row, col]
+
+
+def test_board_str_empty(board):
+    assert ' ' * 16 == str(board)
+
+
+def test_board_str1(board):
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[3, 1] = '4'
+
+    assert '   24  131   4  ' == str(board)
+
+
+def test_board_str2(board):
+    board[0, 0] = '1'
+    board[0, 1] = '3'
+    board[0, 2] = '4'
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 1] = '2'
+    board[1, 2] = '3'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[2, 2] = '2'
+    board[2, 3] = '4'
+    board[3, 0] = '2'
+    board[3, 1] = '4'
+    board[3, 2] = '1'
+    board[3, 3] = '3'
+
+    assert '1342423131242413' == str(board)
+
+
+def test_board_str3(board):
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 1] = '3'
+    board[2, 1] = '2'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
+
+    assert '  13 3   2  41  ' == str(board)
+
+
+def test_board_str4(board):
+    board[0, 0] = '2'
+    board[0, 1] = '4'
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 0] = '1'
+    board[1, 1] = '3'
+    board[1, 2] = '2'
+    board[1, 3] = '4'
+    board[2, 0] = '3'
+    board[2, 1] = '2'
+    board[2, 2] = '4'
+    board[2, 3] = '1'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
+    board[3, 2] = '3'
+    board[3, 3] = '2'
+
+    assert '2413132432414132' == str(board)

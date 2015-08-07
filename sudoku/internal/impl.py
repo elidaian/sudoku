@@ -376,3 +376,11 @@ class BoardImpl(object):
             if cell.symbol:
                 board[cell.x, cell.y] = cell.symbol
         return board
+
+    def __str__(self):
+        '''
+        :return: A string representing this board, with spaces in the unknown cells. The entire board will be returned
+            as a single line string, with no spaces between the lines and blocks.
+        :rtype: str
+        '''
+        return ''.join(cell.symbol or ' ' for cell in self._iter_cells())
