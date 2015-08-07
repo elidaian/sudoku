@@ -365,6 +365,30 @@ class BoardImpl(object):
         row, col = pos
         return self._cells[row][col].symbol
 
+    def get_num_possible_symbols(self, row, col):
+        '''
+        Get the number of possible symbols in a given cell.
+        :param row: The cell row.
+        :type row: int
+        :param col: The cell column.
+        :type col: int
+        :return: The number of possible symbols in this cell.
+        :rtype: int
+        '''
+        return self._cells[row][col].get_num_possible_symbols()
+
+    def get_possible_symbols(self, row, col):
+        '''
+        Get the possible symbols in a given cell.
+        :param row: The cell row.
+        :type row: int
+        :param col: The cell column.
+        :type col: int
+        :return: The possible symbol in this cell.
+        :rtype: set
+        '''
+        return self._cells[row][col].get_possible_symbol()
+
     def copy(self):
         '''
         :return: A new :class:`BoardImpl` object, that is an exact copy of this object.
