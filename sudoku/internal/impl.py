@@ -1,6 +1,7 @@
 '''
 Provides implementation for internal board, cell, etc.
 '''
+from itertools import chain, imap
 from operator import and_
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
@@ -286,6 +287,13 @@ class BoardImpl(object):
         '''
         return self.cols / self.block_width
 
+    def _iter_cells(self):
+        '''
+        :return: An iterable over all the cells in this board.
+        :rtype: iterable of :class:`Cell`-s.
+        '''
+        return chain.from_iterable(self._cells)
+
     def is_valid(self):
         '''
         :return: ``True`` iff the assigned symbol of all cells is valid.
@@ -301,11 +309,32 @@ class BoardImpl(object):
         :return: ``True`` iff all cells have assigned symbol.
         :rtype: bool
         '''
-        for cells_row in self._cells:
-            for cell in cells_row:
-                if not cell.symbol:
-                    return False
-        return True
+        return reduce(and_, imap(lambda x: bool(x.symbol), self._iter_cells()), True)
+
+    def is_empty(self):
+        '''
+        :return: ``True`` iff all cells do not have assigned symbol.
+        :rtype: bool
+        '''
+        return reduce(and_, imap(lambda x: x.symbol is None, self._iter_cells()), True)
+
+    def solve_possible(self):
+        '''
+        Fill the cells with only one single possible symbol.
+        An exception will be raised if there is a cell with no possible symbol to fill with.
+        '''
+        changed = True
+        while changed:
+            changed = False
+            for cell in self._iter_cells():
+                if cell.symbol:
+                    continue
+
+                num_possible_symbols = cell.get_num_possible_symbols()
+                assert num_possible_symbols > 0, "Cell has no possible symbols"
+                if num_possible_symbols == 1:
+                    cell.set_symbol(cell.get_possible_symbol())
+                    changed = True
 
     def is_final(self):
         '''
