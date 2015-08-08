@@ -259,7 +259,7 @@ def create_board():
         except (KeyError, ValueError):
             flash("Invalid request data", "danger")
         except:
-            flash("Internal server error", "danger")
+            flash("Internal oldserver error", "danger")
     user = db.get_user(g.db, session["user"])
     return render_template("create_board.html", just_created=just_created,
                            curr_user=user)

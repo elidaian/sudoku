@@ -27,7 +27,7 @@ def create_parser():
     """
     Create an argument parser.
     """
-    parser = optparse.OptionParser(description="Initialize server secret key")
+    parser = optparse.OptionParser(description="Initialize oldserver secret key")
     parser.add_option("-l", "--length",
                       default=128,
                       metavar="LENGTH`",

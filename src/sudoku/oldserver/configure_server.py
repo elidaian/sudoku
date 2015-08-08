@@ -28,7 +28,7 @@ def create_parser():
     """
     Create an argument parser.
     """
-    parser = optparse.OptionParser(description="Initialize server DB with a root user")
+    parser = optparse.OptionParser(description="Initialize oldserver DB with a root user")
     parser.add_option("-u", "--user",
                       default=os.environ.get("USER", None),
                       metavar="USERNAME",
