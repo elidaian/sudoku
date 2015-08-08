@@ -119,7 +119,7 @@ Board BoardGenerator::generate(size_t) {
 		++n;
 	} while(state != solved);
 
-	// Do something wiered (TODO)
+	// Remove unneeded assignments
 	size_t j = 0;
 	while (j < n) {
 		CleanBoard(m_board);
