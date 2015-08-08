@@ -1,4 +1,4 @@
-from internal.exceptions import SymbolNotPossible, NoPossibleSymbols
+from internal.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -12,7 +12,7 @@ def test_cell_legal_alphabet(alphabet):
 
 
 def test_cell_illegal_alphabet(alphabet):
-    with pytest.raises(AssertionError):
+    with pytest.raises(SymbolNotPossible):
         cell = Cell(0, 0, alphabet, "A")
 
 
@@ -136,7 +136,12 @@ def test_board_is_valid_empty(board):
     assert not board.is_final()
 
 
-def test_board_is_valid_patrially_empty_valid(board):
+def test_board_invalid_alphabet():
+    with pytest.raises(InvalidAlphabet):
+        board = BoardImpl(3, 3, "1234")
+
+
+def test_board_is_valid_partially_empty_valid(board):
     board[0, 0] = "2"
     board[0, 1] = "1"
     board[0, 2] = "3"

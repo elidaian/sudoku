@@ -15,3 +15,12 @@ class NoPossibleSymbols(ValueError):
     with no possible symbols to assign in it.
     """
     pass
+
+
+class InvalidAlphabet(ValueError):
+    """
+    This exception is raised when the given alphabet is invalid.
+
+    Usually, this means that the alphabet length does not match the board dimensions.
+    """
+    pass

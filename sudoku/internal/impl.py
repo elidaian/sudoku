@@ -3,7 +3,7 @@ Provides implementation for internal board, cell, etc.
 """
 from itertools import chain, imap
 from operator import and_
-from internal.exceptions import SymbolNotPossible, NoPossibleSymbols
+from internal.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -34,7 +34,8 @@ class Cell(object):
         self._possible_symbols = set(alphabet)
 
         if symbol:
-            assert symbol in alphabet, "Illegal symbol given"
+            if symbol not in alphabet:
+                raise SymbolNotPossible("Illegal symbol given")
             self._possible_symbols.remove(symbol)
 
     def __repr__(self):
@@ -207,7 +208,8 @@ class BoardImpl(object):
         self._block_height = block_height
         self._alphabet = alphabet
 
-        assert len(alphabet) == self.rows
+        if len(alphabet) != self.rows:
+            raise InvalidAlphabet("Alphabet length mismatch")
 
         # Create the board cells
         self._cells = [[Cell(x, y, self._alphabet) for y in xrange(self.cols)] for x in xrange(self.rows)]
