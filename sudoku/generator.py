@@ -9,7 +9,7 @@ from internal.impl import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
-from board import Board
+from board import Board, SimpleBoard
 
 DEFAULT_ALPHABET = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 """ Default alphabet to be used if no alphabet is given. """
@@ -41,13 +41,18 @@ def _construct_board(block_width, block_height, alphabet):
             if problem.get_num_possible_symbols(row, col) > 1:
                 pos = (row, col)
 
-        symbol = choice(problem.get_possible_symbols(*pos))
+        symbol = choice(list(problem.get_possible_symbols(*pos)))
         problem[pos] = symbol
 
         solution = problem.copy()
-        solution.solve_possible()
+        try:
+            solution.solve_possible()
+        except AssertionError:  # No possible solution for this board
+            problem[pos] = None
+            solution = problem
 
     return str(problem), str(solution)
+
 
 def generate(block_width, block_height, alphabet=None):
     """
@@ -63,9 +68,14 @@ def generate(block_width, block_height, alphabet=None):
     """
 
     board_size = block_height * block_width
-    board_square_size = board_size * board_size
 
     if alphabet is None:
         if board_size > len(DEFAULT_ALPHABET):
             raise IndexError, "Board too long for default alphabet"
         alphabet = DEFAULT_ALPHABET[:board_size]
+
+    problem, solution = _construct_board(block_width, block_height, alphabet)
+
+    problem_board = SimpleBoard(block_width, block_height, problem)
+    solution_board = SimpleBoard(block_width, block_height, solution)
+    return Board(block_width, block_height, problem_board, solution_board)
