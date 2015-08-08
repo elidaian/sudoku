@@ -30,7 +30,7 @@ def test_generator_solution_of_problem(generated_board):
 
 def test_generator_solvable(generated_board, board):
     """
-    Test that a generated board is solvable.
+    Test that a generated board is solvable, and that the solution is the returned solution.
     """
 
     _assign_board_from_generated_board(generated_board.problem, board)
