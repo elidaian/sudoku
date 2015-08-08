@@ -1,8 +1,7 @@
+import pytest
 from sudoku.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
-
-import pytest
 
 from sudoku.internal.impl import Cell, CellGroup, BoardImpl
 
