@@ -5,7 +5,8 @@ This module generates sudoku boards.
 :type DEFAULT_ALPHABET: str
 """
 from random import randint, choice
-from internal.exceptions import NoPossibleSymbols
+
+from exceptions import NoPossibleSymbols
 from internal.impl import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"

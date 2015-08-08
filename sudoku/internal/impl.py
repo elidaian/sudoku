@@ -3,7 +3,8 @@ Provides implementation for internal board, cell, etc.
 """
 from itertools import chain, imap
 from operator import and_
-from internal.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
+
+from sudoku.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
