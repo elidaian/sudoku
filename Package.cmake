@@ -94,7 +94,7 @@ function (extract_git_revision)
                          OUTPUT_VARIABLE HASH
                          OUTPUT_STRIP_TRAILING_WHITESPACE
                          ERROR_QUIET)
-        set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${NUM_COMMITS}-${HASH})
+        set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${NUM_COMMITS}.${HASH})
 
         message (STATUS "Found git, project version is ${PROJECT_VERSION}")
 
@@ -110,9 +110,8 @@ function (extract_git_revision)
         # add the tarball target
         add_custom_command (OUTPUT ${PACKING_DIRECTORY}/${TARBALL_NAME}
                             COMMAND git archive --prefix=${PACKAGE_FULL_NAME}/
-                                                --format=tar.gz
-                                                --output=${PACKING_DIRECTORY}/${TARBALL_NAME}
-                                                ${HASH}
+                                                --format=tar ${HASH} |
+                                                gzip > ${PACKING_DIRECTORY}/${TARBALL_NAME}
                             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                             COMMENT "Creating fresh source checkout tarball")
         add_custom_target (tarball
