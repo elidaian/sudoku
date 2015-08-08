@@ -1,3 +1,5 @@
+import pytest
+
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
 
@@ -49,3 +51,11 @@ def test_generator_problem_not_full(generated_board, board):
     _assign_board_from_generated_board(generated_board.problem, board)
     assert not board.is_full()
     assert not board.is_empty()
+
+
+@pytest.mark.parametrize("count", xrange(64))
+def test_generator_stress_test(generated_board, count):
+    """
+    This test is intended to find exceptions that are raised rarely.
+    """
+    pass
