@@ -7,7 +7,7 @@ This module generates sudoku boards.
 from random import randint, choice
 
 from exceptions import NoPossibleSymbols
-from internal.impl import BoardImpl
+from impl import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -21,7 +21,7 @@ def _find_next_symbol_to_assign(board):
     """
     Find an empty cell in the board, and generate a random symbol to assign in it.
     :param board: The board.
-    :type board: :class:`~internal.impl.BoardImpl`
+    :type board: :class:`~impl.BoardImpl`
     :return: A tuple, consisting of the cell position (another tuple) and the symbol to assign in it.
     :rtype: tuple
     """
@@ -105,7 +105,7 @@ def _construct_from_assignments(block_width, block_height, alphabet, assignments
     :param assignments: The assignments series, as returned from :meth:`__construct_assignments`.
     :type assignments: list
     :return: The constructed board.
-    :rtype: :class:`~internal.impl.BoardImpl`.
+    :rtype: :class:`~impl.BoardImpl`.
     """
     board = BoardImpl(block_width, block_height, alphabet)
     for pos, symbol in assignments:

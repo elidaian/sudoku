@@ -1,9 +1,9 @@
 import pytest
+
 from sudoku.exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
+from sudoku.impl import Cell, CellGroup, BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
-
-from sudoku.internal.impl import Cell, CellGroup, BoardImpl
 
 
 def test_cell_legal_alphabet(alphabet):

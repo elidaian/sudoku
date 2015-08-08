@@ -9,7 +9,7 @@ def _assign_board_from_generated_board(board, board_impl):
     :param board: The input board.
     :type board: :class:`~board.Board`
     :param board_impl: The output board.
-    :type board_impl: :class:`~internal.impl.BoardImpl`
+    :type board_impl: :class:`~impl.BoardImpl`
     """
     assert board.block_width == board_impl.block_width
     assert board.block_height == board.block_height

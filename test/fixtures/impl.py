@@ -1,5 +1,6 @@
 import pytest
-from internal.impl import BoardImpl
+
+from sudoku.impl import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
