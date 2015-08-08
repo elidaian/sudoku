@@ -1,3 +1,5 @@
+from internal.exceptions import SymbolNotPossible
+
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
 import pytest
@@ -24,14 +26,14 @@ def test_cell_set_symbol_legal(alphabet):
 def test_cell_set_symbol_illegal1(alphabet):
     cell = Cell(0, 0, alphabet, "2")
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(SymbolNotPossible):
         cell.set_symbol("a")
 
 
 def test_cell_set_symbol_illegal2(alphabet):
     cell = Cell(0, 0, alphabet)
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(SymbolNotPossible):
         cell.set_symbol("a")
 
 

@@ -3,6 +3,7 @@ Provides implementation for internal board, cell, etc.
 """
 from itertools import chain, imap
 from operator import and_
+from internal.exceptions import SymbolNotPossible
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -53,7 +54,8 @@ class Cell(object):
         if symbol == self.symbol:
             return
 
-        assert symbol is None or symbol in self._possible_symbols, "Illegal symbol given"
+        if symbol is not None and symbol not in self._possible_symbols:
+            raise SymbolNotPossible("Illegal symbol given")
         self.symbol = symbol
 
         for group in self._groups:
