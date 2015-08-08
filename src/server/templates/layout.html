@@ -39,7 +39,7 @@
                                 View board <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                {%- if session.last_boards and not root -%}
+                                {%- if session.last_boards -%}
                                 <li><a href="{{ url_for("view_last_boards") }}">Last created</a></li>
                                 {%- endif -%}
                                 <li><a href="{{ url_for("list_boards") }}">Specific</a></li>
@@ -60,7 +60,16 @@
                         </li>
                     {%- endif %}
                     {%- if curr_user.allow_other_user_boards() %}
-                        <li><a href="{{ url_for("other_user") }}">Other user's boards</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Other users <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for("list_other_boards") }}">View a specific board</a></li>
+                                <li><a href="{{ url_for("list_other_boards", many=1) }}">View multiple boards</a></li>
+                            </ul>
+                        </li>
                     {%- endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
