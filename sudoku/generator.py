@@ -5,7 +5,7 @@ This module generates sudoku boards.
 :type DEFAULT_ALPHABET: str
 """
 from random import randint, choice
-from internal.exceptions import SymbolNotPossible
+from internal.exceptions import NoPossibleSymbols
 from internal.impl import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -74,7 +74,7 @@ def _construct_assignments(block_width, block_height, alphabet):
         solution = problem.copy()
         try:
             solution.solve_possible()
-        except SymbolNotPossible:  # No possible solution for this board with this assignment
+        except NoPossibleSymbols:  # No possible solution for this board with this assignment
             if trials < MAX_TRIALS:
                 # Roll back this assignment
                 problem[pos] = None

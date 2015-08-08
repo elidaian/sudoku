@@ -1,4 +1,4 @@
-from internal.exceptions import SymbolNotPossible
+from internal.exceptions import SymbolNotPossible, NoPossibleSymbols
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -621,7 +621,7 @@ def test_board_solve_possible_impossible(board):
     board[0, 3] = "3"
     board[1, 1] = "4"
 
-    with pytest.raises(AssertionError):
+    with pytest.raises(NoPossibleSymbols):
         board.solve_possible()
 
 

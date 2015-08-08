@@ -3,7 +3,7 @@ Provides implementation for internal board, cell, etc.
 """
 from itertools import chain, imap
 from operator import and_
-from internal.exceptions import SymbolNotPossible
+from internal.exceptions import SymbolNotPossible, NoPossibleSymbols
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -333,10 +333,11 @@ class BoardImpl(object):
                     continue
 
                 num_possible_symbols = cell.get_num_possible_symbols()
-                assert num_possible_symbols > 0, "Cell has no possible symbols"
                 if num_possible_symbols == 1:
                     cell.set_symbol(cell.get_possible_symbol())
                     changed = True
+                elif num_possible_symbols <= 0:
+                    raise NoPossibleSymbols("Cell has no possible symbols")
 
     def is_final(self):
         """

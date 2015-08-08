@@ -7,3 +7,11 @@ class SymbolNotPossible(ValueError):
     be assigned to this cell.
     """
     pass
+
+
+class NoPossibleSymbols(ValueError):
+    """
+    This exception is raised when a board is trying to get solved, but there is at least one cell
+    with no possible symbols to assign in it.
+    """
+    pass
