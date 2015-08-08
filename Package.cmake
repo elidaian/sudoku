@@ -94,7 +94,7 @@ function (extract_git_revision)
                          OUTPUT_VARIABLE HASH
                          OUTPUT_STRIP_TRAILING_WHITESPACE
                          ERROR_QUIET)
-        set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${NUM_COMMITS}-${HASH})
+        set (PROJECT_VERSION ${MAJOR_VERSION}.${MINOR_VERSION}.${NUM_COMMITS}.${HASH})
 
         message (STATUS "Found git, project version is ${PROJECT_VERSION}")
 
