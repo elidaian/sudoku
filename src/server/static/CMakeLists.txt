@@ -1,5 +1,5 @@
 
-set (JQUERY_FILES jquery.min.js)
+set (JQUERY_FILES jquery-2.1.4.min.js)
 set (BOOTSTRAP_FILES bootstrap.min.css
                      bootstrap.min.js
                      bootstrap-theme.min.css)

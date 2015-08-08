@@ -2,28 +2,17 @@
 {% block scripts %}
 <script type="text/javascript">
 <!--
-function check_regular() {
-    if (document.getElementById("regular").checked) {
-        document.getElementById("width").disabled = true;
-        document.getElementById("width").value = 3;
-        document.getElementById("height").disabled = true;
-        document.getElementById("height").value = 3;
+function update_options() {
+    if ($("#regular").prop("checked") || $("#dodeka").prop("checked")) {
+        $("#custom-dimensions").hide("fast");
+    } else {
+        $("#custom-dimensions").show("fast");
     }
 }
-function check_dodeka() {
-    if (document.getElementById("dodeka").checked) {
-        document.getElementById("width").disabled = true;
-        document.getElementById("width").value = 4;
-        document.getElementById("height").disabled = true;
-        document.getElementById("height").value = 3;
-    }
-}
-function check_custom() {
-    if (document.getElementById("custom").checked) {
-        document.getElementById("width").disabled = false;
-        document.getElementById("height").disabled = false;
-    }
-}
+$(document).ready(function () {
+    update_options();
+    $("div.radio").click(update_options);
+});
 //-->
 </script>
 {%- endblock %}
@@ -42,22 +31,21 @@ function check_custom() {
         <div class="col-sm-10">
             <div class="radio">
                 <label>
-                    <input type="radio" name="type" value="regular" checked="true"
-                        id="regular" onchange="check_regular()" />
+                    <input type="radio" name="type" value="regular" checked="true" id="regular" />
                     Regular board <small>3 &times; 3 blocks, each 3 &times; 3 cells</small>
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="type" value="dodeka" id="dodeka" onchange="check_dodeka()" />
+                    <input type="radio" name="type" value="dodeka" id="dodeka" />
                     Dodeka board <small>3 &times; 4 blocks, each 4 &times; 3 cells</small>
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="type" value="custom" id="custom" onchange="check_custom()" />
+                    <input type="radio" name="type" value="custom" id="custom" />
                     Custom board:
-                    <div class="container">
+                    <div class="container" id="custom-dimensions" hidden="hidden">
                         <div class="form-group">
                             <label for="width" class="col-sm-2 control-label">Block width</label>
                             <div class="col-sm-10">
@@ -87,9 +75,4 @@ function check_custom() {
         </div>
     </div>
 </form>
-<script type="text/javascript">
-<!--
-check_regular();
-//-->
-</script>
 {%- endblock %}
