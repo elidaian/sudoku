@@ -597,6 +597,24 @@ def test_board_solve_possible_full4(board):
     assert board[3, 3] == '2'
 
 
+def test_board_solve_possible_impossible(board):
+    '''
+    Try solving the following board:
+    [[1,  , 2, 3],
+     [ , 4,  ,  ],
+     [ ,  ,  ,  ],
+     [ ,  ,  ,  ]]
+     Since this board is impossible to get solved, an exception is expected to be raised.
+    '''
+    board[0, 0] = '1'
+    board[0, 2] = '2'
+    board[0, 3] = '3'
+    board[1, 1] = '4'
+
+    with pytest.raises(AssertionError):
+        board.solve_possible()
+
+
 def test_board_copy_empty(board):
     board2 = board.copy()
 
