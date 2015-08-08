@@ -1,6 +1,6 @@
 from internal.impl import BoardImpl
 
-__author__ = 'Eli Daian <elidaian@gmail.com>'
+__author__ = "Eli Daian <elidaian@gmail.com>"
 
 import pytest
 
