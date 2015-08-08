@@ -1,5 +1,6 @@
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
+
 class SimpleBoard(object):
     """
     Represents a sudoku board.
@@ -52,7 +53,7 @@ class SimpleBoard(object):
         :return: The number of columns in the board.
         :rtype: int
         """
-        return self.rows        # A board is quadratic
+        return self.rows  # A board is quadratic
 
     @property
     def block_rows(self):
@@ -121,6 +122,7 @@ class SimpleBoard(object):
         board_list = [[self[r, c] for c in xrange(self.cols)] for r in xrange(self.rows)]
         return vsep.join([hsep.join(row) for row in board_list])
 
+
 class Board(object):
     """
     Represents a sudoku board, with a problem and solution.
@@ -181,7 +183,7 @@ class Board(object):
         :return: The number of columns in the board.
         :rtype: int
         """
-        return self.rows        # A board is quadratic
+        return self.rows  # A board is quadratic
 
     @property
     def block_rows(self):

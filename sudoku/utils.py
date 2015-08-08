@@ -2,6 +2,7 @@ __author__ = "Eli Daian <elidaian@gmail.com>"
 
 import itertools
 
+
 def enum(*sequential, **named):
     """
     Create an enumeration.
