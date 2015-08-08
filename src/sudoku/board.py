@@ -119,8 +119,15 @@ class SimpleBoard(object):
         hsep = "|"
 
         # Build the board
-        board_list = [[self[r, c] for c in xrange(self.cols)] for r in xrange(self.rows)]
+        board_list = [[self[row, col] for col in xrange(self.cols)] for row in xrange(self.rows)]
         return vsep.join([hsep.join(row) for row in board_list])
+
+    def __repr__(self):
+        """
+        :return: A raw string representation of this board.
+        :rtype: str
+        """
+        return "".join("".join(self[row, col] for col in xrange(self.cols)) for row in xrange(self.rows))
 
 
 class Board(object):
