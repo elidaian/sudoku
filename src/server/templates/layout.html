@@ -2,6 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta charset="utf-8" />
 <title>Eli Daian Sudoku</title>
 <!-- jQuery -->
 <script src="{{ url_for("static", filename="jquery.min.js") }}"></script>
@@ -32,11 +33,24 @@
                 <ul class="nav navbar-nav navbar-left">
                     {%- if curr_user.allow_create_board() %}
                         <li><a href="{{ url_for("create_board") }}">Create board</a></li>
-                        <li><a href="{{ url_for("view_board") }}">View board</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                View board <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                {%- if session.last_boards -%}
+                                <li><a href="{{ url_for("view_last_boards") }}">Last created</a></li>
+                                {%- endif -%}
+                                <li><a href="{{ url_for("list_boards") }}">Specific</a></li>
+                                <li><a href="{{ url_for("list_boards", many=1) }}">Multiple</a></li>
+                            </ul>
+                        </li>
                     {%- endif %}
                     {%- if curr_user.allow_manage_users() %}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
                                 Manage users <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
@@ -46,7 +60,16 @@
                         </li>
                     {%- endif %}
                     {%- if curr_user.allow_other_user_boards() %}
-                        <li><a href="{{ url_for("other_user") }}">Other user's boards</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-haspopup="true" aria-expanded="false">
+                                Other users <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for("list_other_boards") }}">View a specific board</a></li>
+                                <li><a href="{{ url_for("list_other_boards", many=1) }}">View multiple boards</a></li>
+                            </ul>
+                        </li>
                     {%- endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
