@@ -53,7 +53,7 @@ class Cell(object):
         if symbol == self.symbol:
             return
 
-        assert symbol in self._possible_symbols, "Illegal symbol given"
+        assert symbol is None or symbol in self._possible_symbols, "Illegal symbol given"
         self.symbol = symbol
 
         for group in self._groups:
@@ -387,7 +387,7 @@ class BoardImpl(object):
         :return: The possible symbol in this cell.
         :rtype: set
         """
-        return self._cells[row][col].get_possible_symbol()
+        return self._cells[row][col].get_possible_symbols()
 
     def copy(self):
         """

@@ -53,6 +53,14 @@ def test_cell_set_symbol_legal2(alphabet):
     cell.set_symbol("1")
 
 
+def test_cell_set_symbol_none(alphabet):
+    cell = Cell(0, 0, alphabet)
+
+    cell.set_symbol(None)
+    cell.set_symbol("2")
+    cell.set_symbol(None)
+
+
 def test_cell_group_is_valid_empty_cells(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
     group = CellGroup(set(cells))
