@@ -32,7 +32,7 @@ def _find_next_symbol_to_assign(board):
         row = randint(0, board.rows - 1)
         col = randint(0, board.cols - 1)
 
-        if board.get_num_possible_symbols(row, col) > 1:
+        if board[row, col] is None and board.get_num_possible_symbols(row, col) > 1:
             pos = (row, col)
 
     # Select a symbol to assign
