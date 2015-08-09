@@ -4,7 +4,10 @@ from flask.globals import session, g, request
 from flask.helpers import url_for, flash
 from flask.templating import render_template
 from werkzeug.utils import redirect
+from sudoku.exceptions import ErrorWithMessage
+from sudoku.generator import generate
 from sudoku.server import db
+from sudoku.server.users import PERM_CREATE_BOARD
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -72,7 +75,7 @@ def login():
     if request.method == "POST":
         try:
             username = request.form.get("username", None)
-            password = request.form.get("password",None)
+            password = request.form.get("password", None)
 
             if username is None or password is None:
                 flash("Invalid data", "danger")
@@ -93,6 +96,61 @@ def login():
             flash("Missing username or password", "info")
     return render_template("login.html")
 
+
+@app.route("/logout")
+def logout():
+    """
+    Log out and end the current session (if any).
+    """
+    if session.has_key("user"):
+        flash("You have been logged out", "success")
+        del session["user"]
+    session["logged_in"] = False
+    return redirect(url_for("main_page"))
+
+
+@app.route("/create_board", methods=["GET", "POST"])
+@must_login(PERM_CREATE_BOARD)
+def create_board():
+    """
+    Create a new board or some new boards.
+    """
+    just_created = False
+    if request.method == "POST":
+        try:
+            board_type = request.form["type"]
+            if board_type == "regular":
+                width = 3
+                height = 3
+            elif board_type == "dodeka":
+                width = 4
+                height = 3
+            elif board_type == "custom":
+                width = int(request.form["width"])
+                height = int(request.form["height"])
+            else:
+                raise ErrorWithMessage("Invalid board type")
+            count = int(request.form["count"])
+
+            boards = [generate(width,height) for i in xrange(count)]
+            board_ids = [db.insert_board(g.db, session["user"], board)
+                         for board in boards]
+            g.db.commit()
+            session["last_boards"] = board_ids
+            if len(board_ids) == 1:
+                flash("Created one board", "success")
+            else:
+                flash("Created %d boards" % len(board_ids), "success")
+            just_created = True
+        except ErrorWithMessage as e:
+            flash(e.message, "danger")
+        except (KeyError, ValueError):
+            flash("Invalid request data", "danger")
+        except:
+            flash("Internal server error", "danger")
+    user = db.get_user(g.db, session["user"])
+    return render_template("create_board.html", just_created=just_created,
+                           user=user)
 
 if __name__ == "__main__":
     app.run()
