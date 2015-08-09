@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <title>Eli Daian Sudoku</title>
+    <!-- jQuery -->
+    <script src="{{ url_for("static", filename="jquery-2.1.4.min.js") }}"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ url_for("static", filename="bootstrap.min.css") }}" />
+    <link rel="stylesheet" href="{{ url_for("static", filename="bootstrap-theme.min.css") }}" />
+    <script src="{{ url_for("static", filename="bootstrap.min.js") }}"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Own design customization -->
+    <link rel="stylesheet" href="{{ url_for("static", filename="customization.css") }}" type="text/css" />
+    {%- block scripts %}{%- endblock %}
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for("main_page") }}">Eli Daian Sudoku</a>
+        </div>
+        {%- if session.logged_in %}
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="nav navbar-nav navbar-left">
+                {%- if user.allow_create_board() %}
+                <li><a href="{{ url_for("create_board") }}">Create board</a></li>
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">
+                        View board <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {%- if session.last_boards -%}
+                        <li><a href="{{ url_for("view_last_boards") }}">Last created</a></li>
+                        {%- endif -%}
+                        <li><a href="{{ url_for("list_boards") }}">Specific</a></li>
+                        <li><a href="{{ url_for("list_boards", many=1) }}">Multiple</a></li>
+                    </ul>
+                </li>
+                {%- endif %}
+                {%- if user.allow_manage_users() %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">
+                        Manage users <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for("register_user") }}">Register user</a></li>
+                        <li><a href="{{ url_for("manage_users") }}">Manage users</a></li>
+                    </ul>
+                </li>
+                {%- endif %}
+                {%- if user.allow_other_user_boards() %}
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                       aria-haspopup="true" aria-expanded="false">
+                        Other users <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ url_for("list_other_boards") }}">View a specific board</a></li>
+                        <li><a href="{{ url_for("list_other_boards", many=1) }}">View multiple boards</a></li>
+                    </ul>
+                </li>
+                {%- endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{{ url_for("logout") }}">Log out</a></li>
+            </ul>
+        </div>
+        {%- endif %}
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="page-header"><h1>{%- block title %}{%- endblock %}</h1></div>
+    </div>
+    <div class="row">
+        {%- for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {%- endfor %}
+    </div>
+    <div class="row">
+        {%- if session.logged_in %}
+        <p class="lead">Hello {{ user.display }}!</p>
+        {%- endif %}
+    </div>
+    <div class="row">
+        <div class="container">
+            {%- block body %}{%- endblock %}
+        </div>
+    </div>
+    <div class="row">
+        <p class="text-center"><strong><em>&copy; Eli Daian, 2013</em></strong></p>
+    </div>
+</div>
+</body>
+</html>
