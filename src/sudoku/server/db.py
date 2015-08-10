@@ -22,11 +22,11 @@ values (:username, :password, :display, :permissions)
 """
 
 LIST_USERS = """
-select id, username, display from users
+select id, username, display, permissions from users
 """
 
 GET_USER_DETAILS = """
-select username, display, permissions,
+select id, username, display, permissions,
     (select count(*) from boards where uid = users.id) as num_boards from users
 where users.id = :user_id
 """
@@ -185,11 +185,11 @@ def list_users(db):
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :return: A list of registered users.
-    :rtype: list
+    :rtype: list of :class:`~users.User`-s
     """
     cur = db.cursor()
     cur.execute(LIST_USERS)
-    return cur.fetchall()
+    return [User(row["id"], row["username"], row["display"], row["permissions"]) for row in cur.fetchall()]
 
 
 def get_user_details(db, user_id):
@@ -204,12 +204,13 @@ def get_user_details(db, user_id):
     :param user_id: The user ID in the DB.
     :type user_id: int
     :return: The query result, or ``None`` if not found.
-    :rtype: dict
+    :rtype: list of tuples of (:class:`~users.User`, int)
     """
     details = {"user_id": user_id}
     cur = db.cursor()
     cur.execute(GET_USER_DETAILS, details)
-    return cur.fetchone()
+    return [(User(row["id"], row["username"], row["display"], row["permissions"]), row["num_boards"])
+            for row in cur.fetchall()]
 
 
 def edit_user_with_password(db, user_id, password, display, permissions):
