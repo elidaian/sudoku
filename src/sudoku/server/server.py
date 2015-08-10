@@ -1,4 +1,5 @@
 from functools import wraps
+from json import dumps, loads
 from flask.app import Flask
 from flask.globals import session, g, request
 from flask.helpers import url_for, flash
@@ -10,6 +11,10 @@ from sudoku.server import db
 from sudoku.server.users import PERM_CREATE_BOARD
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
+
+INSITE_BOARD_VIEW = 0
+PRINT_BOARD_VIEW = 1
+PDF_BOARD_VIEW = 2
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("sudoku.cfg", silent=True)
@@ -53,6 +58,80 @@ def must_login(permission=None):
         return wrapped
 
     return wrapper
+
+
+def view_one_board(board_id, board, solution, mode, root):
+    """
+    View a single board.
+    """
+    solution = bool(solution)
+
+    if board is None:
+        flash("Board not found", "warning")
+        return redirect(url_for("main_page"))
+
+    if mode == INSITE_BOARD_VIEW:
+        user = db.get_user(g.db, session["user"])
+        return render_template("view_board.html", function="view", board=board, id=board_id, is_solution=solution,
+                               modes=BOARD_MODES, root=root, user=user)
+    elif mode == PRINT_BOARD_VIEW:
+        return render_template("print_board.html", multi_board=False, board=board, id=board_id, is_solution=solution)
+    elif mode == PDF_BOARD_VIEW:
+        return "Not supported (yet)"
+        # filename = "solution.pdf" if solution else "board.pdf"
+        # return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+        #                                         filename=filename,
+        #                                         board=board, id=board_id,
+        #                                         is_solution=solution,
+        #                                         multi_board=False)
+    else:
+        flash("Invalid mode", "warning")
+        return redirect(url_for("main_page"))
+
+
+def parse_board_ids(list_func):
+    """
+    Parse the requested board IDs.
+    """
+    if request.method == "POST":
+        board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
+        board_ids.sort()
+    elif "boards" in request.args:
+        try:
+            json = request.args["boards"].decode('base64').decode('zlib')
+            board_ids = loads(json)
+        except:
+            flash("Unknown boards", "warning")
+            return redirect(url_for(list_func, many=1))
+    else:
+        return redirect(url_for(list_func, many=1))
+    return board_ids
+
+
+def view_many_boards(board_ids, boards, solution, mode, root):
+    """
+    View many boards.
+    """
+    solution = bool(solution)
+    boards_str = dumps(board_ids).encode("zlib").encode("base64")
+
+    if mode == INSITE_BOARD_VIEW:
+        user = db.get_user(g.db, session["user"])
+        return render_template("view_board.html", function="view_many", boards=boards, is_solution=solution,
+                               modes=BOARD_MODES, boards_str=boards_str, root=root, curr_user=user)
+    elif mode == PRINT_BOARD_VIEW:
+        return render_template("print_board.html", multi_board=True, boards=boards, is_solution=solution)
+    elif mode == PDF_BOARD_VIEW:
+        return "Not supported (yet)"
+        # filename = "solutions.pdf" if solution else "boards.pdf"
+        # return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
+        #                                         filename=filename,
+        #                                         boards=boards, id=board_id,
+        #                                         is_solution=solution,
+        #                                         multi_board=True)
+    else:
+        flash("Invalid mode", "warning")
+        return redirect(url_for("main_page"))
 
 
 @app.route("/")
@@ -132,7 +211,7 @@ def create_board():
                 raise ErrorWithMessage("Invalid board type")
             count = int(request.form["count"])
 
-            boards = [generate(width,height) for i in xrange(count)]
+            boards = [generate(width, height) for i in xrange(count)]
             board_ids = [db.insert_board(g.db, session["user"], board)
                          for board in boards]
             g.db.commit()
@@ -151,6 +230,82 @@ def create_board():
     user = db.get_user(g.db, session["user"])
     return render_template("create_board.html", just_created=just_created,
                            user=user)
+
+
+@app.route("/view")
+@must_login(PERM_CREATE_BOARD)
+def view_board():
+    """
+    View a board.
+    """
+    if "board_id" in request.args:
+        return redirect(url_for("view_specific_board",
+                                board_id=request.args["board_id"],
+                                solution=request.args.get("solution", "0")))
+
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", function="main", root=False, user=user)
+
+
+@app.route("/view/list", defaults={"many": 0})
+@app.route("/view/list/<int:many>")
+@must_login(PERM_CREATE_BOARD)
+def list_boards(many):
+    """
+    List the available user boards.
+    """
+
+    boards = db.list_user_boards(g.db, session["user"])
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", boards=boards, function="list_many" if many else "list",
+                           root=False, user=user)
+
+
+@app.route("/view/last")
+@must_login(PERM_CREATE_BOARD)
+def view_last_boards():
+    """
+    View the last created boards.
+    """
+    if "last_boards" not in session:
+        flash("You have not created any board in this session", "info")
+        return redirect(url_for("view_board"))
+    boards = dumps(session["last_boards"]).encode("zlib").encode("base64")
+    return redirect(url_for("view_board_set", boards=boards))
+
+
+@app.route("/view/<int:board_id>",
+           defaults={"solution": 0, "mode": INSITE_BOARD_VIEW})
+@app.route("/view/<int:board_id>/<int:solution>",
+           defaults={"mode": INSITE_BOARD_VIEW})
+@app.route("/view/<int:board_id>/<int:solution>/<int:mode>")
+@must_login(PERM_CREATE_BOARD)
+def view_specific_board(board_id, solution, mode):
+    """
+    View a board.
+    """
+    board_row = db.get_user_board(g.db, board_id, session["user"])
+    return view_one_board(board_id, board_row, solution, mode, False)
+
+
+@app.route("/view/custom", methods=["GET", "POST"],
+           defaults={"solution": 0, "mode": INSITE_BOARD_VIEW})
+@app.route("/view/custom/<int:solution>",
+           defaults={"mode": INSITE_BOARD_VIEW})
+@app.route("/view/custom/<int:solution>/<int:mode>")
+@must_login(PERM_CREATE_BOARD)
+def view_board_set(solution, mode):
+    board_ids = parse_board_ids("list_boards")
+    if type(board_ids) is not list:
+        return board_ids  # this is a redirection
+    if len(board_ids) == 1:
+        return redirect(url_for("view_specific_board", board_id=board_ids[0],
+                                solution=solution, mode=mode))
+
+    board_rows = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
+                  for board_id in board_ids]
+    return view_many_boards(board_ids, board_rows, solution, mode, False)
+
 
 if __name__ == "__main__":
     app.run()
