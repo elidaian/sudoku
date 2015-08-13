@@ -14,7 +14,6 @@ __author__ = "Eli Daian <elidaian@gmail.com>"
 
 INSITE_BOARD_VIEW = 0
 PRINT_BOARD_VIEW = 1
-PDF_BOARD_VIEW = 2
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("sudoku.cfg", silent=True)
@@ -60,11 +59,11 @@ def must_login(permission=None):
     return wrapper
 
 
-def view_one_board(board_id, board, solution, mode, root):
+def view_one_board(board_id, solution, mode, root):
     """
     View a single board.
     """
-    solution = bool(solution)
+    board = db.get_user_board(g.db, board_id, session["user"])
 
     if board is None:
         flash("Board not found", "warning")
@@ -73,17 +72,9 @@ def view_one_board(board_id, board, solution, mode, root):
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view", board=board, id=board_id, is_solution=solution,
-                               modes=BOARD_MODES, root=root, user=user)
+                               root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
         return render_template("print_board.html", multi_board=False, board=board, id=board_id, is_solution=solution)
-    elif mode == PDF_BOARD_VIEW:
-        return "Not supported (yet)"
-        # filename = "solution.pdf" if solution else "board.pdf"
-        # return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
-        #                                         filename=filename,
-        #                                         board=board, id=board_id,
-        #                                         is_solution=solution,
-        #                                         multi_board=False)
     else:
         flash("Invalid mode", "warning")
         return redirect(url_for("main_page"))
@@ -118,7 +109,7 @@ def view_many_boards(board_ids, boards, solution, mode, root):
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards, is_solution=solution,
-                               modes=BOARD_MODES, boards_str=boards_str, root=root, curr_user=user)
+                               boards_str=boards_str, root=root, curr_user=user)
     elif mode == PRINT_BOARD_VIEW:
         return render_template("print_board.html", multi_board=True, boards=boards, is_solution=solution)
     elif mode == PDF_BOARD_VIEW:
@@ -232,21 +223,6 @@ def create_board():
                            user=user)
 
 
-@app.route("/view")
-@must_login(PERM_CREATE_BOARD)
-def view_board():
-    """
-    View a board.
-    """
-    if "board_id" in request.args:
-        return redirect(url_for("view_specific_board",
-                                board_id=request.args["board_id"],
-                                solution=request.args.get("solution", "0")))
-
-    user = db.get_user(g.db, session["user"])
-    return render_template("view_board.html", function="main", root=False, user=user)
-
-
 @app.route("/view/list", defaults={"many": 0})
 @app.route("/view/list/<int:many>")
 @must_login(PERM_CREATE_BOARD)
@@ -274,18 +250,48 @@ def view_last_boards():
     return redirect(url_for("view_board_set", boards=boards))
 
 
-@app.route("/view/<int:board_id>",
-           defaults={"solution": 0, "mode": INSITE_BOARD_VIEW})
-@app.route("/view/<int:board_id>/<int:solution>",
-           defaults={"mode": INSITE_BOARD_VIEW})
-@app.route("/view/<int:board_id>/<int:solution>/<int:mode>")
+@app.route("/view")
 @must_login(PERM_CREATE_BOARD)
-def view_specific_board(board_id, solution, mode):
+def view_board():
     """
     View a board.
     """
-    board_row = db.get_user_board(g.db, board_id, session["user"])
-    return view_one_board(board_id, board_row, solution, mode, False)
+    if "board_id" in request.args:
+        is_solution = bool(request.args.get("solution", False))
+        return redirect(url_for("view_specific_board", board_id=request.args["board_id"], solution=is_solution))
+
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", function="main", root=False, user=user)
+
+
+@app.route("/view/<int:board_id>", defaults={"solution": False})
+@app.route("/view/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def view_specific_board(board_id, solution):
+    """
+    View one board insite.
+    """
+    return view_one_board(board_id, solution, INSITE_BOARD_VIEW, False)
+
+
+@app.route("/print/<int:board_id>", defaults={"solution": False})
+@app.route("/print/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def print_specific_board(board_id, solution):
+    """
+    Print one board.
+    """
+    return view_one_board(board_id, solution, PRINT_BOARD_VIEW, False)
+
+
+@app.route("/pdf/<int:board_id>", defaults={"solution": False})
+@app.route("/pdf/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def pdf_specific_board(board_id, solution):
+    """
+    Get the PDF of one board.
+    """
+    return "Not supported (yet)"
 
 
 @app.route("/view/custom", methods=["GET", "POST"],
@@ -305,6 +311,17 @@ def view_board_set(solution, mode):
     board_rows = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
                   for board_id in board_ids]
     return view_many_boards(board_ids, board_rows, solution, mode, False)
+
+# Here come functions to be added
+@app.route("/register")
+def register_user():
+    pass
+@app.route("/manage")
+def manage_users():
+    pass
+@app.route("/list_other")
+def list_other_boards():
+    pass
 
 
 if __name__ == "__main__":

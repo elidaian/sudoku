@@ -10,13 +10,15 @@
 {%- block body %}
     {%- if root %}
         {%- set list_func = "list_other_boards" %}
-        {%- set view_func = "other_user" %}
+        {%- set view_specific_form = "other_user" %}
         {%- set view_specific_func = "other_specific_board" %}
         {%- set view_set_func = "other_board_set" %}
     {%- else %}
         {%- set list_func = "list_boards" %}
-        {%- set view_func = "view_board" %}
+        {%- set view_specific_form = "view_board" %}
         {%- set view_specific_func = "view_specific_board" %}
+        {%- set print_specific_func = "print_specific_board" %}
+        {%- set pdf_specific_func = "pdf_specific_board" %}
         {%- set view_set_func = "view_board_set" %}
     {%- endif %}
     {%- if function == "main" %}
@@ -44,7 +46,7 @@
             <h3>Select a Board</h3>
             <br/>
 
-            <form action="{{ url_for(view_func) }}" method="GET" class="form-inline">
+            <form action="{{ url_for(view_specific_form) }}" method="GET" class="form-inline">
                 I want to check board
                 #<input type="number" name="board_id" class="form-control" placeholder="Board number"/>.
                 <br/>
@@ -65,10 +67,10 @@
                 {%- for board in boards %}
                     <li class="list-group-item">
             <span class="badge">
-                <a href="{{ url_for(view_specific_func, board_id=board.id, solution=1) }}">Solution</a>
+                <a href="{{ url_for(view_specific_func, board_id=board.id, solution=True) }}">Solution</a>
             </span>
             <span class="badge">
-                <a href="{{ url_for(view_specific_func, board_id=board.id) }}">Problem</a>
+                <a href="{{ url_for(view_specific_func, board_id=board.id, solution=False) }}">Problem</a>
             </span>
                         <h4 class="list-group-item-heading">#{{ board.id }}</h4>
 
@@ -97,10 +99,10 @@
                         {%- for board in boards %}
                             <div class="checkbox list-group-item">
                     <span class="badge">
-                        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=1) }}">Solution</a>
+                        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=True) }}">Solution</a>
                     </span>
                     <span class="badge">
-                        <a href="{{ url_for(view_specific_func, board_id=board.id) }}">Problem</a>
+                        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=False) }}">Problem</a>
                     </span>
                                 <h4 class="list-group-item-heading">
                                     <label>
@@ -150,13 +152,13 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ url_for(view_specific_func, board_id=id, solution=1 if is_solution else 0, mode=modes.PRINT) }}"
+                        <a href="{{ url_for(print_specific_func, board_id=id, solution=is_solution) }}"
                            target="_blank">
                             Print
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url_for(view_specific_func, board_id=id, solution=1 if is_solution else 0, mode=modes.PDF) }}"
+                        <a href="{{ url_for(pdf_specific_func, board_id=id, solution=is_solution) }}"
                            target="_blank">
                             PDF
                         </a>
@@ -169,9 +171,9 @@
             <p>
                 You may always check out the
                 {% if is_solution -%}
-                    <a href="{{ url_for(view_specific_func, board_id=id, solution=0) }}">real problem</a>
+                    <a href="{{ url_for(view_specific_func, board_id=id, solution=False) }}">real problem</a>
                 {%- else -%}
-                    <a href="{{ url_for(view_specific_func, board_id=id, solution=1) }}">solution</a>
+                    <a href="{{ url_for(view_specific_func, board_id=id, solution=True) }}">solution</a>
                 {%- endif -%}
                 .
             </p>
@@ -181,7 +183,7 @@
             <h3>View Another Board</h3>
             <br/>
 
-            <form action="{{ url_for(view_func) }}" method="GET" class="form-inline">
+            <form action="{{ url_for(view_specific_form) }}" method="GET" class="form-inline">
                 I want to check board
                 #<input type="number" name="board_id" class="form-control" placeholder="Board number"/>.
                 <br/>
