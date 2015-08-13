@@ -12,3 +12,12 @@ def generated_board():
     :rtype: :class:`~board.Board`
     '''
     return generate(2, 2)
+
+
+@pytest.fixture
+def generated_board9():
+    '''
+    :return: A generated board of regular size.
+    :rtype: :class:`~board.Board`
+    '''
+    return generate(3, 3)
