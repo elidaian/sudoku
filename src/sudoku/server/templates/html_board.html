@@ -22,7 +22,7 @@
                                     <tr>
                                         {%- for inblock_col in range(board.block_width) %}
                                             {%- set col = col1 + inblock_col %}
-                                            <td>{{ (data[col, row] or '&nbsp;')|safe }}</td>
+                                            <td>{{ (data[col, row].strip() or '&nbsp;')|safe }}</td>
                                         {%- endfor %}
                                     </tr>
                                 {%- endfor %}
