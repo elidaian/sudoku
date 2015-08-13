@@ -19,7 +19,10 @@
         {%- set view_specific_func = "view_specific_board" %}
         {%- set print_specific_func = "print_specific_board" %}
         {%- set pdf_specific_func = "pdf_specific_board" %}
-        {%- set view_set_func = "view_board_set" %}
+        {%- set view_set_form = "view_set" %}
+        {%- set view_set_func = "view_set_of_boards" %}
+        {%- set print_set_func = "print_set_of_boards" %}
+        {%- set pdf_set_func = "pdf_set_of_boards" %}
     {%- endif %}
     {%- if function == "main" %}
         <div class="row">Please select an option:</div>
@@ -91,7 +94,7 @@
         <div class="row">
             <p>Please select the boards you would like to see:</p>
 
-            <form action="{{ url_for(view_set_func) }}" method="POST">
+            <form action="{{ url_for(view_set_form) }}" method="POST">
                 <div class="form-group">
                     <label class="col-sm-2 control-label">Boards</label>
 
@@ -209,13 +212,13 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ url_for(view_set_func, boards=boards_str, solution=1 if is_solution else 0, mode=modes.PRINT) }}"
+                        <a href="{{ url_for(print_set_func, json_board_ids=json_board_ids, solution=is_solution) }}"
                            target="_blank">
                             Print
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url_for(view_set_func, boards=boards_str, solution=1 if is_solution else 0, mode=modes.PDF) }}"
+                        <a href="{{ url_for(pdf_set_func, json_board_ids=json_board_ids, solution=is_solution) }}"
                            target="_blank">
                             PDF
                         </a>
@@ -230,9 +233,13 @@
             <p>
                 You may always check out the
                 {% if is_solution -%}
-                    <a href="{{ url_for(view_set_func, boards=boards_str,  solution=0) }}">real problems</a>
+                    <a href="{{ url_for(view_set_func, json_board_ids=json_board_ids, solution=False) }}">
+                        real problems
+                    </a>
                 {%- else -%}
-                    <a href="{{ url_for(view_set_func, boards=boards_str, solution=1) }}">solutions</a>
+                    <a href="{{ url_for(view_set_func, json_board_ids=json_board_ids, solution=True) }}">
+                        solutions
+                    </a>
                 {%- endif -%}
                 .
             </p>

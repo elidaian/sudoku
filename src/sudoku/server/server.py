@@ -80,46 +80,42 @@ def view_one_board(board_id, solution, mode, root):
         return redirect(url_for("main_page"))
 
 
-def parse_board_ids(list_func):
+def export_board_ids(board_ids):
     """
-    Parse the requested board IDs.
+    Export a list of board IDs to an HTTP safe version.
+    :param board_ids: The list of board IDs.
+    :type board_ids: list
+    :return: The compact form of the board IDs.
+    :rtype: str
     """
-    if request.method == "POST":
-        board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
-        board_ids.sort()
-    elif "boards" in request.args:
-        try:
-            json = request.args["boards"].decode('base64').decode('zlib')
-            board_ids = loads(json)
-        except:
-            flash("Unknown boards", "warning")
-            return redirect(url_for(list_func, many=1))
-    else:
-        return redirect(url_for(list_func, many=1))
-    return board_ids
+    return dumps(board_ids).encode("zlib").encode("base64")
 
 
-def view_many_boards(board_ids, boards, solution, mode, root):
+def import_board_ids(json_board_ids):
+    """
+    Import a list of board IDs from an HTTP safe version.
+    :param json_board_ids: The compact form of the board IDs.
+    :type json_board_ids: str
+    :return: A list of board IDs.
+    :rtype: list
+    """
+    return loads(json_board_ids.decode("base64").decode("zlib"))
+
+
+def view_many_boards(json_board_ids, solution, mode, root):
     """
     View many boards.
     """
-    solution = bool(solution)
-    boards_str = dumps(board_ids).encode("zlib").encode("base64")
+    board_ids = import_board_ids(json_board_ids)
+    boards = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
+              for board_id in board_ids]
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards, is_solution=solution,
-                               boards_str=boards_str, root=root, curr_user=user)
+                               root=root, user=user, json_board_ids=json_board_ids)
     elif mode == PRINT_BOARD_VIEW:
         return render_template("print_board.html", multi_board=True, boards=boards, is_solution=solution)
-    elif mode == PDF_BOARD_VIEW:
-        return "Not supported (yet)"
-        # filename = "solutions.pdf" if solution else "boards.pdf"
-        # return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
-        #                                         filename=filename,
-        #                                         boards=boards, id=board_id,
-        #                                         is_solution=solution,
-        #                                         multi_board=True)
     else:
         flash("Invalid mode", "warning")
         return redirect(url_for("main_page"))
@@ -246,8 +242,8 @@ def view_last_boards():
     if "last_boards" not in session:
         flash("You have not created any board in this session", "info")
         return redirect(url_for("view_board"))
-    boards = dumps(session["last_boards"]).encode("zlib").encode("base64")
-    return redirect(url_for("view_board_set", boards=boards))
+    json_board_ids = export_board_ids(session["last_boards"])
+    return redirect(url_for("view_set_of_boards", json_board_ids=json_board_ids, solution=False))
 
 
 @app.route("/view")
@@ -294,31 +290,63 @@ def pdf_specific_board(board_id, solution):
     return "Not supported (yet)"
 
 
-@app.route("/view/custom", methods=["GET", "POST"],
-           defaults={"solution": 0, "mode": INSITE_BOARD_VIEW})
-@app.route("/view/custom/<int:solution>",
-           defaults={"mode": INSITE_BOARD_VIEW})
-@app.route("/view/custom/<int:solution>/<int:mode>")
+@app.route("/view/custom", methods=["POST"])
 @must_login(PERM_CREATE_BOARD)
-def view_board_set(solution, mode):
-    board_ids = parse_board_ids("list_boards")
-    if type(board_ids) is not list:
-        return board_ids  # this is a redirection
-    if len(board_ids) == 1:
-        return redirect(url_for("view_specific_board", board_id=board_ids[0],
-                                solution=solution, mode=mode))
+def view_set():
+    """
+    Get the reslts of the "View set of boards" form, and redirect to the right location.
+    """
+    board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
+    board_ids.sort()
+    json_board_ids = export_board_ids(board_ids)
 
-    board_rows = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
-                  for board_id in board_ids]
-    return view_many_boards(board_ids, board_rows, solution, mode, False)
+    solution = "solution" in request.form
+
+    return redirect(url_for("view_set_of_boards", json_board_ids=json_board_ids, solution=solution))
+
+
+@app.route("/view/custom/<json_board_ids>", defaults={"solution": False})
+@app.route("/view/solution/custom/<json_board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def view_set_of_boards(json_board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    return view_many_boards(json_board_ids, solution, INSITE_BOARD_VIEW, False)
+
+
+@app.route("/print/custom/<json_board_ids>", defaults={"solution": False})
+@app.route("/print/solution/custom/<json_board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def print_set_of_boards(json_board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    return view_many_boards(json_board_ids, solution, PRINT_BOARD_VIEW, False)
+
+
+@app.route("/pdf/custom/<json_board_ids>", defaults={"solution": False})
+@app.route("/pdf/solution/custom/<json_board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def pdf_set_of_boards(json_board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    board_ids = import_board_ids(json_board_ids)
+    return "Not implemented (yet)"
+
 
 # Here come functions to be added
 @app.route("/register")
 def register_user():
     pass
+
+
 @app.route("/manage")
 def manage_users():
     pass
+
+
 @app.route("/list_other")
 def list_other_boards():
     pass
