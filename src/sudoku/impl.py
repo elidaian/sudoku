@@ -266,7 +266,7 @@ class BoardImpl(object):
         :return: The number of rows in the board.
         :rtype: int
         """
-        return self.block_width * self.block_width
+        return self.block_width * self.block_height
 
     @property
     def cols(self):
