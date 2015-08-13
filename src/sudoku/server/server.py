@@ -59,27 +59,6 @@ def must_login(permission=None):
     return wrapper
 
 
-def view_one_board(board_id, solution, mode, root):
-    """
-    View a single board.
-    """
-    board = db.get_user_board(g.db, board_id, session["user"])
-
-    if board is None:
-        flash("Board not found", "warning")
-        return redirect(url_for("main_page"))
-
-    if mode == INSITE_BOARD_VIEW:
-        user = db.get_user(g.db, session["user"])
-        return render_template("view_board.html", function="view", board=board, id=board_id, is_solution=solution,
-                               root=root, user=user)
-    elif mode == PRINT_BOARD_VIEW:
-        return render_template("print_board.html", multi_board=False, board=board, id=board_id, is_solution=solution)
-    else:
-        flash("Invalid mode", "warning")
-        return redirect(url_for("main_page"))
-
-
 def export_board_ids(board_ids):
     """
     Export a list of board IDs to an HTTP safe version.
@@ -100,6 +79,27 @@ def import_board_ids(json_board_ids):
     :rtype: list
     """
     return loads(json_board_ids.decode("base64").decode("zlib"))
+
+
+def view_one_board(board_id, solution, mode, root):
+    """
+    View a single board.
+    """
+    board = db.get_user_board(g.db, board_id, session["user"])
+
+    if board is None:
+        flash("Board not found", "warning")
+        return redirect(url_for("main_page"))
+
+    if mode == INSITE_BOARD_VIEW:
+        user = db.get_user(g.db, session["user"])
+        return render_template("view_board.html", function="view", board=board, id=board_id, is_solution=solution,
+                               root=root, user=user)
+    elif mode == PRINT_BOARD_VIEW:
+        return render_template("print_board.html", multi_board=False, board=board, id=board_id, is_solution=solution)
+    else:
+        flash("Invalid mode", "warning")
+        return redirect(url_for("main_page"))
 
 
 def view_many_boards(json_board_ids, solution, mode, root):
