@@ -1,5 +1,5 @@
 from functools import wraps
-from json import dumps, loads
+from itertools import imap
 from flask.app import Flask
 from flask.globals import session, g, request
 from flask.helpers import url_for, flash
@@ -61,24 +61,24 @@ def must_login(permission=None):
 
 def export_board_ids(board_ids):
     """
-    Export a list of board IDs to an HTTP safe version.
+    Export a list of board IDs to an URL safe version.
     :param board_ids: The list of board IDs.
     :type board_ids: list
-    :return: The compact form of the board IDs.
+    :return: The URL form of the board IDs.
     :rtype: str
     """
-    return dumps(board_ids).encode("zlib").encode("base64")
+    return "+".join(imap(str, board_ids))
 
 
-def import_board_ids(json_board_ids):
+def import_board_ids(url_board_ids):
     """
-    Import a list of board IDs from an HTTP safe version.
-    :param json_board_ids: The compact form of the board IDs.
-    :type json_board_ids: str
+    Import a list of board IDs from an URL safe version.
+    :param url_board_ids: The URL form of the board IDs.
+    :type url_board_ids: str
     :return: A list of board IDs.
     :rtype: list
     """
-    return loads(json_board_ids.decode("base64").decode("zlib"))
+    return map(int, url_board_ids.split("+"))
 
 
 def view_one_board(board_id, solution, mode, root):
@@ -102,18 +102,18 @@ def view_one_board(board_id, solution, mode, root):
         return redirect(url_for("main_page"))
 
 
-def view_many_boards(json_board_ids, solution, mode, root):
+def view_many_boards(url_board_ids, solution, mode, root):
     """
     View many boards.
     """
-    board_ids = import_board_ids(json_board_ids)
+    board_ids = import_board_ids(url_board_ids)
     boards = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
               for board_id in board_ids]
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards, is_solution=solution,
-                               root=root, user=user, json_board_ids=json_board_ids)
+                               root=root, user=user, url_board_ids=url_board_ids)
     elif mode == PRINT_BOARD_VIEW:
         return render_template("print_board.html", multi_board=True, boards=boards, is_solution=solution)
     else:
@@ -242,8 +242,8 @@ def view_last_boards():
     if "last_boards" not in session:
         flash("You have not created any board in this session", "info")
         return redirect(url_for("view_board"))
-    json_board_ids = export_board_ids(session["last_boards"])
-    return redirect(url_for("view_set_of_boards", json_board_ids=json_board_ids, solution=False))
+    url_board_ids = export_board_ids(session["last_boards"])
+    return redirect(url_for("view_set_of_boards", url_board_ids=url_board_ids, solution=False))
 
 
 @app.route("/view")
@@ -298,41 +298,41 @@ def view_set():
     """
     board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
     board_ids.sort()
-    json_board_ids = export_board_ids(board_ids)
+    url_board_ids = export_board_ids(board_ids)
 
     solution = "solution" in request.form
 
-    return redirect(url_for("view_set_of_boards", json_board_ids=json_board_ids, solution=solution))
+    return redirect(url_for("view_set_of_boards", url_board_ids=url_board_ids, solution=solution))
 
 
-@app.route("/view/custom/<json_board_ids>", defaults={"solution": False})
-@app.route("/view/solution/custom/<json_board_ids>", defaults={"solution": True})
+@app.route("/view/custom/<url_board_ids>", defaults={"solution": False})
+@app.route("/view/solution/custom/<url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def view_set_of_boards(json_board_ids, solution):
+def view_set_of_boards(url_board_ids, solution):
     """
     View a set of boards insite.
     """
-    return view_many_boards(json_board_ids, solution, INSITE_BOARD_VIEW, False)
+    return view_many_boards(url_board_ids, solution, INSITE_BOARD_VIEW, False)
 
 
-@app.route("/print/custom/<json_board_ids>", defaults={"solution": False})
-@app.route("/print/solution/custom/<json_board_ids>", defaults={"solution": True})
+@app.route("/print/custom/<url_board_ids>", defaults={"solution": False})
+@app.route("/print/solution/custom/<url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def print_set_of_boards(json_board_ids, solution):
+def print_set_of_boards(url_board_ids, solution):
     """
     View a set of boards insite.
     """
-    return view_many_boards(json_board_ids, solution, PRINT_BOARD_VIEW, False)
+    return view_many_boards(url_board_ids, solution, PRINT_BOARD_VIEW, False)
 
 
-@app.route("/pdf/custom/<json_board_ids>", defaults={"solution": False})
-@app.route("/pdf/solution/custom/<json_board_ids>", defaults={"solution": True})
+@app.route("/pdf/custom/<url_board_ids>", defaults={"solution": False})
+@app.route("/pdf/solution/custom/<url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def pdf_set_of_boards(json_board_ids, solution):
+def pdf_set_of_boards(url_board_ids, solution):
     """
     View a set of boards insite.
     """
-    board_ids = import_board_ids(json_board_ids)
+    board_ids = import_board_ids(url_board_ids)
     return "Not implemented (yet)"
 
 
