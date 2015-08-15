@@ -248,6 +248,17 @@ class BoardImpl(object):
 
         return changed
 
+    def _remove_assigned_from_groups(self):
+        """
+        Remove cells with assigned values from the groups.
+        :return: ``True`` iff a change has been done.
+        :rtype: bool
+        """
+        changed = False
+        for group in self._groups:
+            changed = group.remove_assigned_cells() or changed
+        return changed
+
     def solve_possible(self):
         """
         Fill the cells with only one single possible symbol.
@@ -258,8 +269,9 @@ class BoardImpl(object):
             one_possible = self._fill_one_possible()
             only_possible_in_group = self._fill_only_possible_in_group()
             split_groups = self._split_groups()
+            removed_assigned_from_groups = self._remove_assigned_from_groups()
 
-            changed = one_possible or only_possible_in_group or split_groups
+            changed = one_possible or only_possible_in_group or split_groups or removed_assigned_from_groups
 
     def is_final(self):
         """

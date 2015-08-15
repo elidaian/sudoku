@@ -81,3 +81,19 @@ class CellGroup(object):
         """
         for cell in self._cells:
             cell.update_possible_symbols()
+
+    def remove_assigned_cells(self):
+        """
+        Remove cells that have an assigned symbol from this group.
+        :return: ``True`` iff cells were removed from this group.
+        :rtype: bool
+        """
+        cells = list(self._cells)
+        for cell in ifilter(lambda cell: cell.symbol is not None, cells):
+            cell.remove_group(self)
+            self._cells.remove(cell)
+            for other_cell in self._cells:
+                alphabet = set(other_cell.alphabet)
+                alphabet.discard(cell.symbol)
+                other_cell.reset_alphabet(alphabet)
+        return len(cells) != len(self._cells)
