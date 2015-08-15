@@ -1,9 +1,8 @@
-from collections import defaultdict
 from itertools import chain, imap, product, ifilter
+
 from operator import and_
 
 from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
-
 from sudoku.impl import Cell, CellGroup
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -243,6 +242,42 @@ class BoardImpl(object):
             changed = group.remove_assigned_cells() or changed
         return changed
 
+    def _remove_from_other_groups(self):
+        """
+        If a symbol is possible in only $n$ cells of a group, and all these $n$ cells are also a part of another group,
+        this symbol should not be possible in any other cell of the other group.
+        :return: ``True`` iff a change has been done.
+        :rtype: bool
+        """
+        changed = False
+
+        for group in self._groups:
+            symbols_to_cells = group.create_symbol_to_possible_cell_mapping()
+            for symbol, cells in symbols_to_cells.iteritems():
+                for other_group in self._groups:
+                    if group is other_group:
+                        # This is not interesting
+                        continue
+
+                    if other_group.contains_cells(cells):
+                        curr_group_changed = False
+
+                        for cell in other_group.iterate_empty_cells():
+                            if cell in cells:
+                                continue
+                        # for cell in ifilter(lambda cell: cell not in cells, other_group.iterate_empty_cells()):
+                            alphabet = set(cell.alphabet)
+                            if symbol in alphabet:
+                                alphabet.discard(symbol)
+                                cell.reset_alphabet(alphabet)
+                                changed = curr_group_changed = True
+
+                        if curr_group_changed:
+                            group.update_taken_symbols()
+                            group.update_possible_symbols()
+
+        return changed
+
     def _remove_empty_groups(self):
         """
         Remove empty groups from this board.
@@ -254,7 +289,7 @@ class BoardImpl(object):
 
     def solve_possible(self):
         """
-        Fill the cells with only one single possible symbol.
+        Fill the board with the possible assignments, without guessing the solution.
         An exception will be raised if there is a cell with no possible symbol to fill with.
         """
         changed = True
@@ -263,9 +298,11 @@ class BoardImpl(object):
             only_possible_in_group = self._fill_only_possible_in_group()
             split_groups = self._split_groups()
             removed_assigned_from_groups = self._remove_assigned_from_groups()
+            removed_from_other_groups = self._remove_from_other_groups()
             self._remove_empty_groups()
 
-            changed = one_possible or only_possible_in_group or split_groups or removed_assigned_from_groups
+            changed = one_possible or only_possible_in_group or split_groups or removed_assigned_from_groups or \
+                      removed_from_other_groups
 
     def is_final(self):
         """

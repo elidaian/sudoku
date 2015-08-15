@@ -103,6 +103,18 @@ class CellGroup(object):
             possibles_to_cells[frozenset(possible_symbols)].append(cell)
         return possibles_to_cells
 
+    def create_symbol_to_possible_cell_mapping(self):
+        """
+        Create a mapping from symbols to a list of cells, in which this symbol is a possible assignment.
+        :return: This mapping.
+        :rtype: dict
+        """
+        symbols_to_cells = defaultdict(list)
+        for cell in self.iterate_empty_cells():
+            for symbol in cell.get_possible_symbols():
+                symbols_to_cells[symbol].append(cell)
+        return symbols_to_cells
+
     def remove_as_subgroup(self, other_groups):
         """
         Remove this group from other groups, when this group is a subgroup of another group.
@@ -144,3 +156,13 @@ class CellGroup(object):
                 alphabet.discard(cell.symbol)
                 other_cell.reset_alphabet(alphabet)
         return len(cells) != len(self._cells)
+
+    def contains_cells(self, cells):
+        """
+        Check if a group of cells is a subgroup of this group.
+        :param cells: The group of cells.
+        :type cells: list
+        :return: ``True`` if the given group of cells is a subgroup of this group.
+        :rtype: bool
+        """
+        return set(self._cells).issuperset(cells)
