@@ -220,7 +220,6 @@ class BoardImpl(object):
 
             for possible_symbols, cells in group_possibles.iteritems():
                 if len(possible_symbols) == len(cells):
-                    print "Helping"
                     # Remove all cells from the old group, and remove the old group
                     for cell in group.iterate_cells():
                         cell.remove_group(group)
