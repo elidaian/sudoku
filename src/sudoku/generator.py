@@ -30,13 +30,6 @@ def _find_next_symbol_to_assign(board, possible_positions):
 
     # Find the position for assigning
     pos = choice(possible_positions)
-    # pos = None
-    # while not pos:
-    #     row = randint(0, board.rows - 1)
-    #     col = randint(0, board.cols - 1)
-    #
-    #     if board[row, col] is None and board.get_num_possible_symbols(row, col) >= 1:
-    #         pos = (row, col)
 
     # Select a symbol to assign
     symbol = choice(list(board.get_possible_symbols(*pos)))
@@ -83,8 +76,8 @@ def _construct_assignments(block_width, block_height, alphabet):
         try:
             solution.solve_possible()
         except NoPossibleSymbols:  # No possible solution for this board with this assignment
-            if trials < MAX_TRIALS:
-                # Roll back this assignment
+            if trials < MAX_TRIALS and len(possible_positions) > 1:
+                # Roll back this assignment, there are more assignments to try
                 problem[pos] = None
                 solution = problem
                 trials += 1
