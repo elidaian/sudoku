@@ -137,10 +137,6 @@ class CellGroup(object):
                     new_alphabet = set(cell.alphabet).difference(symbols_to_exclude)
                     cell.reset_alphabet(new_alphabet)
 
-                # Update the possible symbols in the other group
-                group.update_taken_symbols()
-                group.update_possible_symbols()
-
     def remove_assigned_cells(self):
         """
         Remove cells that have an assigned symbol from this group.

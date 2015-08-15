@@ -1,5 +1,4 @@
 from itertools import chain, imap, product, ifilter
-
 from operator import and_
 
 from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
@@ -260,21 +259,14 @@ class BoardImpl(object):
                         continue
 
                     if other_group.contains_cells(cells):
-                        curr_group_changed = False
-
                         for cell in other_group.iterate_empty_cells():
                             if cell in cells:
                                 continue
-                        # for cell in ifilter(lambda cell: cell not in cells, other_group.iterate_empty_cells()):
                             alphabet = set(cell.alphabet)
                             if symbol in alphabet:
                                 alphabet.discard(symbol)
                                 cell.reset_alphabet(alphabet)
-                                changed = curr_group_changed = True
-
-                        if curr_group_changed:
-                            group.update_taken_symbols()
-                            group.update_possible_symbols()
+                                changed = True
 
         return changed
 
