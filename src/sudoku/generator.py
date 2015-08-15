@@ -32,6 +32,8 @@ def _find_next_symbol_to_assign(board, possible_positions):
     pos = choice(possible_positions)
 
     # Select a symbol to assign
+    if len(board.get_possible_symbols(*pos)) == 0:
+        print "Here I am"
     symbol = choice(list(board.get_possible_symbols(*pos)))
     return pos, symbol
 
