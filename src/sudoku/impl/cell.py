@@ -1,4 +1,4 @@
-from sudoku.exceptions import SymbolNotPossible
+from sudoku.exceptions import SymbolNotPossible, IllegalAlphabet
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -63,9 +63,17 @@ class Cell(object):
         """
         Add this cell to a group.
         :param group: The group this cell is now part of.
-        :type group: CellGroup
+        :type group: :class:`CellGroup`
         """
         self._groups.append(group)
+
+    def remove_group(self, group):
+        """
+        Remove this cell from a group.
+        :param group: The group to remove.
+        :type group: :class:`CellGroup`
+        """
+        self._groups.remove(group)
 
     def iterate_groups(self):
         """
@@ -76,8 +84,7 @@ class Cell(object):
 
     def update_possible_symbols(self):
         """
-        Update the possible symbols for this cell, looking at the taken symbols
-        in all other groups.
+        Update the possible symbols for this cell, looking at the taken symbols in all other groups.
         """
 
         taken_symbols = set()
@@ -122,3 +129,17 @@ class Cell(object):
         :rtype: bool
         """
         return self.symbol is None
+
+    def reset_alphabet(self, alphabet):
+        """
+        Set a new alphabet for this cell.
+
+        :note: The new alphabet should be a subset of the previous alphabet.
+
+        :param alphabet: The new alphabet.
+        :type alphabet: set
+        """
+        new_alphabet = set(alphabet)
+        if not new_alphabet.issubset(self.alphabet) or (self.symbol and self.symbol not in new_alphabet):
+            raise IllegalAlphabet("Illegal alphabet given")
+        self.alphabet = new_alphabet

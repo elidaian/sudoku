@@ -1,4 +1,5 @@
-from itertools import chain, imap, product
+from collections import defaultdict
+from itertools import chain, imap, product, ifilter
 from operator import and_
 
 from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
@@ -118,6 +119,13 @@ class BoardImpl(object):
         """
         return chain.from_iterable(self._cells)
 
+    def _iter_empty_cells(self):
+        """
+        :return: An iterable over all the cells with no assigned symbol.
+        :rtype: iterable of :class:`Cell`-s
+        """
+        return ifilter(lambda cell: cell.symbol is None, self._iter_cells())
+
     def is_valid(self):
         """
         :return: ``True`` iff the assigned symbol of all cells is valid.
@@ -142,6 +150,103 @@ class BoardImpl(object):
         """
         return reduce(and_, imap(lambda x: x.symbol is None, self._iter_cells()), True)
 
+    def _fill_one_possible(self):
+        """
+        Fill cells with a single possible value.
+        :return: ``True`` iff a change to the board was done.
+        :rtype: bool
+        """
+
+        changed = False
+
+        for cell in self._iter_empty_cells():
+            num_possible_symbols = cell.get_num_possible_symbols()
+            if num_possible_symbols == 1:
+                cell.set_symbol(cell.get_possible_symbol())
+                changed = True
+            elif num_possible_symbols <= 0:
+                raise NoPossibleSymbols("Cell has no possible symbols")
+
+        return changed
+
+    def _fill_only_possible_in_group(self):
+        """
+        Fill cells that are the only one in a group to have a possible symbol.
+        :return: ``True`` iff a change to the board was done.
+        :rtype: bool
+        """
+
+        changed = False
+
+        for cell in self._iter_empty_cells():
+            for group in cell.iterate_groups():
+                possible_symbols = set(cell.get_possible_symbols())
+
+                for group_cell in group.iterate_cells():
+                    if group_cell == cell:
+                        # Of course this cell has its possible cells as possible
+                        continue
+                    possible_symbols.difference_update(group_cell.get_possible_symbols())
+
+                if len(possible_symbols) == 1:
+                    cell.set_symbol(possible_symbols.pop())
+                    changed = True
+                    break
+
+        return changed
+
+    def _split_groups(self):
+        """
+        Split groups where possible.
+
+        A group of size $n$ can be split if there is a subgroup of size $0 < k < n$ cells in this group, such that
+        these cells have the same $k$ possible symbols. In this case, this group can be considered as two different
+        groups. The subgroup with a possible alphabet of the $k$ symbols, and the complementary subgroup.
+        :return: ``True`` iff a change to the board was done.
+        :rtype: bool
+        """
+
+        changed = False
+
+        groups = list(self._groups)
+        for group in groups:
+            group_possibles = defaultdict(list)
+            for cell in group.iterate_empty_cells():
+                possible_symbols = cell.get_possible_symbols()
+                group_possibles[frozenset(possible_symbols)].append(cell)
+
+            if len(group_possibles) == 1:
+                continue
+
+            for possible_symbols, cells in group_possibles.iteritems():
+                if len(possible_symbols) == len(cells):
+                    print "Helping"
+                    # Remove all cells from the old group, and remove the old group
+                    for cell in group.iterate_cells():
+                        cell.remove_group(group)
+                    self._groups.remove(group)
+
+                    # Create the first subgroup
+                    for cell in cells:
+                        cell.reset_alphabet(possible_symbols)
+                    new_group = CellGroup(cells)
+                    self._groups.append(new_group)
+
+                    # Create the second subgroup
+                    new_cells = filter(lambda cell: cell not in cells, group.iterate_empty_cells())
+                    # new_alphabet = reduce(lambda a, cell: a.union(cell.get_possible_symbols()), new_cells, set())
+                    # new_alphabet.difference_update(possible_symbols)
+                    for cell in new_cells:
+                        new_alphabet = cell.get_possible_symbols().difference(possible_symbols)
+                        cell.reset_alphabet(new_alphabet)
+                    new_group = CellGroup(new_cells)
+                    self._groups.append(new_group)
+
+                    # Cannot help any more in this group, go to the next group
+                    break
+
+        return changed
+
     def solve_possible(self):
         """
         Fill the cells with only one single possible symbol.
@@ -149,39 +254,11 @@ class BoardImpl(object):
         """
         changed = True
         while changed:
-            changed = False
+            one_possible = self._fill_one_possible()
+            only_possible_in_group = self._fill_only_possible_in_group()
+            split_groups = self._split_groups()
 
-            # Iterate over cells
-            for cell in self._iter_cells():
-                if cell.symbol:
-                    continue
-
-                # Fill cells with only 1 possible symbol
-                num_possible_symbols = cell.get_num_possible_symbols()
-                if num_possible_symbols == 1:
-                    cell.set_symbol(cell.get_possible_symbol())
-                    changed = True
-                elif num_possible_symbols <= 0:
-                    raise NoPossibleSymbols("Cell has no possible symbols")
-
-                    # # Fill cells that are the only ones in the group to have a possible symbol
-                    # for group in cell.iterate_groups():
-                    #     possible_symbols = set(cell.get_possible_symbols())
-                    #     for group_cell in group.iterate_cells():
-                    #         if group_cell == cell:
-                    #             # This is not the interesting case
-                    #             continue
-                    #         possible_symbols.difference_update(cell.get_possible_symbols())
-                    #     if len(possible_symbols) == 1:
-                    #         # Success, we have a symbol to assign now
-                    #         print "This helped"
-                    #         cell.set_symbol(possible_symbols.pop())
-                    #         changed = True
-                    #     else:
-                    #         print "Consumed CPU"
-
-                    # Iterate over groups, and split them if possible
-                    # for group in self._groups:
+            changed = one_possible or only_possible_in_group or split_groups
 
     def is_final(self):
         """

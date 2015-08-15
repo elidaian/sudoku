@@ -26,6 +26,13 @@ class InvalidAlphabet(ValueError):
     pass
 
 
+class IllegalAlphabet(Exception):
+    """
+    This exception is raised when the alphabet of a cell is reset with an invalid new alphabet.
+    """
+    pass
+
+
 class ErrorWithMessage(Exception):
     """
     This exception is raised inside the server.

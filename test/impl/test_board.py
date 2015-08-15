@@ -242,7 +242,7 @@ def test_board_solve_possible_partial4(board):
     To this state:
     [[1, 4,  ,  ],
      [2, 3, 4, 1],
-     [3,  ,  ,  ],
+     [3,  ,  , 4],
      [4,  ,  ,  ]]
     """
     board[0, 0] = "1"
@@ -268,7 +268,7 @@ def test_board_solve_possible_partial4(board):
     assert board[2, 0] == "3"
     assert board[2, 1] is None
     assert board[2, 2] is None
-    assert board[2, 3] is None
+    assert board[2, 3] == "4"
     assert board[3, 0] == "4"
     assert board[3, 1] is None
     assert board[3, 2] is None

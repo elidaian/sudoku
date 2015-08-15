@@ -1,3 +1,5 @@
+from itertools import ifilter
+
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
 
@@ -35,6 +37,13 @@ class CellGroup(object):
         :rtype: iterable of :class:`Cell`-s
         """
         return (cell for cell in self._cells)
+
+    def iterate_empty_cells(self):
+        """
+        :return: An iterable over all empty cells in this group.
+        :rtype: iterable of :class:`Cell`-s
+        """
+        return ifilter(lambda cell: cell.symbol is None, self.iterate_cells())
 
     def is_valid(self):
         """
