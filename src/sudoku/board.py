@@ -152,7 +152,7 @@ class Board(object):
         """
         assert problem.block_width == block_width, self.DIMENSION_MISMATCH_ERROR
         assert problem.block_height == block_height, self.DIMENSION_MISMATCH_ERROR
-        assert solution is None or solution.block_width == block_height, self.DIMENSION_MISMATCH_ERROR
+        assert solution is None or solution.block_width == block_width, self.DIMENSION_MISMATCH_ERROR
         assert solution is None or solution.block_height == block_height, self.DIMENSION_MISMATCH_ERROR
 
         self._block_width = block_width
