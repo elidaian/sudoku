@@ -1,3 +1,4 @@
+from collections import defaultdict
 from itertools import ifilter
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -19,6 +20,13 @@ class CellGroup(object):
             cell.add_group(self)
         self.update_taken_symbols()
         self.update_possible_symbols()
+
+    def __len__(self):
+        """
+        :return: The number of cells in this group.
+        :rtype: int
+        """
+        return len(self._cells)
 
     def add(self, cell):
         """
@@ -81,6 +89,45 @@ class CellGroup(object):
         """
         for cell in self._cells:
             cell.update_possible_symbols()
+
+    def create_possible_symbols_to_cells_mapping(self):
+        """
+        Create a mapping from ``frozenset``-s of possible symbols to a lists of cells, that these are their possible
+        symbols.
+        :return: This mapping.
+        :rtype: dict
+        """
+        possibles_to_cells = defaultdict(list)
+        for cell in self.iterate_empty_cells():
+            possible_symbols = cell.get_possible_symbols()
+            possibles_to_cells[frozenset(possible_symbols)].append(cell)
+        return possibles_to_cells
+
+    def remove_as_subgroup(self, other_groups):
+        """
+        Remove this group from other groups, when this group is a subgroup of another group.
+        :param other_groups: The other groups, to look for.
+        :type other_groups: list of :class:`CellGroup`-s
+        """
+        symbols_to_exclude = reduce(lambda alphabet, cell: alphabet.union(cell.get_possible_symbols()),
+                                    self._cells, set())
+        my_cells = set(self._cells)
+
+        for group in other_groups:
+            if my_cells.issubset(group._cells) and self is not group:
+                # Remove my cells from the other group
+                for cell in self._cells:
+                    cell.remove_group(group)
+                    group._cells.remove(cell)
+
+                # Update the alphabets in the other group
+                for cell in group._cells:
+                    new_alphabet = set(cell.alphabet).difference(symbols_to_exclude)
+                    cell.reset_alphabet(new_alphabet)
+
+                # Update the possible symbols in the other group
+                group.update_taken_symbols()
+                group.update_possible_symbols()
 
     def remove_assigned_cells(self):
         """

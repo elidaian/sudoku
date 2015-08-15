@@ -140,6 +140,11 @@ class Cell(object):
         :type alphabet: set
         """
         new_alphabet = set(alphabet)
-        if not new_alphabet.issubset(self.alphabet) or (self.symbol and self.symbol not in new_alphabet):
+        if not new_alphabet.issubset(self.alphabet): # or (self.symbol and self.symbol not in new_alphabet):
+            raise IllegalAlphabet("Illegal alphabet given")
+        if self.symbol and self.symbol not in new_alphabet:
             raise IllegalAlphabet("Illegal alphabet given")
         self.alphabet = new_alphabet
+        if self.symbol:
+            if self.symbol not in self.alphabet:
+                print "here"

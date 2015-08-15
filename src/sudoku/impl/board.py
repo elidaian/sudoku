@@ -210,40 +210,24 @@ class BoardImpl(object):
 
         groups = list(self._groups)
         for group in groups:
-            group_possibles = defaultdict(list)
-            for cell in group.iterate_empty_cells():
-                possible_symbols = cell.get_possible_symbols()
-                group_possibles[frozenset(possible_symbols)].append(cell)
-
-            if len(group_possibles) == 1:
+            possibles_to_cells = group.create_possible_symbols_to_cells_mapping()
+            if len(possibles_to_cells) == 1:
                 continue
 
-            for possible_symbols, cells in group_possibles.iteritems():
+            for possible_symbols, cells in possibles_to_cells.iteritems():
                 if len(possible_symbols) == len(cells):
                     changed = True
 
-                    # Remove all cells from the old group, and remove the old group
-                    for cell in group.iterate_cells():
-                        cell.remove_group(group)
-                    self._groups.remove(group)
-
-                    # Create the first subgroup
+                    # Create the new subgroup
                     for cell in cells:
                         cell.reset_alphabet(possible_symbols)
                     new_group = CellGroup(cells)
                     self._groups.append(new_group)
 
-                    # Create the second subgroup
-                    new_cells = filter(lambda cell: cell not in cells, group.iterate_empty_cells())
-                    # new_alphabet = reduce(lambda a, cell: a.union(cell.get_possible_symbols()), new_cells, set())
-                    # new_alphabet.difference_update(possible_symbols)
-                    for cell in new_cells:
-                        new_alphabet = cell.get_possible_symbols().difference(possible_symbols)
-                        cell.reset_alphabet(new_alphabet)
-                    new_group = CellGroup(new_cells)
-                    self._groups.append(new_group)
+                    # Remove all cells from the old group, and remove the old group
+                    new_group.remove_as_subgroup(self._groups)
 
-                    # Cannot help any more in this group, go to the next group
+                    # Cannot split this group into more groups, go to the next group
                     break
 
         return changed
@@ -259,6 +243,15 @@ class BoardImpl(object):
             changed = group.remove_assigned_cells() or changed
         return changed
 
+    def _remove_empty_groups(self):
+        """
+        Remove empty groups from this board.
+        """
+        groups = list(self._groups)
+        for group in groups:
+            if len(group) == 0:
+                self._groups.remove(group)
+
     def solve_possible(self):
         """
         Fill the cells with only one single possible symbol.
@@ -270,6 +263,7 @@ class BoardImpl(object):
             only_possible_in_group = self._fill_only_possible_in_group()
             split_groups = self._split_groups()
             removed_assigned_from_groups = self._remove_assigned_from_groups()
+            self._remove_empty_groups()
 
             changed = one_possible or only_possible_in_group or split_groups or removed_assigned_from_groups
 
