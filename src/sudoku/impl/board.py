@@ -1,192 +1,11 @@
-"""
-Provides implementation for internal board, cell, etc.
-"""
-from itertools import chain, imap
+from itertools import chain, imap, product
 from operator import and_
 
-from exceptions import SymbolNotPossible, NoPossibleSymbols, InvalidAlphabet
+from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
+
+from sudoku.impl import Cell, CellGroup
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
-
-
-class Cell(object):
-    """
-    A sudoku board cell.
-    """
-
-    def __init__(self, x, y, alphabet, symbol=None):
-        """
-        Create a new cell.
-        :param x: The X coordinate of this cell.
-        :type x: int
-        :param y: The Y coordinate of this cell.
-        :type y: int
-        :param alphabet: The possible symbols in the board.
-        :type alphabet: str
-        :param symbol: The cell value, or ``None`` if unknown.
-        :type symbol: str or None
-        """
-        self.x = x
-        self.y = y
-        self.alphabet = alphabet
-        self.symbol = symbol
-
-        self._groups = []
-        self._possible_symbols = set(alphabet)
-
-        if symbol:
-            if symbol not in alphabet:
-                raise SymbolNotPossible("Illegal symbol given")
-            self._possible_symbols.remove(symbol)
-
-    def __repr__(self):
-        """
-        :return: A readable representation of this cell.
-        :rtype: str
-        """
-        return "Cell at <%d, %d> with value \"%s\"" % (self.x, self.y, self.symbol)
-
-    def set_symbol(self, symbol):
-        """
-        Set a new symbol.
-        :param symbol: The new symbol, or ``None``.
-        :type symbol: str
-        """
-
-        if symbol == self.symbol:
-            return
-
-        if symbol is not None and symbol not in self._possible_symbols:
-            raise SymbolNotPossible("Illegal symbol given")
-        self.symbol = symbol
-
-        for group in self._groups:
-            group.update_taken_symbols()
-        for group in self._groups:
-            group.update_possible_symbols()
-
-    def add_group(self, group):
-        """
-        Add this cell to a group.
-        :param group: The group this cell is now part of.
-        :type group: CellGroup
-        """
-        self._groups.append(group)
-
-    def update_possible_symbols(self):
-        """
-        Update the possible symbols for this cell, looking at the taken symbols
-        in all other groups.
-        """
-
-        taken_symbols = set()
-        possible_symbols = set(self.alphabet)
-
-        # Look at the taken symbols
-        for group in self._groups:
-            taken_symbols = taken_symbols.union(group.taken_symbols())
-
-        self._possible_symbols = possible_symbols.difference(taken_symbols)
-
-    def get_possible_symbols(self):
-        """
-        Get the set of possible symbols for this cell.
-        :note: The set of possible symbols might not be up to date.
-        :return: The set of possible symbols for this cell.
-        :rtype: set of string
-        """
-        return self._possible_symbols
-
-    def get_num_possible_symbols(self):
-        """
-        :return: The number of possible symbols for this cell.
-        :rtype: int
-        """
-        return len(self._possible_symbols)
-
-    def get_possible_symbol(self):
-        """
-        Get the only possible symbol for this cell. If more than one symbol is
-        possible, an exception will be raised.
-        :return: The only possible symbol.
-        :rtype: str
-        """
-        assert len(self._possible_symbols) == 1, "There is more than one possible symbol"
-        for symbol in self._possible_symbols:
-            return symbol
-
-    def is_empty(self):
-        """
-        :return: ``True`` iff this cell has no assigned symbol.
-        :rtype: bool
-        """
-        return self.symbol is None
-
-
-class CellGroup(object):
-    """
-    A group of cells, in which two cells cannot have the same value.
-    """
-
-    def __init__(self, cells=None):
-        """
-        Initialize this cell group.
-        :param cells: The cells in this group, or ``None`` if unknown.
-        :type cells: set of Cell
-        """
-        self._cells = cells or set()
-        for cell in self._cells:
-            cell.add_group(self)
-        self.update_taken_symbols()
-        self.update_possible_symbols()
-
-    def add(self, cell):
-        """
-        Add a cell to this cell group.
-        :param cell: The cell to add.
-        :type cell: Cell
-        """
-        self._cells.add(cell)
-        cell.add_group(self)
-        self.update_taken_symbols()
-        self.update_possible_symbols()
-
-    def is_valid(self):
-        """
-        :return: ``True`` iff there are no two cells in this group with the same symbol.
-        :rtype: bool
-        """
-
-        seen_symbols = set()
-
-        for cell in self._cells:
-            if cell.symbol:
-                if cell.symbol in seen_symbols:
-                    return False
-                seen_symbols.add(cell.symbol)
-
-        return True
-
-    def taken_symbols(self):
-        """
-        :return: A set of the taken symbols in this cell group.
-        :rtype: set of strings.
-        """
-
-        return self._taken_symbols
-
-    def update_taken_symbols(self):
-        """
-        Update the set of taken symbols in this cell group.
-        """
-        self._taken_symbols = set(cell.symbol for cell in self._cells if cell.symbol)
-
-    def update_possible_symbols(self):
-        """
-        Update the possible symbols of each cell in this cell group.
-        """
-        for cell in self._cells:
-            cell.update_possible_symbols()
 
 
 class BoardImpl(object):
@@ -331,16 +150,38 @@ class BoardImpl(object):
         changed = True
         while changed:
             changed = False
+
+            # Iterate over cells
             for cell in self._iter_cells():
                 if cell.symbol:
                     continue
 
+                # Fill cells with only 1 possible symbol
                 num_possible_symbols = cell.get_num_possible_symbols()
                 if num_possible_symbols == 1:
                     cell.set_symbol(cell.get_possible_symbol())
                     changed = True
                 elif num_possible_symbols <= 0:
                     raise NoPossibleSymbols("Cell has no possible symbols")
+
+                    # # Fill cells that are the only ones in the group to have a possible symbol
+                    # for group in cell.iterate_groups():
+                    #     possible_symbols = set(cell.get_possible_symbols())
+                    #     for group_cell in group.iterate_cells():
+                    #         if group_cell == cell:
+                    #             # This is not the interesting case
+                    #             continue
+                    #         possible_symbols.difference_update(cell.get_possible_symbols())
+                    #     if len(possible_symbols) == 1:
+                    #         # Success, we have a symbol to assign now
+                    #         print "This helped"
+                    #         cell.set_symbol(possible_symbols.pop())
+                    #         changed = True
+                    #     else:
+                    #         print "Consumed CPU"
+
+                    # Iterate over groups, and split them if possible
+                    # for group in self._groups:
 
     def is_final(self):
         """
@@ -414,3 +255,11 @@ class BoardImpl(object):
         :rtype: str
         """
         return "".join(cell.symbol or " " for cell in self._iter_cells())
+
+    def get_empty_cells_positions(self):
+        """
+        :return: A list of positions of cells without an assigned symbol.
+        :rtype: set of tuples
+        """
+        return [(row, col) for row, col in product(xrange(self.rows), xrange(self.cols))
+                if not self._cells[row][col].symbol]

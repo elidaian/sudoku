@@ -7,7 +7,7 @@ This module generates sudoku boards.
 from random import randint, choice
 
 from exceptions import NoPossibleSymbols
-from impl import BoardImpl
+from sudoku.impl.board import BoardImpl
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -17,23 +17,26 @@ DEFAULT_ALPHABET = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 """ Default alphabet to be used if no alphabet is given. """
 
 
-def _find_next_symbol_to_assign(board):
+def _find_next_symbol_to_assign(board, possible_positions):
     """
     Find an empty cell in the board, and generate a random symbol to assign in it.
     :param board: The board.
     :type board: :class:`~impl.BoardImpl`
+    :param possible_positions: The possible locations for assignment.
+    :type possible_positions: list
     :return: A tuple, consisting of the cell position (another tuple) and the symbol to assign in it.
     :rtype: tuple
     """
 
-    # Find the position for assiging
-    pos = None
-    while not pos:
-        row = randint(0, board.rows - 1)
-        col = randint(0, board.cols - 1)
-
-        if board[row, col] is None and board.get_num_possible_symbols(row, col) > 1:
-            pos = (row, col)
+    # Find the position for assigning
+    pos = choice(possible_positions)
+    # pos = None
+    # while not pos:
+    #     row = randint(0, board.rows - 1)
+    #     col = randint(0, board.cols - 1)
+    #
+    #     if board[row, col] is None and board.get_num_possible_symbols(row, col) >= 1:
+    #         pos = (row, col)
 
     # Select a symbol to assign
     symbol = choice(list(board.get_possible_symbols(*pos)))
@@ -64,13 +67,17 @@ def _construct_assignments(block_width, block_height, alphabet):
     solution = BoardImpl(block_width, block_height, alphabet)
     trials = 0
     assignments = []
+    possible_positions = solution.get_empty_cells_positions()
+
+    # f = open('log.txt', 'w')
 
     # Main loop for assigning values
     while not solution.is_final():
         problem = solution
 
-        pos, symbol = _find_next_symbol_to_assign(problem)
+        pos, symbol = _find_next_symbol_to_assign(problem, possible_positions)
         problem[pos] = symbol
+        # print >> f, "Assigning %s in %s" % (symbol, pos)
 
         solution = problem.copy()
         try:
@@ -81,14 +88,22 @@ def _construct_assignments(block_width, block_height, alphabet):
                 problem[pos] = None
                 solution = problem
                 trials += 1
+                possible_positions.remove(pos)
+                # print >> f, "Failure, rolling back assignment, board: %s" % str(solution)
             else:
                 # Roll back all assignments, create with a clean board
                 solution = BoardImpl(block_width, block_height, alphabet)
                 trials = 0
                 assignments = []
+                possible_positions = solution.get_empty_cells_positions()
+                # print >> f, "Failure, rolling back board"
         else:
             # Board is still solvable
             assignments.append((pos, symbol))
+            possible_positions = solution.get_empty_cells_positions()
+            # print >> f, "Success, board is %s" % str(solution)
+
+    # f.close()
 
     return assignments
 
