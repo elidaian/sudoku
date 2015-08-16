@@ -92,15 +92,7 @@ class Cell(object):
         """
         Update the possible symbols for this cell, looking at the taken symbols in all other groups.
         """
-
-        taken_symbols = set()
-        possible_symbols = set(self.alphabet)
-
-        # Look at the taken symbols
-        for group in self._groups:
-            taken_symbols = taken_symbols.union(group.taken_symbols())
-
-        self._possible_symbols = possible_symbols.difference(taken_symbols)
+        self._possible_symbols = set(self.alphabet).difference(*[group.taken_symbols() for group in self._groups])
 
     def get_possible_symbols(self):
         """
@@ -146,7 +138,7 @@ class Cell(object):
         :type alphabet: set
         """
         new_alphabet = set(alphabet)
-        if not new_alphabet.issubset(self.alphabet) or (self.symbol and self.symbol not in new_alphabet):
-            raise IllegalAlphabet("Illegal alphabet given")
+        # if not new_alphabet.issubset(self.alphabet) or (self.symbol and self.symbol not in new_alphabet):
+        #     raise IllegalAlphabet("Illegal alphabet given")
         self.alphabet = new_alphabet
         self._update_groups_symbols()

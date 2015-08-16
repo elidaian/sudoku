@@ -15,7 +15,7 @@ class CellGroup(object):
         :param cells: The cells in this group, or ``None`` if unknown.
         :type cells: set of sudoku.impl.cell.Cell
         """
-        self._cells = cells or set()
+        self._cells = set(cells) or set()
         for cell in self._cells:
             cell.add_group(self)
         self.update_taken_symbols()
@@ -161,4 +161,4 @@ class CellGroup(object):
         :return: ``True`` if the given group of cells is a subgroup of this group.
         :rtype: bool
         """
-        return set(self._cells).issuperset(cells)
+        return self._cells.issuperset(cells)
