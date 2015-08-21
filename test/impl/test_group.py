@@ -52,7 +52,7 @@ def test_cell_group_update_possible_symbols_partially_empty(alphabet10):
 
 
 def test_cell_group_contains_cells_true_all(alphabet10):
-    cells = [Cell(0, y, alphabet10) for y in xrange(10)]
+    cells = set([Cell(0, y, alphabet10) for y in xrange(10)])
     group = CellGroup(set(cells))
 
     assert group.contains_cells(cells)
@@ -62,20 +62,20 @@ def test_cell_group_contains_cells_true_part(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
     group = CellGroup(set(cells))
 
-    assert group.contains_cells(cells[2:5])
+    assert group.contains_cells(set(cells[2:5]))
 
 
 def test_cell_group_contains_cells_false(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
     group = CellGroup(set(cells))
 
-    assert not group.contains_cells([Cell(x, 0, alphabet10) for x in xrange(10)])
+    assert not group.contains_cells(set([Cell(x, 0, alphabet10) for x in xrange(10)]))
 
 
 def test_cell_group_contains_cells_false_addition(alphabet10):
-    cells = [Cell(0, y, alphabet10) for y in xrange(10)]
+    cells = set([Cell(0, y, alphabet10) for y in xrange(10)])
     group = CellGroup(set(cells))
-    cells.append(Cell(1, 0, alphabet10))
+    cells.add(Cell(1, 0, alphabet10))
 
     assert not group.contains_cells(cells)
 
