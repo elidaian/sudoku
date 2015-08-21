@@ -103,10 +103,10 @@ class CellGroup(object):
         :return: This mapping.
         :rtype: dict
         """
-        symbols_to_cells = defaultdict(list)
+        symbols_to_cells = defaultdict(set)
         for cell in self.iterate_empty_cells():
             for symbol in cell.get_possible_symbols():
-                symbols_to_cells[symbol].append(cell)
+                symbols_to_cells[symbol].add(cell)
         return symbols_to_cells
 
     def remove_as_subgroup(self, other_groups):
@@ -146,8 +146,8 @@ class CellGroup(object):
         """
         Check if a group of cells is a subgroup of this group.
         :param cells: The group of cells.
-        :type cells: list
+        :type cells: set
         :return: ``True`` if the given group of cells is a subgroup of this group.
         :rtype: bool
         """
-        return self._cells.issuperset(cells)
+        return cells.issubset(self._cells)
