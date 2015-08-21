@@ -4,7 +4,7 @@ This module generates sudoku boards.
 :var DEFAULT_ALPHABET: The default alphabet used when no alphabet is given for generating the board.
 :type DEFAULT_ALPHABET: str
 """
-from random import randint, choice
+from random import choice
 
 from exceptions import NoPossibleSymbols
 from sudoku.impl.board import BoardImpl
@@ -62,41 +62,34 @@ def _construct_assignments(block_width, block_height, alphabet):
     assignments = []
     possible_positions = solution.get_empty_cells_positions()
 
-    # f = open('log.txt', 'w')
 
     # Main loop for assigning values
     while not solution.is_final():
         problem = solution
 
         pos, symbol = _find_next_symbol_to_assign(problem, possible_positions)
-        problem[pos] = symbol
-        # print >> f, "Assigning %s in %s" % (symbol, pos)
+        problem_with_assignment = problem.copy()
+        problem_with_assignment[pos] = symbol
 
-        solution = problem.copy()
+        solution = problem_with_assignment.copy()
         try:
             solution.solve_possible()
         except NoPossibleSymbols:  # No possible solution for this board with this assignment
             if trials < MAX_TRIALS and len(possible_positions) > 1:
                 # Roll back this assignment, there are more assignments to try
-                problem[pos] = None
                 solution = problem
                 trials += 1
                 possible_positions.remove(pos)
-                # print >> f, "Failure, rolling back assignment, board: %s" % str(solution)
             else:
                 # Roll back all assignments, create with a clean board
                 solution = BoardImpl(block_width, block_height, alphabet)
                 trials = 0
                 assignments = []
                 possible_positions = solution.get_empty_cells_positions()
-                # print >> f, "Failure, rolling back board"
         else:
             # Board is still solvable
             assignments.append((pos, symbol))
             possible_positions = solution.get_empty_cells_positions()
-            # print >> f, "Success, board is %s" % str(solution)
-
-    # f.close()
 
     return assignments
 

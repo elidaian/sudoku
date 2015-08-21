@@ -16,10 +16,9 @@ class CellGroup(object):
         :type cells: set of sudoku.impl.cell.Cell
         """
         self._cells = set(cells) or set()
+        self._taken_symbols = set()
         for cell in self._cells:
             cell.add_group(self)
-        self.update_taken_symbols()
-        self.update_possible_symbols()
 
     def __len__(self):
         """
@@ -36,8 +35,6 @@ class CellGroup(object):
         """
         self._cells.add(cell)
         cell.add_group(self)
-        self.update_taken_symbols()
-        self.update_possible_symbols()
 
     def iterate_cells(self):
         """
@@ -69,26 +66,23 @@ class CellGroup(object):
 
         return True
 
-    def taken_symbols(self):
+    def take_symbol(self, symbol):
         """
-        :return: A set of the taken symbols in this cell group.
-        :rtype: set of strings.
+        Take a symbol from all cells in the group.
+        :param symbol: The symbol to take.
+        :type symbol: str
         """
+        if symbol not in self._taken_symbols:
+            for cell in self._cells:
+                cell.remove_possible_symbol(symbol)
+            self._taken_symbols.add(symbol)
 
+    def get_taken_symbols(self):
+        """
+        :return: The symbols that are already taken in this group.
+        :rtype: set
+        """
         return self._taken_symbols
-
-    def update_taken_symbols(self):
-        """
-        Update the set of taken symbols in this cell group.
-        """
-        self._taken_symbols = set(cell.symbol for cell in self._cells if cell.symbol)
-
-    def update_possible_symbols(self):
-        """
-        Update the possible symbols of each cell in this cell group.
-        """
-        for cell in self._cells:
-            cell.update_possible_symbols()
 
     def create_possible_symbols_to_cells_mapping(self):
         """
@@ -134,8 +128,7 @@ class CellGroup(object):
 
                 # Update the alphabets in the other group
                 for cell in group._cells:
-                    new_alphabet = set(cell.alphabet).difference(symbols_to_exclude)
-                    cell.reset_alphabet(new_alphabet)
+                    cell.remove_possible_symbols(symbols_to_exclude)
 
     def remove_assigned_cells(self):
         """
@@ -147,10 +140,6 @@ class CellGroup(object):
         for cell in ifilter(lambda cell: cell.symbol is not None, cells):
             cell.remove_group(self)
             self._cells.remove(cell)
-            for other_cell in self._cells:
-                alphabet = set(other_cell.alphabet)
-                alphabet.discard(cell.symbol)
-                other_cell.reset_alphabet(alphabet)
         return len(cells) != len(self._cells)
 
     def contains_cells(self, cells):

@@ -1,4 +1,4 @@
-from sudoku.exceptions import SymbolNotPossible, IllegalAlphabet
+from sudoku.exceptions import SymbolNotPossible
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -40,38 +40,47 @@ class Cell(object):
         """
         return "Cell at <%d, %d> with value \"%s\"" % (self.x, self.y, self.symbol)
 
-    def _update_groups_symbols(self):
+    def remove_possible_symbol(self, symbol):
         """
-        Call :meth:`CellGroup.update_taken_symbols` and :meth:`CellGroup.update_possible_symbols`.
+        Remove a possible symbol for this cell.
+        :param symbol: The symbol that is not possible since now.
+        :type symbol: str
         """
-        for group in self._groups:
-            group.update_taken_symbols()
-        for group in self._groups:
-            group.update_possible_symbols()
+        self._possible_symbols.discard(symbol)
+
+    def remove_possible_symbols(self, symbols):
+        """
+        Remove some possible symbols from this cell.
+        :param symbols: The symbols that are not possible since now.
+        :type symbols: set
+        """
+        self._possible_symbols.difference_update(symbols)
 
     def set_symbol(self, symbol):
         """
-        Set a new symbol.
-        :param symbol: The new symbol, or ``None``.
+        Set a new symbol. A symbol can be set exactly once in the lifetime of a cell.
+        :param symbol: The new symbol.
         :type symbol: str
         """
 
-        if symbol == self.symbol:
-            return
-
-        if symbol is not None and symbol not in self._possible_symbols:
+        if self.symbol is not None or symbol not in self._possible_symbols:
             raise SymbolNotPossible("Illegal symbol given")
         self.symbol = symbol
 
-        self._update_groups_symbols()
+        for group in self._groups:
+            group.take_symbol(symbol)
 
     def add_group(self, group):
         """
         Add this cell to a group.
         :param group: The group this cell is now part of.
-        :type group: :class:`CellGroup`
+        :type group: :class:`sudoku.impl.group.CellGroup`
         """
         self._groups.append(group)
+        if self.symbol:
+            group.take_symbol(self.symbol)
+        for symbol in group.get_taken_symbols():
+            self._possible_symbols.discard(symbol)
 
     def remove_group(self, group):
         """
@@ -92,7 +101,7 @@ class Cell(object):
         """
         Update the possible symbols for this cell, looking at the taken symbols in all other groups.
         """
-        self._possible_symbols = set(self.alphabet).difference(*[group.taken_symbols() for group in self._groups])
+        self._possible_symbols = set(self.alphabet).difference(*[group.taken_symbols for group in self._groups])
 
     def get_possible_symbols(self):
         """
@@ -127,18 +136,3 @@ class Cell(object):
         :rtype: bool
         """
         return self.symbol is None
-
-    def reset_alphabet(self, alphabet):
-        """
-        Set a new alphabet for this cell.
-
-        :note: The new alphabet should be a subset of the previous alphabet.
-
-        :param alphabet: The new alphabet.
-        :type alphabet: set
-        """
-        new_alphabet = set(alphabet)
-        if not new_alphabet.issubset(self.alphabet) or (self.symbol and self.symbol not in new_alphabet):
-            raise IllegalAlphabet("Illegal alphabet given")
-        self.alphabet = new_alphabet
-        self._update_groups_symbols()

@@ -217,8 +217,6 @@ class BoardImpl(object):
                     changed = True
 
                     # Create the new subgroup
-                    for cell in cells:
-                        cell.reset_alphabet(possible_symbols)
                     new_group = CellGroup(cells)
                     self._groups.append(new_group)
 
@@ -262,10 +260,8 @@ class BoardImpl(object):
                         for cell in other_group.iterate_empty_cells():
                             if cell in cells:
                                 continue
-                            alphabet = set(cell.alphabet)
-                            if symbol in alphabet:
-                                alphabet.discard(symbol)
-                                cell.reset_alphabet(alphabet)
+                            if symbol in cell.get_possible_symbols():
+                                cell.remove_possible_symbol(symbol)
                                 changed = True
 
         return changed
