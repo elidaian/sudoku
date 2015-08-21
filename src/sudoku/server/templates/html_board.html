@@ -8,7 +8,6 @@
         <div class="row head">Eli Daian's Sudoku</div>
     {%- endif -%}
     <div class="row text-center">
-        <p class="text-center">
         <table class="board">
             {%- for blocks_row in range(board.block_width) %}
                 {%- set row1 = board.block_height * blocks_row %}
@@ -32,7 +31,6 @@
                 </tr>
             {%- endfor %}
         </table>
-        </p>
     </div>
     <div class="row">
         <p class="text-center"><em>#{{ id }}</em></p>
