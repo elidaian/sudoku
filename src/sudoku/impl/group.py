@@ -15,9 +15,9 @@ class CellGroup(object):
         :param cells: The cells in this group, or ``None`` if unknown.
         :type cells: set of sudoku.impl.cell.Cell
         """
-        self._cells = set(cells) or set()
+        self.cells = set(cells) or set()
         self._taken_symbols = set()
-        for cell in self._cells:
+        for cell in self.cells:
             cell.add_group(self)
 
     def __len__(self):
@@ -25,7 +25,7 @@ class CellGroup(object):
         :return: The number of cells in this group.
         :rtype: int
         """
-        return len(self._cells)
+        return len(self.cells)
 
     def add(self, cell):
         """
@@ -33,7 +33,7 @@ class CellGroup(object):
         :param cell: The cell to add.
         :type cell: sudoku.impl.cell.Cell
         """
-        self._cells.add(cell)
+        self.cells.add(cell)
         cell.add_group(self)
 
     def iterate_cells(self):
@@ -41,7 +41,7 @@ class CellGroup(object):
         :return: An iterable over all cells in this group.
         :rtype: iterable of :class:`Cell`-s
         """
-        return (cell for cell in self._cells)
+        return (cell for cell in self.cells)
 
     def iterate_empty_cells(self):
         """
@@ -58,7 +58,7 @@ class CellGroup(object):
 
         seen_symbols = set()
 
-        for cell in self._cells:
+        for cell in self.cells:
             if cell.symbol:
                 if cell.symbol in seen_symbols:
                     return False
@@ -73,7 +73,7 @@ class CellGroup(object):
         :type symbol: str
         """
         if symbol not in self._taken_symbols:
-            for cell in self._cells:
+            for cell in self.cells:
                 cell.remove_possible_symbol(symbol)
             self._taken_symbols.add(symbol)
 
@@ -116,18 +116,18 @@ class CellGroup(object):
         :type other_groups: list of :class:`CellGroup`-s
         """
         symbols_to_exclude = reduce(lambda alphabet, cell: alphabet.union(cell.get_possible_symbols()),
-                                    self._cells, set())
-        my_cells = set(self._cells)
+                                    self.cells, set())
+        my_cells = set(self.cells)
 
         for group in other_groups:
-            if my_cells.issubset(group._cells) and self is not group:
+            if my_cells.issubset(group.cells) and self is not group:
                 # Remove my cells from the other group
-                for cell in self._cells:
+                for cell in self.cells:
                     cell.remove_group(group)
-                    group._cells.remove(cell)
+                    group.cells.remove(cell)
 
                 # Update the alphabets in the other group
-                for cell in group._cells:
+                for cell in group.cells:
                     cell.remove_possible_symbols(symbols_to_exclude)
 
     def remove_assigned_cells(self):
@@ -136,11 +136,11 @@ class CellGroup(object):
         :return: ``True`` iff cells were removed from this group.
         :rtype: bool
         """
-        cells = list(self._cells)
+        cells = list(self.cells)
         for cell in ifilter(lambda cell: cell.symbol is not None, cells):
             cell.remove_group(self)
-            self._cells.remove(cell)
-        return len(cells) != len(self._cells)
+            self.cells.remove(cell)
+        return len(cells) != len(self.cells)
 
     def contains_cells(self, cells):
         """
@@ -150,4 +150,4 @@ class CellGroup(object):
         :return: ``True`` if the given group of cells is a subgroup of this group.
         :rtype: bool
         """
-        return cells.issubset(self._cells)
+        return cells.issubset(self.cells)

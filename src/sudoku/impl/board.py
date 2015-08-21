@@ -256,7 +256,7 @@ class BoardImpl(object):
                         # This is not interesting
                         continue
 
-                    if other_group.contains_cells(cells):
+                    if cells.issubset(other_group.cells):
                         for cell in other_group.iterate_empty_cells():
                             if cell in cells:
                                 continue
