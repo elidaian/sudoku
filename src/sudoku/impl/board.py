@@ -181,7 +181,7 @@ class BoardImpl(object):
                 possible_symbols = set(cell.get_possible_symbols())
 
                 for group_cell in group.iterate_cells():
-                    if group_cell == cell:
+                    if group_cell is cell:
                         # Of course this cell has its possible cells as possible
                         continue
                     possible_symbols.difference_update(group_cell.get_possible_symbols())
@@ -282,15 +282,16 @@ class BoardImpl(object):
         """
         changed = True
         while changed:
-            one_possible = self._fill_one_possible()
-            only_possible_in_group = self._fill_only_possible_in_group()
-            split_groups = self._split_groups()
-            removed_assigned_from_groups = self._remove_assigned_from_groups()
-            removed_from_other_groups = self._remove_from_other_groups()
+            changed = self._fill_one_possible()
+            if not changed:
+                changed = self._fill_only_possible_in_group()
+            if not changed:
+                changed = self._split_groups()
+            if not changed:
+                changed = self._remove_assigned_from_groups()
+            if not changed:
+                changed = self._remove_from_other_groups()
             self._remove_empty_groups()
-
-            changed = one_possible or only_possible_in_group or split_groups or removed_assigned_from_groups or \
-                      removed_from_other_groups
 
     def is_final(self):
         """
