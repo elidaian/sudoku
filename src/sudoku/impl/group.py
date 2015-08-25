@@ -93,8 +93,7 @@ class CellGroup(object):
         """
         possibles_to_cells = defaultdict(set)
         for cell in self.iterate_empty_cells():
-            possible_symbols = cell.get_possible_symbols()
-            possibles_to_cells[frozenset(possible_symbols)].add(cell)
+            possibles_to_cells[frozenset(cell.get_possible_symbols())].add(cell)
         return possibles_to_cells
 
     def create_symbol_to_possible_cell_mapping(self):
