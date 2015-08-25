@@ -61,8 +61,7 @@ def test_generator_stress_test(generated_board, count):
     pass
 
 
-@pytest.mark.skipif(True, reason="Too slow")
-@pytest.mark.parametrize("count", xrange(64))
+@pytest.mark.parametrize("count", xrange(32))
 def test_generator_stress_test_regular_size(generated_board9, count):
     """
     This test is intended to find exceptions that are raised rarely.
