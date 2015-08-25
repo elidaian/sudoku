@@ -1,3 +1,4 @@
+from collections import defaultdict
 from itertools import chain, imap, product, ifilter
 from operator import and_
 
@@ -180,25 +181,24 @@ class BoardImpl(object):
 
         changed = False
 
-        groups = list(self._groups)
-        for group in groups:
-            possibles_to_cells = group.create_possible_symbols_to_cells_mapping()
-            if len(possibles_to_cells) == 1:
-                continue
+        possibles_to_group_to_cells = defaultdict(lambda: defaultdict(set))
+        for cell in self._iter_empty_cells():
+            group_to_symbols = possibles_to_group_to_cells[frozenset(cell.get_possible_symbols())]
+            for group in cell.iterate_groups():
+                group_to_symbols[group].add(cell)
+                # possibles_to_group_to_cells[possible_symbols, group].add(cell)
 
-            for possible_symbols, cells in possibles_to_cells.iteritems():
-                if len(possible_symbols) == len(cells):
-                    changed = True
-
-                    # Create the new subgroup
+        for possible_symbols, group_to_symbols in possibles_to_group_to_cells.iteritems():
+            for group, cells in group_to_symbols.iteritems():
+                if len(possible_symbols) == len(cells) and len(cells) != len(group.cells):
                     new_group = CellGroup(cells)
                     self._groups.append(new_group)
-
-                    # Remove all cells from the old group, and remove the old group
                     new_group.remove_as_subgroup(self._groups)
-
-                    # Cannot split this group into more groups, go to the next group
+                    changed = True
                     break
+            else:
+                continue
+            break
 
         return changed
 
