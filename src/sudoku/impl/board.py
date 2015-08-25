@@ -167,32 +167,6 @@ class BoardImpl(object):
 
         return changed
 
-    def _fill_only_possible_in_group(self):
-        """
-        Fill cells that are the only one in a group to have a possible symbol.
-        :return: ``True`` iff a change to the board was done.
-        :rtype: bool
-        """
-
-        changed = False
-
-        for cell in self._iter_empty_cells():
-            for group in cell.iterate_groups():
-                possible_symbols = set(cell.get_possible_symbols())
-
-                for group_cell in group.iterate_cells():
-                    if group_cell is cell:
-                        # Of course this cell has its possible cells as possible
-                        continue
-                    possible_symbols.difference_update(group_cell.get_possible_symbols())
-
-                if len(possible_symbols) == 1:
-                    cell.set_symbol(possible_symbols.pop())
-                    changed = True
-                    break
-
-        return changed
-
     def _split_groups(self):
         """
         Split groups where possible.
@@ -251,6 +225,11 @@ class BoardImpl(object):
         for group in self._groups:
             symbols_to_cells = group.create_symbol_to_possible_cell_mapping()
             for symbol, cells in symbols_to_cells.iteritems():
+                if len(cells) == 1:
+                    cells.pop().set_symbol(symbol)
+                    changed = True
+                    break
+
                 for other_group in self._groups:
                     if group is other_group:
                         # This is not interesting
@@ -283,8 +262,6 @@ class BoardImpl(object):
         changed = True
         while changed:
             changed = self._fill_one_possible()
-            if not changed:
-                changed = self._fill_only_possible_in_group()
             if not changed:
                 changed = self._split_groups()
             if not changed:
