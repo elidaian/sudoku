@@ -91,10 +91,10 @@ class CellGroup(object):
         :return: This mapping.
         :rtype: dict
         """
-        possibles_to_cells = defaultdict(list)
+        possibles_to_cells = defaultdict(set)
         for cell in self.iterate_empty_cells():
             possible_symbols = cell.get_possible_symbols()
-            possibles_to_cells[frozenset(possible_symbols)].append(cell)
+            possibles_to_cells[frozenset(possible_symbols)].add(cell)
         return possibles_to_cells
 
     def create_symbol_to_possible_cell_mapping(self):

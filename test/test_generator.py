@@ -70,7 +70,7 @@ def test_generator_stress_test_regular_size(generated_board9, count):
 
 
 @pytest.mark.skipif(True, reason="Too slow")
-@pytest.mark.parametrize("count", xrange(64))
+@pytest.mark.parametrize("count", xrange(16))
 def test_generator_stress_test_dodeka(generated_dodeka, count):
     """
     This test is intended to find exception that are raised rarely.
