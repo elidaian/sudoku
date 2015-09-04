@@ -204,13 +204,15 @@ def get_user_details(db, user_id):
     :param user_id: The user ID in the DB.
     :type user_id: int
     :return: The query result, or ``None`` if not found.
-    :rtype: list of tuples of (:class:`~users.User`, int)
+    :rtype: tuple of :class:`~users.User` and int
     """
     details = {"user_id": user_id}
     cur = db.cursor()
     cur.execute(GET_USER_DETAILS, details)
-    return [(User(row["id"], row["username"], row["display"], row["permissions"]), row["num_boards"])
-            for row in cur.fetchall()]
+    row = cur.fetchone()
+    if not row:
+        return None
+    return User(row["id"], row["username"], row["display"], row["permissions"]), row["num_boards"]
 
 
 def edit_user_with_password(db, user_id, password, display, permissions):
