@@ -11,6 +11,7 @@ class Cell(object):
     def __init__(self, x, y, alphabet, symbol=None):
         """
         Create a new cell.
+
         :param x: The X coordinate of this cell.
         :type x: int
         :param y: The Y coordinate of this cell.
@@ -43,6 +44,7 @@ class Cell(object):
     def remove_possible_symbol(self, symbol):
         """
         Remove a possible symbol for this cell.
+
         :param symbol: The symbol that is not possible since now.
         :type symbol: str
         """
@@ -51,6 +53,7 @@ class Cell(object):
     def remove_possible_symbols(self, symbols):
         """
         Remove some possible symbols from this cell.
+
         :param symbols: The symbols that are not possible since now.
         :type symbols: set
         """
@@ -59,6 +62,7 @@ class Cell(object):
     def set_symbol(self, symbol):
         """
         Set a new symbol. A symbol can be set exactly once in the lifetime of a cell.
+
         :param symbol: The new symbol.
         :type symbol: str
         """
@@ -73,6 +77,7 @@ class Cell(object):
     def add_group(self, group):
         """
         Add this cell to a group.
+
         :param group: The group this cell is now part of.
         :type group: :class:`sudoku.impl.group.CellGroup`
         """
@@ -85,6 +90,7 @@ class Cell(object):
     def remove_group(self, group):
         """
         Remove this cell from a group.
+
         :param group: The group to remove.
         :type group: :class:`CellGroup`
         """
@@ -106,7 +112,9 @@ class Cell(object):
     def get_possible_symbols(self):
         """
         Get the set of possible symbols for this cell.
+
         :note: The set of possible symbols might not be up to date.
+
         :return: The set of possible symbols for this cell.
         :rtype: set of string
         """
@@ -123,6 +131,7 @@ class Cell(object):
         """
         Get the only possible symbol for this cell. If more than one symbol is
         possible, an exception will be raised.
+
         :return: The only possible symbol.
         :rtype: str
         """

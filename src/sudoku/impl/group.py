@@ -12,6 +12,7 @@ class CellGroup(object):
     def __init__(self, cells=None):
         """
         Initialize this cell group.
+
         :param cells: The cells in this group, or ``None`` if unknown.
         :type cells: set of sudoku.impl.cell.Cell
         """
@@ -30,6 +31,7 @@ class CellGroup(object):
     def add(self, cell):
         """
         Add a cell to this cell group.
+
         :param cell: The cell to add.
         :type cell: sudoku.impl.cell.Cell
         """
@@ -69,6 +71,7 @@ class CellGroup(object):
     def take_symbol(self, symbol):
         """
         Take a symbol from all cells in the group.
+
         :param symbol: The symbol to take.
         :type symbol: str
         """
@@ -88,6 +91,7 @@ class CellGroup(object):
         """
         Create a mapping from ``frozenset``-s of possible symbols to a lists of cells, that these are their possible
         symbols.
+
         :return: This mapping.
         :rtype: dict
         """
@@ -99,6 +103,7 @@ class CellGroup(object):
     def create_symbol_to_possible_cell_mapping(self):
         """
         Create a mapping from symbols to a list of cells, in which this symbol is a possible assignment.
+
         :return: This mapping.
         :rtype: dict
         """
@@ -111,6 +116,7 @@ class CellGroup(object):
     def remove_as_subgroup(self, other_groups):
         """
         Remove this group from other groups, when this group is a subgroup of another group.
+
         :param other_groups: The other groups, to look for.
         :type other_groups: list of :class:`CellGroup`-s
         """
@@ -132,6 +138,7 @@ class CellGroup(object):
     def remove_assigned_cells(self):
         """
         Remove cells that have an assigned symbol from this group.
+
         :return: ``True`` iff cells were removed from this group.
         :rtype: bool
         """
@@ -144,6 +151,7 @@ class CellGroup(object):
     def contains_cells(self, cells):
         """
         Check if a group of cells is a subgroup of this group.
+
         :param cells: The group of cells.
         :type cells: set
         :return: ``True`` if the given group of cells is a subgroup of this group.

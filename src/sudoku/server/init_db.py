@@ -10,6 +10,7 @@ __author__ = 'Eli Daian <elidaian@gmail.com>'
 def _parse_args():
     """
     Parse command line arguments.
+
     :return: The parsed arguments.
     :rtype: :class:`argparse.Namespace`
     """

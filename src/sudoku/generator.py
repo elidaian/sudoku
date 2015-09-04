@@ -20,6 +20,7 @@ DEFAULT_ALPHABET = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 def _find_next_symbol_to_assign(board, possible_positions):
     """
     Find an empty cell in the board, and generate a random symbol to assign in it.
+
     :param board: The board.
     :type board: :class:`~impl.BoardImpl`
     :param possible_positions: The possible locations for assignment.
@@ -43,6 +44,7 @@ def _construct_assignments(block_width, block_height, alphabet):
 
     This function returns a list of tuples, each tuple consisting of a cell position (a tuple itself),
     and the symbol assigned to this cell.
+
     :param block_width: The block width in the board.
     :type block_width: int
     :param block_height: The block height in the board.
@@ -97,6 +99,7 @@ def _construct_assignments(block_width, block_height, alphabet):
 def _construct_from_assignments(block_width, block_height, alphabet, assignments):
     """
     Construct a board from a series of assignments.
+
     :param block_width: The block width in the board.
     :type block_width: int
     :param block_height: The block height in the board.
@@ -119,6 +122,7 @@ def _remove_unneeded_assignments(block_width, block_height, alphabet, assignment
     Remove the unneeded assignments from an assignments series.
 
     An unneeded assignment is an assignment that is not needed for the board to remain solvable.
+
     :param block_width: The block width in the board.
     :type block_width: int
     :param block_height: The block height in the board.
@@ -152,6 +156,7 @@ def _remove_unneeded_assignments(block_width, block_height, alphabet, assignment
 def _construct_board(block_width, block_height, alphabet):
     """
     Construct a new board, that consists of a problem ans solution.
+
     :param block_width: The block width in the board.
     :type block_width: int
     :param block_height: The block height in the board.
@@ -180,6 +185,7 @@ def _construct_board(block_width, block_height, alphabet):
 def generate(block_width, block_height, alphabet=None):
     """
     Generate a new sudoku board.
+
     :param block_width: The block width in the board.
     :type block_width: int
     :param block_height: The block height in the board.

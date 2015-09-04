@@ -30,7 +30,11 @@ def close_db(exception):
 def must_login(permission=None):
     """
     Wraps a page that requires a logged in viewer.
-    If permission is given, the viewing user must have the given permission.
+
+    :param permission: If given, the viewing user must have the given permission.
+    :type permission: :class:`~sudoku.server.users.UserPermissions`
+    :return: A wrapped function with this check.
+    :rtype: function
     """
 
     def wrapper(func):
@@ -53,5 +57,10 @@ def must_login(permission=None):
 def get_font(filename):
     """
     Get a file from the fonts directory.
+
+    :param filename: The filename.
+    :type filename: str
+    :return: The font file.
+    :rtype: flask.Response
     """
     return send_from_directory('fonts', filename)

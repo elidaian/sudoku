@@ -16,6 +16,7 @@ class BoardImpl(object):
     def __init__(self, block_width, block_height, alphabet):
         """
         Create an empty board with the given dimensions.
+
         :param block_width: The block width of the board.
         :type block_width: int
         :param block_height: The block height of the board.
@@ -152,6 +153,7 @@ class BoardImpl(object):
     def _fill_one_possible(self):
         """
         Fill cells with a single possible value.
+
         :return: ``True`` iff a change to the board was done.
         :rtype: bool
         """
@@ -175,6 +177,7 @@ class BoardImpl(object):
         A group of size $n$ can be split if there is a subgroup of size $0 < k < n$ cells in this group, such that
         these cells have the same $k$ possible symbols. In this case, this group can be considered as two different
         groups. The subgroup with a possible alphabet of the $k$ symbols, and the complementary subgroup.
+
         :return: ``True`` iff a change to the board was done.
         :rtype: bool
         """
@@ -205,6 +208,7 @@ class BoardImpl(object):
     def _remove_assigned_from_groups(self):
         """
         Remove cells with assigned values from the groups.
+
         :return: ``True`` iff a change has been done.
         :rtype: bool
         """
@@ -217,6 +221,7 @@ class BoardImpl(object):
         """
         If a symbol is possible in only $n$ cells of a group, and all these $n$ cells are also a part of another group,
         this symbol should not be possible in any other cell of the other group.
+
         :return: ``True`` iff a change has been done.
         :rtype: bool
         """
@@ -280,6 +285,7 @@ class BoardImpl(object):
     def __setitem__(self, pos, symbol):
         """
         Set the value of a cell in the board.
+
         :param pos: The position of the cell in the board.
         :type pos: tuple of ints
         :param symbol: The new symbol value.
@@ -291,6 +297,7 @@ class BoardImpl(object):
     def __getitem__(self, pos):
         """
         Get the value of a cell, or ``None`` if the cell has no symbol assigned.
+
         :param pos: The position of the cell in the board.
         :type pos: tuple of ints
         :return: The cell symbol value.
@@ -302,6 +309,7 @@ class BoardImpl(object):
     def get_num_possible_symbols(self, row, col):
         """
         Get the number of possible symbols in a given cell.
+
         :param row: The cell row.
         :type row: int
         :param col: The cell column.
@@ -314,6 +322,7 @@ class BoardImpl(object):
     def get_possible_symbols(self, row, col):
         """
         Get the possible symbols in a given cell.
+
         :param row: The cell row.
         :type row: int
         :param col: The cell column.

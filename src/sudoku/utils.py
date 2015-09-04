@@ -6,6 +6,7 @@ import itertools
 def enum(*sequential, **named):
     """
     Create an enumeration.
+
     :param sequential: The sequential arguments.
     :type sequential: list
     :param named: The named arguments.

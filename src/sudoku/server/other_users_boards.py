@@ -16,7 +16,12 @@ __author__ = 'Eli Daian <elidaian@gmail.com>'
 @must_login(PERM_SHOW_OTHER_USER_BOARDS)
 def list_other_boards(many):
     """
-    List all the boards of the other users.
+    List the boards of all users.
+
+    :param many: ``True`` iff multiple boards can be selected.
+    :type many: bool
+    :return: A list of boards.
+    :rtype: flask.Response
     """
     boards = db.list_all_boards(g.db)
     user = db.get_user(g.db, session['user'])
@@ -28,11 +33,14 @@ def list_other_boards(many):
 @must_login(PERM_CREATE_BOARD)
 def view_other_board():
     """
-    View a board.
+    :return: A page that asks you if you want to select a single board or multiple boards. If a ``board_id`` argument is
+        given in the request, the user will be redirected to
+        :meth:`~sudoku.server.other_users_boards.view_specific_other_board`.
+    :rtype: flask.Response
     """
     if 'board_id' in request.args:
         is_solution = bool(request.args.get('solution', False))
-        return redirect(url_for('view_specific_board', board_id=request.args['board_id'], solution=is_solution))
+        return redirect(url_for('view_specific_other_board', board_id=request.args['board_id'], solution=is_solution))
 
     user = db.get_user(g.db, session['user'])
     return render_template('view_board.html', function='main', root=True, user=user)
@@ -43,7 +51,16 @@ def view_other_board():
 @must_login(PERM_CREATE_BOARD)
 def view_specific_other_board(board_id, solution):
     """
-    View one board insite.
+    View one board.
+
+    The board will be displayed inside the website, i.e. the website menus and themes will be displayed with the board.
+
+    :param board_id: The board ID to view.
+    :type board_id: int
+    :param solution: ``True`` iff the solution is requested.
+    :type solution: bool
+    :return: A page containing the board.
+    :rtype: flask.Response
     """
     return view_one_board(board_id, solution, INSITE_BOARD_VIEW, True)
 
@@ -54,6 +71,16 @@ def view_specific_other_board(board_id, solution):
 def print_specific_other_board(board_id, solution):
     """
     Print one board.
+
+    This board will be displayed in a clean page that is dedicated for printing, i.e. the website menus and themes will
+    not be shown in this page.
+
+    :param board_id: The board ID to view.
+    :type board_id: int
+    :param solution: ``True`` iff the solution is requested.
+    :type solution: bool
+    :return: A page containing the board.
+    :rtype: flask.Response
     """
     return view_one_board(board_id, solution, PRINT_BOARD_VIEW, True)
 
@@ -64,6 +91,15 @@ def print_specific_other_board(board_id, solution):
 def pdf_specific_other_board(board_id, solution):
     """
     Get the PDF of one board.
+
+    :note: This feature is currently not supported.
+
+    :param board_id: The board ID to view.
+    :type board_id: int
+    :param solution: ``True`` iff the solution is requested.
+    :type solution: bool
+    :return: A PDF containing the requested board.
+    :rtype: flask.Response
     """
     return 'Not supported (yet)'
 
@@ -72,7 +108,11 @@ def pdf_specific_other_board(board_id, solution):
 @must_login(PERM_CREATE_BOARD)
 def view_other_set():
     """
-    Get the reslts of the 'View set of boards' form, and redirect to the right location.
+    Process the results of the 'View set of boards' form (see :meth:`~sudoku.server.my_boards.list_boards`), and
+    redirect to the right location (:meth:`~sudoku.server.other_users_boards.view_set_of_other_boards`).
+
+    :return: A redirection.
+    :rtype: flask.Response
     """
     board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
     board_ids.sort()
@@ -87,7 +127,17 @@ def view_other_set():
 @must_login(PERM_CREATE_BOARD)
 def view_set_of_other_boards(board_ids, solution):
     """
-    View a set of boards insite.
+    View multiple boards.
+
+    The boards will be displayed inside the website, i.e. the website menus and themes will be displayed with the
+    boards.
+
+    :param board_ids: The board IDs to view.
+    :type board_ids: list of ints
+    :param solution: ``True`` iff the solutions are requested.
+    :type solution: bool
+    :return: A page containing the boards.
+    :rtype: flask.Response
     """
     return view_many_boards(board_ids, solution, INSITE_BOARD_VIEW, True)
 
@@ -97,7 +147,17 @@ def view_set_of_other_boards(board_ids, solution):
 @must_login(PERM_CREATE_BOARD)
 def print_set_of_other_boards(board_ids, solution):
     """
-    View a set of boards insite.
+    Print multiple boards.
+
+    This boards will be displayed in a clean page that is dedicated for printing, i.e. the website menus and themes will
+    not be shown in this page.
+
+    :param board_ids: The board IDs to view.
+    :type board_ids: list of ints
+    :param solution: ``True`` iff the solutions are requested.
+    :type solution: bool
+    :return: A page containing the boards.
+    :rtype: flask.Response
     """
     return view_many_boards(board_ids, solution, PRINT_BOARD_VIEW, True)
 
@@ -107,6 +167,15 @@ def print_set_of_other_boards(board_ids, solution):
 @must_login(PERM_CREATE_BOARD)
 def pdf_set_of_other_boards(board_ids, solution):
     """
-    View a set of boards insite.
+    Get the PDF of multiple boards.
+
+    :note: This feature is currently not supported.
+
+    :param board_ids: The board IDs to view.
+    :type board_ids: list of ints
+    :param solution: ``True`` iff the solutions are requested.
+    :type solution: bool
+    :return: A PDF containing the requested boards.
+    :rtype: flask.Response
     """
     return 'Not implemented (yet)'

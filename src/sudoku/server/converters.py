@@ -47,6 +47,8 @@ class BooleanConverter(BaseConverter):
 class IntegersListConverter(BaseConverter):
     """
     Convert a list of ints from the URL.
+
+    For example, the list [1, 2, 3] will be converted to '1/2/3'.
     """
 
     regex = r'[^/]?(/?\d+)+'

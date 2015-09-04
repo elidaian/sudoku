@@ -85,6 +85,7 @@ where id = :id
 def connect_db(app):
     """
     Create a new DB connection.
+
     :param app: The Flask application object.
     :type app: :class:`flask.Flask`
     :return: A DB connection object.
@@ -100,6 +101,7 @@ def connect_db(app):
 def hash_password(password):
     """
     Hash a password to protect it.
+
     :param password: The password.
     :type password: str
     :return: The hashed password.
@@ -112,6 +114,7 @@ def login(db, username, password):
     """
     Get user information (if available) given the username and password,
     or ``None`` if the login credentials are invalid.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param username: The username.
@@ -135,6 +138,7 @@ def get_user(db, user_id):
     """
     Get user information (if available) given the user id, or ``None`` if
     this user does not exist.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -154,6 +158,7 @@ def get_user(db, user_id):
 def register_user(db, username, password, display, permissions):
     """
     Register a new user given its details.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param username: The username.
@@ -183,6 +188,7 @@ def register_user(db, username, password, display, permissions):
 def list_users(db):
     """
     List the existing users in the DB.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :return: A list of registered users.
@@ -198,6 +204,7 @@ def get_user_details(db, user_id):
     Get the details of a user.
 
     The details of a user, consists, in addition to the username and display, of the following information:
+
     * The number of boards this user has.
 
     :param db: The DB connection object.
@@ -219,6 +226,7 @@ def get_user_details(db, user_id):
 def edit_user_with_password(db, user_id, password, display, permissions):
     """
     Edit a user and set his new password.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -241,6 +249,7 @@ def edit_user_with_password(db, user_id, password, display, permissions):
 def edit_user_without_password(db, user_id, display, permissions):
     """
     Edit a user without changing his password.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -260,6 +269,7 @@ def edit_user_without_password(db, user_id, display, permissions):
 def delete_user(db, user_id):
     """
     Delete a user and all his boards.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -275,6 +285,7 @@ def delete_user(db, user_id):
 def insert_board(db, user_id, board):
     """
     Insert a new board to the DB, and return its ID.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -298,6 +309,7 @@ def insert_board(db, user_id, board):
 def list_user_boards(db, user_id):
     """
     List all boards of a user.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -346,6 +358,7 @@ def get_user_board(db, board_id, user_id):
 def list_all_boards(db):
     """
     List all boards (of all users) in the DB.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :return: The boards (as dicts).
@@ -359,6 +372,7 @@ def list_all_boards(db):
 def get_board(db, board_id):
     """
     Get a board from the DB.
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param board_id: The board ID.
@@ -388,6 +402,7 @@ def init_db(app, root_user, root_password):
 
     This function creates a single user in the DB. This user is referred as the *root user*, and he has any possible
     permission.
+
     :param app: The Flask application.
     :type app: :class:`flask.Flask`
     :param root_user: The root user name.

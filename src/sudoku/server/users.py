@@ -12,6 +12,7 @@ class UserPermission(object):
     def __init__(self, name, description, is_default):
         """
         Construct a permission given its description.
+
         :param name: The permission name.
         :type name: str
         :param description: A brief description of this permission (will be displayed to the users).
@@ -54,6 +55,7 @@ class UserPermission(object):
     def __eq__(self, other):
         """
         Checks the equality of this object to other object.
+
         :param other: The other permission to compare to.
         :type other: :class:`~users.UserPermission`
         :return: ``True`` iff this is the same permission as other.
@@ -77,6 +79,7 @@ class User(object):
     def __init__(self, id, username, display, permissions):
         """
         Initialize a user given its ID, username, display name and permissions.
+
         :param id: The user ID.
         :type id: int
         :param username: The username.
@@ -95,6 +98,7 @@ class User(object):
     def has_permission(self, permission):
         """
         Check if this user has a permission.
+
         :param permission: The permission to check on.
         :type permission: :class:`~users.UserPermission`
         :return: ``True`` iff this user has the requested permission.
@@ -137,6 +141,7 @@ class User(object):
     def from_json(json):
         """
         Create a :class:`~users.User` object fom its representing json.
+
         :param json: The json data.
         :type json: dict
         :return: The corresponding :class:`~users.User` object.

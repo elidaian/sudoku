@@ -74,6 +74,7 @@ class SimpleBoard(object):
     def _get_index(self, row, col):
         """
         Get the index of a cell in the board, given its row and column.
+
         :param row: The row of the cell.
         :type row: int
         :param col: The column of the cell.
@@ -86,6 +87,7 @@ class SimpleBoard(object):
     def __getitem__(self, pos):
         """
         Get a board cell.
+
         :param pos: The cell coordinates.
         :type pos: tuple of strings
         :return: The cell data.
@@ -97,6 +99,7 @@ class SimpleBoard(object):
     def __setitem__(self, pos, value):
         """
         Set a board cell.
+
         :param pos: The cell coordinates.
         :type pos: tuple of strings
         :param value: The new cell value.

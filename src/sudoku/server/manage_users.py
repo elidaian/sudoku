@@ -15,6 +15,14 @@ __author__ = 'Eli Daian <elidaian@gmail.com>'
 def register_user():
     """
     Register a new user account.
+
+    * If this page was requested with a GET method, the new user registration form will be shown.
+    * If this page was requested with a POST method, a registration form is processed.
+
+    In any case, a registration form is returned.
+
+    :return: The registration form.
+    :rtype: flask.Response
     """
     user = db.get_user(g.db, session['user'])
 
@@ -47,6 +55,11 @@ def register_user():
 def manage_users():
     """
     Manage the other users.
+
+    This page lists the available users, with buttons to edit and remove the users.
+
+    :return: The page.
+    :rtype: flask.Response
     """
     users = db.list_users(g.db)
     user = db.get_user(g.db, session['user'])
@@ -58,6 +71,18 @@ def manage_users():
 def edit_user(user_id):
     """
     Edit a user.
+
+    * If this page was requested with GET method, the user editing form is displayed.
+    * If this page was requested with a POST method, a user editing is processed.
+
+      * If the form was processed successfully, the user is redirected to the management page
+        (see :meth:`~sudoku.server.manage_users.manage_users`).
+      * Otherwise, the form is returned with an error explanation.
+
+    :param user_id: The user ID to edit.
+    :type user_id: int
+    :return: As explained above.
+    :rtype: flask.Response
     """
     user = db.get_user(g.db, session['user'])
 
@@ -96,6 +121,18 @@ def edit_user(user_id):
 def delete_user(user_id):
     """
     Delete a user.
+
+    This page can be requested in both GET and POST methods:
+
+    * If this page was requested with GET method, a form that confirms that this user should be removed is returned.
+    * If this page was requested with POST method, the validation form is checked. If it is validated successfully.
+        Later (even if the user was not deleted) the user is redirected to the management page (see
+        :meth:`~sudoku.server.manage_users.manage_users`).
+
+    :param user_id: The user ID to be deleted.
+    :type user_id: int
+    :return: As explained above.
+    :rtype: flask.Response
     """
     user_details = db.get_user_details(g.db, user_id)
     if not user_details:

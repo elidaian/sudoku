@@ -12,6 +12,9 @@ __author__ = 'Eli Daian <elidaian@gmail.com>'
 def main_page():
     """
     Webserver index page.
+
+    :return: The main page.
+    :rtype: flask.Response
     """
     if session.get('logged_in', False):
         user = db.get_user(g.db, session['user'])
@@ -24,6 +27,9 @@ def main_page():
 def login():
     """
     Show the login page and handle login requests.
+
+    :return: The login page.
+    :rtype: flask.Response
     """
     if request.method == 'POST':
         try:
@@ -54,6 +60,10 @@ def login():
 def logout():
     """
     Log out and end the current session (if any).
+    Later redirect to the main page (see :meth:`~sudoku.server.login.main_page`).
+
+    :return: A redirection.
+    :rtype: flask.Response
     """
     session.clear()
     session['logged_in'] = False
