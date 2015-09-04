@@ -18,6 +18,7 @@ Contents
    installation
    getting_started
    wsgi
+   api
 
 
 Indices and tables
