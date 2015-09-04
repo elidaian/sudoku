@@ -41,8 +41,7 @@ def view_other_board():
         is_solution = bool(request.args.get('solution', False))
         return redirect(url_for('view_specific_other_board', board_id=request.args['board_id'], solution=is_solution))
 
-    user = db.get_user(g.db, session['user'])
-    return render_template('view_board.html', function='main', root=True, user=user)
+    return redirect(url_for("list_other_boards", many=True))
 
 
 @app.route('/other/view/<int:board_id>', defaults={'solution': False})
