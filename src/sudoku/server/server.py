@@ -1,14 +1,17 @@
 from functools import wraps
 from itertools import imap
+
 from flask.app import Flask
 from flask.globals import session, g, request
 from flask.helpers import url_for, flash
 from flask.templating import render_template
+
 from werkzeug.utils import redirect
+
 from sudoku.exceptions import ErrorWithMessage
 from sudoku.generator import generate
 from sudoku.server import db
-from sudoku.server.users import PERM_CREATE_BOARD
+from sudoku.server.users import PERM_CREATE_BOARD, PERM_MANAGE_USERS, UserPermission
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -67,7 +70,7 @@ def export_board_ids(board_ids):
     :return: The URL form of the board IDs.
     :rtype: str
     """
-    return "+".join(imap(str, board_ids))
+    return "/".join(imap(str, board_ids))
 
 
 def import_board_ids(url_board_ids):
@@ -78,7 +81,7 @@ def import_board_ids(url_board_ids):
     :return: A list of board IDs.
     :rtype: list
     """
-    return map(int, url_board_ids.split("+"))
+    return map(int, url_board_ids.split("/"))
 
 
 def view_one_board(board_id, solution, mode, root):
@@ -168,9 +171,7 @@ def logout():
     """
     Log out and end the current session (if any).
     """
-    if session.has_key("user"):
-        flash("You have been logged out", "success")
-        del session["user"]
+    session.clear()
     session["logged_in"] = False
     return redirect(url_for("main_page"))
 
@@ -213,6 +214,8 @@ def create_board():
         except (KeyError, ValueError):
             flash("Invalid request data", "danger")
         except:
+            if app.debug:
+                raise
             flash("Internal server error", "danger")
     user = db.get_user(g.db, session["user"])
     return render_template("create_board.html", just_created=just_created,
@@ -305,8 +308,8 @@ def view_set():
     return redirect(url_for("view_set_of_boards", url_board_ids=url_board_ids, solution=solution))
 
 
-@app.route("/view/custom/<url_board_ids>", defaults={"solution": False})
-@app.route("/view/solution/custom/<url_board_ids>", defaults={"solution": True})
+@app.route("/view/custom/<path:url_board_ids>", defaults={"solution": False})
+@app.route("/view/solution/custom/<path:url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
 def view_set_of_boards(url_board_ids, solution):
     """
@@ -315,8 +318,8 @@ def view_set_of_boards(url_board_ids, solution):
     return view_many_boards(url_board_ids, solution, INSITE_BOARD_VIEW, False)
 
 
-@app.route("/print/custom/<url_board_ids>", defaults={"solution": False})
-@app.route("/print/solution/custom/<url_board_ids>", defaults={"solution": True})
+@app.route("/print/custom/<path:url_board_ids>", defaults={"solution": False})
+@app.route("/print/solution/custom/<path:url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
 def print_set_of_boards(url_board_ids, solution):
     """
@@ -325,8 +328,8 @@ def print_set_of_boards(url_board_ids, solution):
     return view_many_boards(url_board_ids, solution, PRINT_BOARD_VIEW, False)
 
 
-@app.route("/pdf/custom/<url_board_ids>", defaults={"solution": False})
-@app.route("/pdf/solution/custom/<url_board_ids>", defaults={"solution": True})
+@app.route("/pdf/custom/<path:url_board_ids>", defaults={"solution": False})
+@app.route("/pdf/solution/custom/<path:url_board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
 def pdf_set_of_boards(url_board_ids, solution):
     """
@@ -337,9 +340,36 @@ def pdf_set_of_boards(url_board_ids, solution):
 
 
 # Here come functions to be added
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
+@must_login(PERM_MANAGE_USERS)
 def register_user():
-    pass
+    """
+    Register a new user account.
+    """
+    user = db.get_user(g.db, session["user"])
+
+    if request.method == "POST":
+        username = request.form.get("username", None)
+        password = request.form.get("password", None)
+        password2 = request.form.get("password2", None)
+
+        if not username:
+            flash("Username cannot be empty", "danger")
+            return redirect(url_for("register_user"))
+        if not password:
+            flash("Password cannot be empty", "warning")
+            return redirect(url_for("register_user"))
+        if password != password2:
+            flash("Passwords do not match", "warning")
+            return redirect(url_for("register_user"))
+
+        display = request.form.get("display", None)
+        permissions = [permission for permission in UserPermission.PERMISSIONS
+                       if request.form.get(permission.name, None) == str(permission.flag)]
+        message, status = db.register_user(g.db, username, password, display, permissions)
+        flash(message, "success" if status else "danger")
+
+    return render_template("register.html", user=user, permissions=UserPermission.PERMISSIONS)
 
 
 @app.route("/manage")
