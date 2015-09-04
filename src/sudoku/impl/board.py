@@ -5,7 +5,7 @@ from operator import and_
 from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
 from sudoku.impl import Cell, CellGroup
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class BoardImpl(object):
@@ -29,7 +29,7 @@ class BoardImpl(object):
         self._alphabet = alphabet
 
         if len(alphabet) != self.rows:
-            raise InvalidAlphabet("Alphabet length mismatch")
+            raise InvalidAlphabet('Alphabet length mismatch')
 
         # Create the board cells
         self._cells = [[Cell(x, y, self._alphabet) for y in xrange(self.cols)] for x in xrange(self.rows)]
@@ -164,7 +164,7 @@ class BoardImpl(object):
                 cell.set_symbol(cell.get_possible_symbol())
                 changed = True
             elif num_possible_symbols <= 0:
-                raise NoPossibleSymbols("Cell has no possible symbols")
+                raise NoPossibleSymbols('Cell has no possible symbols')
 
         return changed
 
@@ -341,7 +341,7 @@ class BoardImpl(object):
             as a single line string, with no spaces between the lines and blocks.
         :rtype: str
         """
-        return "".join(cell.symbol or " " for cell in self._iter_cells())
+        return ''.join(cell.symbol or ' ' for cell in self._iter_cells())
 
     def get_empty_cells_positions(self):
         """

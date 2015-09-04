@@ -4,7 +4,7 @@ import sqlite3
 from sudoku.board import SimpleBoard, Board
 from sudoku.server.users import User, UserPermission
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 LOGIN_QUERY = """
 select id, display, permissions from users
@@ -90,8 +90,8 @@ def connect_db(app):
     :return: A DB connection object.
     :rtype: :class:`sqlite3.Connection`
     """
-    print "connecting to %s" % app.config["DATABASE"]
-    db = sqlite3.connect(app.config["DATABASE"])
+    print 'connecting to %s' % app.config['DATABASE']
+    db = sqlite3.connect(app.config['DATABASE'])
     db.row_factory = sqlite3.Row
     db.text_factory = str
     return db
@@ -121,12 +121,12 @@ def login(db, username, password):
     :return: The user object, or ``None`` if not found.
     :rtype: :class:`~users.User`
     """
-    info = {"username": username,
-            "password": hash_password(password)}
+    info = {'username': username,
+            'password': hash_password(password)}
     cur = db.execute(LOGIN_QUERY, info)
     entry = cur.fetchone()
     if entry is not None:
-        return User(entry["id"], username, entry["display"], entry["permissions"])
+        return User(entry['id'], username, entry['display'], entry['permissions'])
     else:
         return None
 
@@ -142,11 +142,11 @@ def get_user(db, user_id):
     :return: The user object, or ``None`` if not found.
     :rtype: :class:`~users.User`
     """
-    info = {"id": user_id}
+    info = {'id': user_id}
     cur = db.execute(USER_QUERY, info)
     entry = cur.fetchone()
     if entry is not None:
-        return User(user_id, entry["username"], entry["display"], entry["permissions"])
+        return User(user_id, entry['username'], entry['display'], entry['permissions'])
     else:
         return None
 
@@ -169,15 +169,15 @@ def register_user(db, username, password, display, permissions):
     """
 
     try:
-        details = {"username": username,
-                   "password": hash_password(password),
-                   "display": display,
-                   "permissions": UserPermission.get_mask(permissions)}
+        details = {'username': username,
+                   'password': hash_password(password),
+                   'display': display,
+                   'permissions': UserPermission.get_mask(permissions)}
         db.execute(REGISTER_USER, details)
         db.commit()
-        return "User %s successfully created!" % (display if display else username), True
+        return 'User %s successfully created!' % (display if display else username), True
     except sqlite3.IntegrityError:
-        return "Unable to register %s" % username, False
+        return 'Unable to register %s' % username, False
 
 
 def list_users(db):
@@ -190,7 +190,7 @@ def list_users(db):
     """
     cur = db.cursor()
     cur.execute(LIST_USERS)
-    return [User(row["id"], row["username"], row["display"], row["permissions"]) for row in cur.fetchall()]
+    return [User(row['id'], row['username'], row['display'], row['permissions']) for row in cur.fetchall()]
 
 
 def get_user_details(db, user_id):
@@ -207,13 +207,13 @@ def get_user_details(db, user_id):
     :return: The query result, or ``None`` if not found.
     :rtype: tuple of :class:`~users.User` and int
     """
-    details = {"user_id": user_id}
+    details = {'user_id': user_id}
     cur = db.cursor()
     cur.execute(GET_USER_DETAILS, details)
     row = cur.fetchone()
     if not row:
         return None
-    return User(row["id"], row["username"], row["display"], row["permissions"]), row["num_boards"]
+    return User(row['id'], row['username'], row['display'], row['permissions']), row['num_boards']
 
 
 def edit_user_with_password(db, user_id, password, display, permissions):
@@ -230,10 +230,10 @@ def edit_user_with_password(db, user_id, password, display, permissions):
     :param permissions: The new user permissions.
     :type permissions: list of :class:`~users.UserPermission`-s
     """
-    details = {"user_id": user_id,
-               "password": hash_password(password),
-               "display": display,
-               "permissions": UserPermission.get_mask(permissions)}
+    details = {'user_id': user_id,
+               'password': hash_password(password),
+               'display': display,
+               'permissions': UserPermission.get_mask(permissions)}
     db.execute(EDIT_USER_WITH_PASSWORD, details)
     db.commit()
 
@@ -250,9 +250,9 @@ def edit_user_without_password(db, user_id, display, permissions):
     :param permissions: The new user permissions.
     :type permissions: list of :class:`~users.UserPermission`-s
     """
-    details = {"user_id": user_id,
-               "display": display,
-               "permissions": UserPermission.get_mask(permissions)}
+    details = {'user_id': user_id,
+               'display': display,
+               'permissions': UserPermission.get_mask(permissions)}
     db.execute(EDIT_USER_WITHOUT_PASSWORD, details)
     db.commit()
 
@@ -265,7 +265,7 @@ def delete_user(db, user_id):
     :param user_id: The user ID in the DB.
     :type user_id: int
     """
-    details = {"user_id": user_id}
+    details = {'user_id': user_id}
     cur = db.cursor()
     cur.execute(DELETE_USER, details)
     cur.execute(DELETE_USER_BOARDS, details)
@@ -285,11 +285,11 @@ def insert_board(db, user_id, board):
     :rtype: int
     """
 
-    details = {"uid": user_id,
-               "problem": str(board.problem),
-               "solution": str(board.solution),
-               "block_width": board.block_width,
-               "block_height": board.block_height}
+    details = {'uid': user_id,
+               'problem': str(board.problem),
+               'solution': str(board.solution),
+               'block_width': board.block_width,
+               'block_height': board.block_height}
     cur = db.cursor()
     cur.execute(INSERT_BOARD, details)
     return cur.lastrowid
@@ -305,7 +305,7 @@ def list_user_boards(db, user_id):
     :return: The boards (as dicts).
     :rtype: list
     """
-    details = {"uid": user_id}
+    details = {'uid': user_id}
     cur = db.cursor()
     cur.execute(LIST_USER_BOARDS, details)
     return cur.fetchall()
@@ -326,8 +326,8 @@ def get_user_board(db, board_id, user_id):
     :return: The board, or ``None`` if board does not exist.
     :rtype: :class:`~board.Board`
     """
-    details = {"id": board_id,
-               "uid": user_id}
+    details = {'id': board_id,
+               'uid': user_id}
     cur = db.cursor()
     cur.execute(GET_USER_BOARD, details)
 
@@ -335,11 +335,11 @@ def get_user_board(db, board_id, user_id):
     if not raw_board:
         return None
 
-    block_width = raw_board["block_width"]
-    block_height = raw_board["block_height"]
+    block_width = raw_board['block_width']
+    block_height = raw_board['block_height']
 
-    problem = SimpleBoard(block_width, block_height, raw_board["problem"])
-    solution = SimpleBoard(block_width, block_height, raw_board["solution"])
+    problem = SimpleBoard(block_width, block_height, raw_board['problem'])
+    solution = SimpleBoard(block_width, block_height, raw_board['solution'])
     return Board(block_width, block_height, problem, solution)
 
 
@@ -366,7 +366,7 @@ def get_board(db, board_id):
     :return: The board, or ``None`` if board does not exist.
     :rtype: :class:`~board.Board`
     """
-    details = {"id": board_id}
+    details = {'id': board_id}
     cur = db.cursor()
     cur.execute(GET_BOARD, details)
 
@@ -374,11 +374,11 @@ def get_board(db, board_id):
     if not raw_board:
         return None
 
-    block_width = raw_board["block_width"]
-    block_height = raw_board["block_height"]
+    block_width = raw_board['block_width']
+    block_height = raw_board['block_height']
 
-    problem = SimpleBoard(block_width, block_height, raw_board["problem"])
-    solution = SimpleBoard(block_width, block_height, raw_board["solution"])
+    problem = SimpleBoard(block_width, block_height, raw_board['problem'])
+    solution = SimpleBoard(block_width, block_height, raw_board['solution'])
     return Board(block_width, block_height, problem, solution)
 
 
@@ -396,7 +396,7 @@ def init_db(app, root_user, root_password):
     :type root_password: str
     """
     with closing(connect_db(app)) as db:
-        with app.open_resource("schema.sql", "r") as f:
+        with app.open_resource('schema.sql', 'r') as f:
             db.cursor().executescript(f.read())
         db.commit()
         register_user(db, root_user, root_password, None, UserPermission.PERMISSIONS)

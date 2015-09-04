@@ -4,7 +4,7 @@ from getpass import getuser, getpass
 from sudoku.server import app
 from sudoku.server.db import init_db
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 def _parse_args():
@@ -14,17 +14,17 @@ def _parse_args():
     :rtype: :class:`argparse.Namespace`
     """
 
-    parser = ArgumentParser(description="Initialize an empty DB")
-    parser.add_argument("-u", "--user",
+    parser = ArgumentParser(description='Initialize an empty DB')
+    parser.add_argument('-u', '--user',
                         default=getuser(),
-                        metavar="USERNAME",
-                        dest="user",
-                        help="Root user name")
-    parser.add_argument("-p", "--password",
+                        metavar='USERNAME',
+                        dest='user',
+                        help='Root user name')
+    parser.add_argument('-p', '--password',
                         default=None,
-                        metavar="PASSWORD",
-                        dest="password",
-                        help="Root user password")
+                        metavar='PASSWORD',
+                        dest='password',
+                        help='Root user password')
     return parser.parse_args()
 
 
@@ -37,9 +37,9 @@ def main():
     user = args.user
     password = args.password or getpass()
 
-    print "Initializing DB..."
+    print 'Initializing DB...'
     init_db(app, user, password)
-    print "Done!"
+    print 'Done!'
 
 
 if __name__ == '__main__':

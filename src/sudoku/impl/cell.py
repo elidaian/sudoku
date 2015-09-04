@@ -1,6 +1,6 @@
 from sudoku.exceptions import SymbolNotPossible
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class Cell(object):
@@ -30,7 +30,7 @@ class Cell(object):
 
         if symbol:
             if symbol not in alphabet:
-                raise SymbolNotPossible("Illegal symbol given")
+                raise SymbolNotPossible('Illegal symbol given')
             self._possible_symbols.remove(symbol)
 
     def __repr__(self):
@@ -38,7 +38,7 @@ class Cell(object):
         :return: A readable representation of this cell.
         :rtype: str
         """
-        return "Cell at <%d, %d> with value \"%s\"" % (self.x, self.y, self.symbol)
+        return 'Cell at <%d, %d> with value \'%s\'' % (self.x, self.y, self.symbol)
 
     def remove_possible_symbol(self, symbol):
         """
@@ -64,7 +64,7 @@ class Cell(object):
         """
 
         if self.symbol is not None or symbol not in self._possible_symbols:
-            raise SymbolNotPossible("Illegal symbol given")
+            raise SymbolNotPossible('Illegal symbol given')
         self.symbol = symbol
 
         for group in self._groups:
@@ -126,7 +126,7 @@ class Cell(object):
         :return: The only possible symbol.
         :rtype: str
         """
-        assert len(self._possible_symbols) == 1, "There is more than one possible symbol"
+        assert len(self._possible_symbols) == 1, 'There is more than one possible symbol'
         for symbol in self._possible_symbols:
             return symbol
 

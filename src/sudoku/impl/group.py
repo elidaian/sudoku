@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import ifilter
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class CellGroup(object):

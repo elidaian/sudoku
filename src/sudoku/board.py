@@ -1,4 +1,4 @@
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class SimpleBoard(object):
@@ -21,7 +21,7 @@ class SimpleBoard(object):
         """
         self._block_width = block_width
         self._block_height = block_height
-        self._data = data or (" " * (block_width * block_width * block_height * block_height))
+        self._data = data or (' ' * (block_width * block_width * block_height * block_height))
 
     @property
     def block_height(self):
@@ -115,8 +115,8 @@ class SimpleBoard(object):
         """
 
         # Define the separators
-        vsep = "-"
-        hsep = "|"
+        vsep = '-'
+        hsep = '|'
 
         # Build the board
         board_list = [[self[row, col] for col in xrange(self.cols)] for row in xrange(self.rows)]
@@ -127,7 +127,7 @@ class SimpleBoard(object):
         :return: A raw string representation of this board.
         :rtype: str
         """
-        return "".join("".join(self[row, col] for col in xrange(self.cols)) for row in xrange(self.rows))
+        return ''.join(''.join(self[row, col] for col in xrange(self.cols)) for row in xrange(self.rows))
 
 
 class Board(object):
@@ -135,7 +135,7 @@ class Board(object):
     Represents a sudoku board, with a problem and solution.
     """
 
-    DIMENSION_MISMATCH_ERROR = "Dimension mismatch"
+    DIMENSION_MISMATCH_ERROR = 'Dimension mismatch'
 
     def __init__(self, block_width, block_height, problem, solution=None):
         """

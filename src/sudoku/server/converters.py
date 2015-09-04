@@ -1,7 +1,7 @@
 from itertools import imap
 from werkzeug.routing import BaseConverter, ValidationError
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class BooleanConverter(BaseConverter):
@@ -14,7 +14,7 @@ class BooleanConverter(BaseConverter):
     Any other value will cause an error.
     """
 
-    regex = "(?:true|false)"
+    regex = '(?:true|false)'
 
     def to_python(self, value):
         """
@@ -26,9 +26,9 @@ class BooleanConverter(BaseConverter):
         :rtype: bool
         """
 
-        if value == "true":
+        if value == 'true':
             return True
-        elif value == "false":
+        elif value == 'false':
             return False
         raise ValidationError()
 
@@ -41,7 +41,7 @@ class BooleanConverter(BaseConverter):
         :return: The URL conversion.
         :rtype: str
         """
-        return "true" if value else "false"
+        return 'true' if value else 'false'
 
 
 class IntegersListConverter(BaseConverter):
@@ -49,7 +49,7 @@ class IntegersListConverter(BaseConverter):
     Convert a list of ints from the URL.
     """
 
-    regex = r"[^/]?(/?\d+)+"
+    regex = r'[^/]?(/?\d+)+'
 
     def to_python(self, value):
         """
@@ -60,7 +60,7 @@ class IntegersListConverter(BaseConverter):
         :return: The Python list.
         :rtype: list of ints
         """
-        return map(int, value.split("/"))
+        return map(int, value.split('/'))
 
     def to_url(self, value):
         """
@@ -71,4 +71,4 @@ class IntegersListConverter(BaseConverter):
         :return: The URL list.
         :rtype: str
         """
-        return "/".join(imap(str, value))
+        return '/'.join(imap(str, value))

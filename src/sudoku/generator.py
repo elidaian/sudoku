@@ -9,11 +9,11 @@ from random import choice
 from exceptions import NoPossibleSymbols
 from sudoku.impl.board import BoardImpl
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 from board import Board, SimpleBoard
 
-DEFAULT_ALPHABET = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+DEFAULT_ALPHABET = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 """ Default alphabet to be used if no alphabet is given. """
 
 
@@ -172,7 +172,7 @@ def _construct_board(block_width, block_height, alphabet):
     problem = _construct_from_assignments(block_width, block_height, alphabet, pure_assignments)
     solution = problem.copy()
     solution.solve_possible()
-    assert solution.is_final(), "Cannot solve problem, this is a BUG"
+    assert solution.is_final(), 'Cannot solve problem, this is a BUG'
 
     return str(problem), str(solution)
 
@@ -194,7 +194,7 @@ def generate(block_width, block_height, alphabet=None):
 
     if alphabet is None:
         if board_size > len(DEFAULT_ALPHABET):
-            raise IndexError, "Board too long for default alphabet"
+            raise IndexError, 'Board too long for default alphabet'
         alphabet = DEFAULT_ALPHABET[:board_size]
 
     problem, solution = _construct_board(block_width, block_height, alphabet)

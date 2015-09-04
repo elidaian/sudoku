@@ -1,4 +1,4 @@
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 class UserPermission(object):
@@ -63,10 +63,10 @@ class UserPermission(object):
 
 
 # Define the permissions
-PERM_CREATE_BOARD = UserPermission("CREATE_BOARD", "Create boards", True)
-PERM_MANAGE_USERS = UserPermission("MANAGE_USERS", "Manage users", False)
-PERM_SHOW_OTHER_USER_BOARDS = UserPermission("SHOW_OTHER_USERS_BOARDS",
-                                             "Show other user\'s boards", False)
+PERM_CREATE_BOARD = UserPermission('CREATE_BOARD', 'Create boards', True)
+PERM_MANAGE_USERS = UserPermission('MANAGE_USERS', 'Manage users', False)
+PERM_SHOW_OTHER_USER_BOARDS = UserPermission('SHOW_OTHER_USERS_BOARDS',
+                                             'Show other user\'s boards', False)
 
 
 class User(object):
@@ -128,10 +128,10 @@ class User(object):
         :return: jsonable object with the same data as this user.
         :rtype: bool
         """
-        return {"id": self.id,
-                "username": self.username,
-                "display": self.display,
-                "permisions": UserPermission.get_mask(self.permissions)}
+        return {'id': self.id,
+                'username': self.username,
+                'display': self.display,
+                'permisions': UserPermission.get_mask(self.permissions)}
 
     @staticmethod
     def from_json(json):
@@ -142,4 +142,4 @@ class User(object):
         :return: The corresponding :class:`~users.User` object.
         :rtype: :class:`~users.User`
         """
-        return User(json["id"], json["username"], json["display"], json["permissions"])
+        return User(json['id'], json['username'], json['display'], json['permissions'])

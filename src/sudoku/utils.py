@@ -1,4 +1,4 @@
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 import itertools
 
@@ -13,4 +13,4 @@ def enum(*sequential, **named):
     :return: Enum
     """
     sequential_dict = itertools.izip(sequential, xrange(len(sequential)))
-    return type("Enum", (), dict(sequential_dict, named))
+    return type('Enum', (), dict(sequential_dict, named))
