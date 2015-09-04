@@ -63,7 +63,6 @@ def _construct_assignments(block_width, block_height, alphabet):
     assignments = []
     possible_positions = solution.get_empty_cells_positions()
 
-
     # Main loop for assigning values
     while not solution.is_final():
         problem = solution
@@ -199,7 +198,7 @@ def generate(block_width, block_height, alphabet=None):
 
     if alphabet is None:
         if board_size > len(DEFAULT_ALPHABET):
-            raise IndexError, 'Board too long for default alphabet'
+            raise IndexError('Board too long for default alphabet')
         alphabet = DEFAULT_ALPHABET[:board_size]
 
     problem, solution = _construct_board(block_width, block_height, alphabet)
