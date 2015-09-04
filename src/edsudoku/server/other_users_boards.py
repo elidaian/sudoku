@@ -3,10 +3,10 @@ from flask.helpers import url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from sudoku.server import db, app
-from sudoku.server.misc import must_login
-from sudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD
-from sudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards
+from edsudoku.server import db, app
+from edsudoku.server.misc import must_login
+from edsudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD
+from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -34,7 +34,7 @@ def view_other_board():
     """
     :return: A page that asks you if you want to select a single board or multiple boards. If a ``board_id`` argument is
         given in the request, the user will be redirected to
-        :meth:`~sudoku.server.other_users_boards.view_specific_other_board`.
+        :meth:`~edsudoku.server.other_users_boards.view_specific_other_board`.
     :rtype: flask.Response
     """
     if 'board_id' in request.args:
@@ -106,8 +106,8 @@ def pdf_specific_other_board(board_id, solution):
 @must_login(PERM_CREATE_BOARD)
 def view_other_set():
     """
-    Process the results of the 'View set of boards' form (see :meth:`~sudoku.server.my_boards.list_boards`), and
-    redirect to the right location (:meth:`~sudoku.server.other_users_boards.view_set_of_other_boards`).
+    Process the results of the 'View set of boards' form (see :meth:`~edsudoku.server.my_boards.list_boards`), and
+    redirect to the right location (:meth:`~edsudoku.server.other_users_boards.view_set_of_other_boards`).
 
     :return: A redirection.
     :rtype: flask.Response

@@ -10,7 +10,7 @@ class SimpleBoard(object):
 
     def __init__(self, block_width, block_height, data=None):
         """
-        Create a new sudoku board.
+        Create a new edsudoku board.
 
         :param block_width: The block width in the board.
         :type block_width: int

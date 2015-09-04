@@ -1,7 +1,7 @@
 import pytest
 
-from sudoku.exceptions import SymbolNotPossible
-from sudoku.impl import Cell
+from edsudoku.exceptions import SymbolNotPossible
+from edsudoku.impl import Cell
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

@@ -2,7 +2,7 @@
 Entry point for running the server as a standalone server.
 """
 
-from sudoku.server import app
+from edsudoku.server import app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

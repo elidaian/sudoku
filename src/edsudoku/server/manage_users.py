@@ -3,9 +3,9 @@ from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from sudoku.server import db, app
-from sudoku.server.misc import must_login
-from sudoku.server.users import PERM_MANAGE_USERS, UserPermission
+from edsudoku.server import db, app
+from edsudoku.server.misc import must_login
+from edsudoku.server.users import PERM_MANAGE_USERS, UserPermission
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -76,7 +76,7 @@ def edit_user(user_id):
     * If this page was requested with a POST method, a user editing is processed.
 
       * If the form was processed successfully, the user is redirected to the management page
-        (see :meth:`~sudoku.server.manage_users.manage_users`).
+        (see :meth:`~edsudoku.server.manage_users.manage_users`).
       * Otherwise, the form is returned with an error explanation.
 
     :param user_id: The user ID to edit.
@@ -127,7 +127,7 @@ def delete_user(user_id):
     * If this page was requested with GET method, a form that confirms that this user should be removed is returned.
     * If this page was requested with POST method, the validation form is checked. If it is validated successfully.
         Later (even if the user was not deleted) the user is redirected to the management page (see
-        :meth:`~sudoku.server.manage_users.manage_users`).
+        :meth:`~edsudoku.server.manage_users.manage_users`).
 
     :param user_id: The user ID to be deleted.
     :type user_id: int

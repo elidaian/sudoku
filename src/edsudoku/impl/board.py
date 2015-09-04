@@ -2,8 +2,8 @@ from collections import defaultdict
 from itertools import chain, imap, product, ifilter
 from operator import and_
 
-from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
-from sudoku.impl import Cell, CellGroup
+from edsudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
+from edsudoku.impl import Cell, CellGroup
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

@@ -3,12 +3,12 @@ from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from sudoku.exceptions import ErrorWithMessage
-from sudoku.generator import generate
-from sudoku.server import db, app
-from sudoku.server.misc import must_login
-from sudoku.server.users import PERM_CREATE_BOARD
-from sudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards
+from edsudoku.exceptions import ErrorWithMessage
+from edsudoku.generator import generate
+from edsudoku.server import db, app
+from edsudoku.server.misc import must_login
+from edsudoku.server.users import PERM_CREATE_BOARD
+from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -91,7 +91,7 @@ def view_last_boards():
     """
     View the last created boards.
 
-    Actually, this function redirects to :meth:`~sudoku.server.my_boards.view_set_of_boards` in such way that the last
+    Actually, this function redirects to :meth:`~edsudoku.server.my_boards.view_set_of_boards` in such way that the last
     generated board/s will be viewd.
 
     :return: A redirection.
@@ -185,8 +185,8 @@ def pdf_specific_board(board_id, solution):
 @must_login(PERM_CREATE_BOARD)
 def view_set():
     """
-    Process the results of the 'View set of boards' form (see :meth:`~sudoku.server.my_boards.list_boards`), and
-    redirect to the right location (:meth:`~sudoku.server.my_boards.view_set_of_boards`).
+    Process the results of the 'View set of boards' form (see :meth:`~edsudoku.server.my_boards.list_boards`), and
+    redirect to the right location (:meth:`~edsudoku.server.my_boards.view_set_of_boards`).
 
     :return: A redirection.
     :rtype: flask.Response

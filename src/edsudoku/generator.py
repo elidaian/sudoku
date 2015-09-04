@@ -7,7 +7,7 @@ This module generates sudoku boards.
 from random import choice
 
 from exceptions import NoPossibleSymbols
-from sudoku.impl.board import BoardImpl
+from edsudoku.impl.board import BoardImpl
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

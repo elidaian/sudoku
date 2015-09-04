@@ -2,7 +2,7 @@ import os
 
 from flask.app import Flask
 
-from sudoku.server.converters import BooleanConverter, IntegersListConverter
+from edsudoku.server.converters import BooleanConverter, IntegersListConverter
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -15,7 +15,7 @@ if not os.path.isfile(app.config['DATABASE']):
     app.config['DATABASE'] = os.path.join(app.instance_path, app.config['DATABASE'])
 
 # Import the modules that contain the pages
-import sudoku.server.login
-import sudoku.server.manage_users
-import sudoku.server.my_boards
-import sudoku.server.other_users_boards
+import edsudoku.server.login
+import edsudoku.server.manage_users
+import edsudoku.server.my_boards
+import edsudoku.server.other_users_boards

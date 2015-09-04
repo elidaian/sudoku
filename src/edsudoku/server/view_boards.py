@@ -3,7 +3,7 @@ from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from sudoku.server import db
+from edsudoku.server import db
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

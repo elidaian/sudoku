@@ -3,7 +3,7 @@ from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from sudoku.server import db, app
+from edsudoku.server import db, app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -60,7 +60,7 @@ def login():
 def logout():
     """
     Log out and end the current session (if any).
-    Later redirect to the main page (see :meth:`~sudoku.server.login.main_page`).
+    Later redirect to the main page (see :meth:`~edsudoku.server.login.main_page`).
 
     :return: A redirection.
     :rtype: flask.Response

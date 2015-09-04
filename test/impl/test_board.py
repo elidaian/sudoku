@@ -1,7 +1,7 @@
 import pytest
 
-from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
-from sudoku.impl.board import BoardImpl
+from edsudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
+from edsudoku.impl.board import BoardImpl
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

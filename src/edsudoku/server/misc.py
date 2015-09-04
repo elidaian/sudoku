@@ -4,7 +4,7 @@ from flask.globals import session, request, g
 from flask.helpers import url_for, flash, send_from_directory
 from werkzeug.utils import redirect
 
-from sudoku.server import db, app
+from edsudoku.server import db, app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -32,7 +32,7 @@ def must_login(permission=None):
     Wraps a page that requires a logged in viewer.
 
     :param permission: If given, the viewing user must have the given permission.
-    :type permission: :class:`~sudoku.server.users.UserPermissions`
+    :type permission: :class:`~edsudoku.server.users.UserPermissions`
     :return: A wrapped function with this check.
     :rtype: function
     """

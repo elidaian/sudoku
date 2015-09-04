@@ -1,4 +1,4 @@
-from sudoku.exceptions import SymbolNotPossible
+from edsudoku.exceptions import SymbolNotPossible
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

@@ -1,5 +1,5 @@
 from time import time
-from sudoku.generator import generate
+from edsudoku.generator import generate
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 

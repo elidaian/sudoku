@@ -1,4 +1,4 @@
-from sudoku.impl import Cell, CellGroup
+from edsudoku.impl import Cell, CellGroup
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 

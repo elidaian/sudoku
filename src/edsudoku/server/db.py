@@ -1,8 +1,8 @@
 from contextlib import closing
 import hashlib
 import sqlite3
-from sudoku.board import SimpleBoard, Board
-from sudoku.server.users import User, UserPermission
+from edsudoku.board import SimpleBoard, Board
+from edsudoku.server.users import User, UserPermission
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
