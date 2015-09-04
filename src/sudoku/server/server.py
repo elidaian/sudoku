@@ -1,18 +1,16 @@
 from functools import wraps
-from itertools import imap
 
 from flask.app import Flask
 from flask.globals import session, g, request
 from flask.helpers import url_for, flash, send_from_directory
 from flask.templating import render_template
-
 from werkzeug.utils import redirect
 
 from sudoku.exceptions import ErrorWithMessage
 from sudoku.generator import generate
 from sudoku.server import db
 from sudoku.server.converters import BooleanConverter, IntegersListConverter
-from sudoku.server.users import PERM_CREATE_BOARD, PERM_MANAGE_USERS, UserPermission
+from sudoku.server.users import PERM_CREATE_BOARD, PERM_MANAGE_USERS, UserPermission, PERM_SHOW_OTHER_USER_BOARDS
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 
@@ -23,6 +21,7 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("sudoku.cfg", silent=True)
 app.url_map.converters["bool"] = BooleanConverter
 app.url_map.converters["list"] = IntegersListConverter
+
 
 @app.before_request
 def open_db():
@@ -68,7 +67,10 @@ def view_one_board(board_id, solution, mode, root):
     """
     View a single board.
     """
-    board = db.get_user_board(g.db, board_id, session["user"])
+    if root:
+        board = db.get_board(g.db, board_id)
+    else:
+        board = db.get_user_board(g.db, board_id, session["user"])
 
     if board is None:
         flash("Board not found", "warning")
@@ -89,8 +91,11 @@ def view_many_boards(board_ids, solution, mode, root):
     """
     View many boards.
     """
-    boards = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
-              for board_id in board_ids]
+    if root:
+        boards = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
+    else:
+        boards = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
+                  for board_id in board_ids]
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
@@ -425,9 +430,105 @@ def delete_user(user_id):
                            num_boards=num_boards, user_id=user_id)
 
 
-@app.route("/list_other")
-def list_other_boards():
-    pass
+@app.route("/other/list", defaults={"many": False})
+@app.route("/other/list/<bool:many>")
+@must_login(PERM_SHOW_OTHER_USER_BOARDS)
+def list_other_boards(many):
+    """
+    List all the boards of the other users.
+    """
+    boards = db.list_all_boards(g.db)
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", boards=boards, function="list_many" if many else "list",
+                           root=True, user=user)
+
+
+@app.route("/other/view")
+@must_login(PERM_CREATE_BOARD)
+def view_other_board():
+    """
+    View a board.
+    """
+    if "board_id" in request.args:
+        is_solution = bool(request.args.get("solution", False))
+        return redirect(url_for("view_specific_board", board_id=request.args["board_id"], solution=is_solution))
+
+    user = db.get_user(g.db, session["user"])
+    return render_template("view_board.html", function="main", root=True, user=user)
+
+
+@app.route("/other/view/<int:board_id>", defaults={"solution": False})
+@app.route("/other/view/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def view_specific_other_board(board_id, solution):
+    """
+    View one board insite.
+    """
+    return view_one_board(board_id, solution, INSITE_BOARD_VIEW, True)
+
+
+@app.route("/other/print/<int:board_id>", defaults={"solution": False})
+@app.route("/other/print/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def print_specific_other_board(board_id, solution):
+    """
+    Print one board.
+    """
+    return view_one_board(board_id, solution, PRINT_BOARD_VIEW, True)
+
+
+@app.route("/other/pdf/<int:board_id>", defaults={"solution": False})
+@app.route("/other/pdf/solutions/<int:board_id>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def pdf_specific_other_board(board_id, solution):
+    """
+    Get the PDF of one board.
+    """
+    return "Not supported (yet)"
+
+
+@app.route("/other/view/custom", methods=["POST"])
+@must_login(PERM_CREATE_BOARD)
+def view_other_set():
+    """
+    Get the reslts of the "View set of boards" form, and redirect to the right location.
+    """
+    board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
+    board_ids.sort()
+
+    solution = "solution" in request.form
+
+    return redirect(url_for("view_set_of_other_boards", board_ids=board_ids, solution=solution))
+
+
+@app.route("/other/view/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/other/view/solution/custom/<list:board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def view_set_of_other_boards(board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    return view_many_boards(board_ids, solution, INSITE_BOARD_VIEW, True)
+
+
+@app.route("/other/print/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/other/print/solution/custom/<list:board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def print_set_of_other_boards(board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    return view_many_boards(board_ids, solution, PRINT_BOARD_VIEW, True)
+
+
+@app.route("/other/pdf/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/other/pdf/solution/custom/<list:board_ids>", defaults={"solution": True})
+@must_login(PERM_CREATE_BOARD)
+def pdf_set_of_other_boards(board_ids, solution):
+    """
+    View a set of boards insite.
+    """
+    return "Not implemented (yet)"
 
 
 @app.route("/fonts/<path:filename>")

@@ -10,9 +10,14 @@
 {%- block body %}
     {%- if root %}
         {%- set list_func = "list_other_boards" %}
-        {%- set view_specific_form = "other_user" %}
-        {%- set view_specific_func = "other_specific_board" %}
-        {%- set view_set_func = "other_board_set" %}
+        {%- set view_specific_form = "view_other_board" %}
+        {%- set view_specific_func = "view_specific_other_board" %}
+        {%- set print_specific_func = "print_specific_other_board" %}
+        {%- set pdf_specific_func = "pdf_specific_other_board" %}
+        {%- set view_set_form = "view_other_set" %}
+        {%- set view_set_func = "view_set_of_other_boards" %}
+        {%- set print_set_func = "print_set_of_other_boards" %}
+        {%- set pdf_set_func = "pdf_set_of_other_boards" %}
     {%- else %}
         {%- set list_func = "list_boards" %}
         {%- set view_specific_form = "view_board" %}
@@ -173,12 +178,9 @@
         <div class="row">
             <p>
                 You may always check out the
-                {% if is_solution -%}
-                    <a href="{{ url_for(view_specific_func, board_id=id, solution=False) }}">real problem</a>
-                {%- else -%}
-                    <a href="{{ url_for(view_specific_func, board_id=id, solution=True) }}">solution</a>
-                {%- endif -%}
-                .
+                <a href="{{ url_for(view_specific_func, board_id=id, solution=not is_solution) }}">
+                    {{- "real problem" if is_solution else "solution" -}}
+                </a>.
             </p>
         </div>
         <br/>
@@ -232,16 +234,9 @@
         <div class="row">
             <p>
                 You may always check out the
-                {% if is_solution -%}
-                    <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=False) }}">
-                        real problems
-                    </a>
-                {%- else -%}
-                    <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=True) }}">
-                        solutions
-                    </a>
-                {%- endif -%}
-                .
+                <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=not is_solution) }}">
+                    {{- "real problems" if is_solution else "solutions" -}}
+                </a>.
             </p>
         </div>
     {%- endif %}

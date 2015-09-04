@@ -322,7 +322,7 @@ def get_user_board(db, board_id, user_id):
     :type board_id: int
     :param user_id: The user ID in the DB.
     :type user_id: int
-    :return: The board.
+    :return: The board, or ``None`` if board does not exist.
     :rtype: :class:`~board.Board`
     """
     details = {"id": board_id,
@@ -331,6 +331,9 @@ def get_user_board(db, board_id, user_id):
     cur.execute(GET_USER_BOARD, details)
 
     raw_board = cur.fetchone()
+    if not raw_board:
+        return None
+
     block_width = raw_board["block_width"]
     block_height = raw_board["block_height"]
 
@@ -359,7 +362,7 @@ def get_board(db, board_id):
     :type db: :class:`sqlite3.Connection`
     :param board_id: The board ID.
     :type board_id: int
-    :return: The board.
+    :return: The board, or ``None`` if board does not exist.
     :rtype: :class:`~board.Board`
     """
     details = {"id": board_id}
@@ -367,6 +370,9 @@ def get_board(db, board_id):
     cur.execute(GET_BOARD, details)
 
     raw_board = cur.fetchone()
+    if not raw_board:
+        return None
+
     block_width = raw_board["block_width"]
     block_height = raw_board["block_height"]
 
