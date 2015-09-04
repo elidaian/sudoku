@@ -1,6 +1,6 @@
 from sudoku.impl import Cell, CellGroup
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 def test_cell_group_is_valid_empty_cells(alphabet10):
@@ -14,8 +14,8 @@ def test_cell_group_is_valid_partially_empty_valid(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
     group = CellGroup(set(cells))
 
-    cells[0].set_symbol("0")
-    cells[1].set_symbol("1")
+    cells[0].set_symbol('0')
+    cells[1].set_symbol('1')
 
     assert group.is_valid()
 
@@ -47,8 +47,8 @@ def test_cell_group_update_possible_symbols_partially_empty(alphabet10):
     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
     group = CellGroup(set(cells))
 
-    cells[2].set_symbol("2")
-    cells[4].set_symbol("7")
+    cells[2].set_symbol('2')
+    cells[4].set_symbol('7')
 
 
 def test_cell_group_contains_cells_true_all(alphabet10):
@@ -83,9 +83,9 @@ def test_cell_group_contains_cells_false_addition(alphabet10):
 #     cells = [Cell(0, y, alphabet10) for y in xrange(10)]
 #     group = CellGroup(set(cells))
 #
-#     cells[0].set_symbol("0")
-#     cells[1].set_symbol("1")
-#     cells[5].set_symbol("0")
+#     cells[0].set_symbol('0')
+#     cells[1].set_symbol('1')
+#     cells[5].set_symbol('0')
 #
 #     assert not group.is_valid()
 
@@ -94,6 +94,6 @@ def test_cell_group_contains_cells_false_addition(alphabet10):
 #     cells = [Cell(0, y, alphabet10, str(y)) for y in xrange(10)]
 #     group = CellGroup(set(cells))
 #
-#     cells[4].set_symbol("5")
+#     cells[4].set_symbol('5')
 #
 #     assert not group.is_valid()
