@@ -3,3 +3,4 @@ build
 *.pyc
 *.swp
 src/instance/sudoku.db
+doc/_build
