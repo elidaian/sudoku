@@ -1,67 +1,82 @@
 {%- extends 'layout.html' %}
 {%- from 'html_board.html' import html_board %}
-{%- macro disp_user(display, username) -%}
-    {% if display %}{{ display }}{% else %}{{ username }}{% endif %}
+{% if root %}
+    {%- set view_specific_form = 'view_other_board' %}
+    {%- set view_specific_func = 'view_specific_other_board' %}
+    {%- set print_specific_func = 'print_specific_other_board' %}
+    {%- set pdf_specific_func = 'pdf_specific_other_board' %}
+    {%- set view_set_func = 'view_set_of_other_boards' %}
+    {%- set print_set_func = 'print_set_of_other_boards' %}
+    {%- set pdf_set_func = 'pdf_set_of_other_boards' %}
+{% else %}
+    {%- set view_specific_form = 'view_board' %}
+    {%- set view_specific_func = 'view_specific_board' %}
+    {%- set print_specific_func = 'print_specific_board' %}
+    {%- set pdf_specific_func = 'pdf_specific_board' %}
+    {%- set view_set_func = 'view_set_of_boards' %}
+    {%- set print_set_func = 'print_set_of_boards' %}
+    {%- set pdf_set_func = 'pdf_set_of_boards' %}
+{% endif %}
+{% if many %}
+    {% set view_func = view_set_func %}
+    {% set print_func = print_set_func %}
+    {% set pdf_func = pdf_set_func %}
+{% else %}
+    {% set view_func = view_specific_func %}
+    {% set print_func = print_specific_func %}
+    {% set pdf_func = pdf_specific_func %}
+{% endif %}
+{% macro get_url(func, sol) -%}
+    {%- if many -%}
+        {{ url_for(func, board_ids=board_ids, solution=sol) }}
+    {%- else -%}
+        {{ url_for(func, board_id=board_id, solution=sol) }}
+    {%- endif -%}
 {%- endmacro %}
+{% macro prefix() %}
+    <div class="row">
+        Other views:
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                View <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a href="{{ get_url(print_func, is_solution) }}" target="_blank">Print</a>
+                </li>
+                <li>
+                    <a href="{{ get_url(pdf_func, is_solution) }}" target="_blank">PDF</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endmacro %}
+{% macro postfix() %}
+    <div class="row">
+        <p>
+            You may always check out the
+            <a href="{{ get_url(view_func, not is_solution) }}">
+                {{- 'real problem' if is_solution else 'solution' -}}
+                {%- if many -%}s{%- endif -%}
+            </a>.
+        </p>
+    </div>{% endmacro %}
 {%- block title %}View Board{% endblock %}
 {%- block scripts %}
     <link rel="stylesheet" href="{{ url_for('static', filename='board.css') }}" type="text/css"/>
 {%- endblock %}
 {%- block body %}
-    {%- if root %}
-        {%- set list_func = 'list_other_boards' %}
-        {%- set view_specific_form = 'view_other_board' %}
-        {%- set view_specific_func = 'view_specific_other_board' %}
-        {%- set print_specific_func = 'print_specific_other_board' %}
-        {%- set pdf_specific_func = 'pdf_specific_other_board' %}
-        {%- set view_set_form = 'view_other_set' %}
-        {%- set view_set_func = 'view_set_of_other_boards' %}
-        {%- set print_set_func = 'print_set_of_other_boards' %}
-        {%- set pdf_set_func = 'pdf_set_of_other_boards' %}
-    {%- else %}
-        {%- set list_func = 'list_boards' %}
-        {%- set view_specific_form = 'view_board' %}
-        {%- set view_specific_func = 'view_specific_board' %}
-        {%- set print_specific_func = 'print_specific_board' %}
-        {%- set pdf_specific_func = 'pdf_specific_board' %}
-        {%- set view_set_form = 'view_set' %}
-        {%- set view_set_func = 'view_set_of_boards' %}
-        {%- set print_set_func = 'print_set_of_boards' %}
-        {%- set pdf_set_func = 'pdf_set_of_boards' %}
-    {%- endif %}
-    {%- if function == 'view' %}
-        <div class="row">
-            Other views:
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    View <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="{{ url_for(print_specific_func, board_id=id, solution=is_solution) }}"
-                           target="_blank">
-                            Print
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for(pdf_specific_func, board_id=id, solution=is_solution) }}"
-                           target="_blank">
-                            PDF
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        {{ html_board(board, id, False, is_solution) }}
-        <div class="row">
-            <p>
-                You may always check out the
-                <a href="{{ url_for(view_specific_func, board_id=id, solution=not is_solution) }}">
-                    {{- 'real problem' if is_solution else 'solution' -}}
-                </a>.
-            </p>
-        </div>
+    {{ prefix() }}
+    {% if many %}
+        {% for board, board_id in boards %}
+            {{ html_board(board, board_id, False, is_solution) }}
+        {% endfor %}
+    {% else %}
+        {{ html_board(board, board_id, False, is_solution) }}
+    {% endif %}
+    {{ postfix() }}
+    {% if not many %}
         <br/>
         <div class="row">
             <h3>View Another Board</h3>
@@ -83,40 +98,5 @@
                 <button type="submit" class="btn btn-default">Go</button>
             </form>
         </div>
-    {%- elif function == 'view_many' %}
-        <div class="row">
-            Other views:
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    View <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="{{ url_for(print_set_func, board_ids=board_ids, solution=is_solution) }}"
-                           target="_blank">
-                            Print
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for(pdf_set_func, board_ids=board_ids, solution=is_solution) }}"
-                           target="_blank">
-                            PDF
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        {%- for board, id in boards %}
-            {{ html_board(board, id, False, is_solution) }}
-        {%- endfor %}
-        <div class="row">
-            <p>
-                You may always check out the
-                <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=not is_solution) }}">
-                    {{- 'real problems' if is_solution else 'solutions' -}}
-                </a>.
-            </p>
-        </div>
-    {%- endif %}
+    {% endif %}
 {%- endblock %}

@@ -26,10 +26,10 @@ def view_one_board(board_id, solution, mode, root):
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session['user'])
-        return render_template('view_board.html', function='view', board=board, id=board_id, is_solution=solution,
+        return render_template('view_board.html', many=False, board=board, board_id=board_id, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
-        return render_template('print_board.html', multi_board=False, board=board, id=board_id, is_solution=solution)
+        return render_template('print_board.html', multi_board=False, board=board, board_id=board_id, is_solution=solution)
     else:
         flash('Invalid mode', 'warning')
         return redirect(url_for('main_page'))
@@ -47,8 +47,8 @@ def view_many_boards(board_ids, solution, mode, root):
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session['user'])
-        return render_template('view_board.html', function='view_many', boards=boards, is_solution=solution,
-                               root=root, user=user, board_ids=board_ids)
+        return render_template('view_board.html', many=True, boards=boards, board_ids=board_ids, is_solution=solution,
+                               root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
         return render_template('print_board.html', multi_board=True, boards=boards, is_solution=solution)
     else:
