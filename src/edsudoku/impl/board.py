@@ -174,9 +174,10 @@ class BoardImpl(object):
         """
         Split groups where possible.
 
-        A group of size $n$ can be split if there is a subgroup of size $0 < k < n$ cells in this group, such that
-        these cells have the same $k$ possible symbols. In this case, this group can be considered as two different
-        groups. The subgroup with a possible alphabet of the $k$ symbols, and the complementary subgroup.
+        A group of size :math:`n`$ can be split if there is a subgroup of size :math:`0 < k < n` cells in this group,
+        such that these cells have the same :math:`k` possible symbols. In this case, this group can be considered as
+        two different groups. The subgroup with a possible alphabet of the :math:`k` symbols, and the complementary
+        subgroup.
 
         :return: ``True`` iff a change to the board was done.
         :rtype: bool
@@ -219,8 +220,8 @@ class BoardImpl(object):
 
     def _remove_from_other_groups(self):
         """
-        If a symbol is possible in only $n$ cells of a group, and all these $n$ cells are also a part of another group,
-        this symbol should not be possible in any other cell of the other group.
+        If a symbol is possible in only :math:`n` cells of a group, and all these $n$ cells are also a part of another
+        group, this symbol should not be possible in any other cell of the other group.
 
         :return: ``True`` iff a change has been done.
         :rtype: bool
