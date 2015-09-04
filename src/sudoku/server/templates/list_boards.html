@@ -15,10 +15,16 @@
 {% endmacro %}
 {% macro board_badges(board) %}
     <span class="badge">
-        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=True) }}">Solution</a>
+        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=True) }}">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            Solution
+        </a>
     </span>
     <span class="badge">
-        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=False) }}">Problem</a>
+        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=False) }}">
+            <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+            Problem
+        </a>
     </span>
 {% endmacro %}
 {%- macro disp_user(display, username) -%}
