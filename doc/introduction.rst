@@ -1,7 +1,7 @@
 Introduction
 ************
 
-edsudoku is an utility and website for generating solvable sudoku puzzles.
+``edsudoku`` is an utility and website for generating solvable sudoku puzzles.
 It is named after its developer, Eli Daian.
 
 Basic Motivation

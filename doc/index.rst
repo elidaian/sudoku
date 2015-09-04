@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to edsudoku's documentation!
-************************************
+Welcome to ``edsudoku``'s documentation!
+****************************************
 
 This is an utility and website for generating solvable sudoku puzzles.
 
