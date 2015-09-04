@@ -11,6 +11,7 @@ from werkzeug.utils import redirect
 from sudoku.exceptions import ErrorWithMessage
 from sudoku.generator import generate
 from sudoku.server import db
+from sudoku.server.converters import BooleanConverter
 from sudoku.server.users import PERM_CREATE_BOARD, PERM_MANAGE_USERS, UserPermission
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -20,7 +21,7 @@ PRINT_BOARD_VIEW = 1
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("sudoku.cfg", silent=True)
-
+app.url_map.converters["bool"] = BooleanConverter
 
 @app.before_request
 def open_db():
@@ -222,8 +223,8 @@ def create_board():
                            user=user)
 
 
-@app.route("/view/list", defaults={"many": 0})
-@app.route("/view/list/<int:many>")
+@app.route("/view/list", defaults={"many": False})
+@app.route("/view/list/<bool:many>")
 @must_login(PERM_CREATE_BOARD)
 def list_boards(many):
     """
