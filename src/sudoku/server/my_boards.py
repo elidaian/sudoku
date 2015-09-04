@@ -82,8 +82,7 @@ def list_boards(many):
 
     boards = db.list_user_boards(g.db, session['user'])
     user = db.get_user(g.db, session['user'])
-    return render_template('view_board.html', boards=boards, function='list_many' if many else 'list',
-                           root=False, user=user)
+    return render_template('list_boards.html', boards=boards, many=many, root=False, user=user)
 
 
 @app.route('/view/last')

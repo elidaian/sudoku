@@ -25,8 +25,7 @@ def list_other_boards(many):
     """
     boards = db.list_all_boards(g.db)
     user = db.get_user(g.db, session['user'])
-    return render_template('view_board.html', boards=boards, function='list_many' if many else 'list',
-                           root=True, user=user)
+    return render_template('list_boards.html', boards=boards, many=many, root=True, user=user)
 
 
 @app.route('/other/view')

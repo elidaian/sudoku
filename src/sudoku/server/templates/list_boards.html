@@ -1,0 +1,136 @@
+{%- extends 'layout.html' %}
+{%- if root %}
+    {%- set view_specific_form = 'view_other_board' %}
+    {%- set view_specific_func = 'view_specific_other_board' %}
+    {%- set view_set_form = 'view_other_set' %}
+{%- else %}
+    {%- set view_specific_form = 'view_board' %}
+    {%- set view_specific_func = 'view_specific_board' %}
+    {%- set view_set_form = 'view_set' %}
+{%- endif %}
+{% macro mutual_prefix() %}
+    {% if not root %}
+        <div class="row">You have {{ boards|length }} boards.</div>
+    {% endif %}
+{% endmacro %}
+{% macro board_badges(board) %}
+    <span class="badge">
+        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=True) }}">Solution</a>
+    </span>
+    <span class="badge">
+        <a href="{{ url_for(view_specific_func, board_id=board.id, solution=False) }}">Problem</a>
+    </span>
+{% endmacro %}
+{%- macro disp_user(display, username) -%}
+    {% if display %}{{ display }}{% else %}{{ username }}{% endif %}
+{%- endmacro %}
+{% macro board_details(board) %}
+    <p class="list-group-item-text">
+        {{ board.block_width }} &times; {{ board.block_height }} board, created
+        on {{ board.create_time }}
+        {%- if root -%}
+            <br/>
+            [Created by {{ disp_user(board.display, board.username) }}]
+        {%- endif -%}
+    </p>
+{% endmacro %}
+{% macro single_prefix() %}
+    <div class="row">
+        <h3>Select a Board</h3>
+        <br/>
+
+        <form action="{{ url_for(view_specific_form) }}" method="GET" class="form-inline">
+            I want to check board
+            #<input type="number" name="board_id" class="form-control" placeholder="Board number"/>.
+            <br/>
+
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="solution" value="1"/>
+                    Let me see the solution.
+                </label>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-default">Go</button>
+        </form>
+    </div>
+{% endmacro %}
+{% macro multiple_prefix() %}
+{% endmacro %}
+{% macro single_list_prefix() %}
+    <p>Alternatively, you may select a board to watch from a list:</p>
+    <ul class="list-group">
+{% endmacro %}
+{% macro single_board_in_list(board) %}
+    <li class="list-group-item">
+        {{ board_badges(board) }}
+        <h4 class="list-group-item-heading">#{{ board.id }}</h4>
+        {{ board_details(board) }}
+    </li>
+{% endmacro %}
+{% macro single_list_postfix() %}
+    </ul>
+{% endmacro %}
+{% macro multiple_list_prefix() %}
+    <p>Please select the boards you would like to see:</p>
+
+    <form action="{{ url_for(view_set_form) }}" method="POST">
+    <div class="form-group">
+    <label class="col-sm-2 control-label">Boards</label>
+
+    <div class="col-sm-10 list-group">
+{% endmacro %}
+{% macro multiple_board_in_list(board) %}
+    <div class="checkbox list-group-item">
+        {{ board_badges(board) }}
+        <h4 class="list-group-item-heading">
+            <label><input type="checkbox" name="{{ board.id }}" value="1"/> #{{ board.id }}</label>
+        </h4>
+        {{ board_details(board) }}
+    </div>
+{% endmacro %}
+{% macro multiple_list_postfix() %}
+    </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Solution</label>
+
+        <div class="col-sm-10">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="solution" value="1"/>
+                    Let me see the solution.
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <input type="submit" value="Go"/>
+        </div>
+    </div>
+    </form>
+{% endmacro %}
+{% if many %}
+    {% set prefix = multiple_prefix %}
+    {% set list_prefix = multiple_list_prefix %}
+    {% set board_in_list = multiple_board_in_list %}
+    {% set list_postfix = multiple_list_postfix %}
+{% else %}
+    {% set prefix = single_prefix %}
+    {% set list_prefix = single_list_prefix %}
+    {% set board_in_list = single_board_in_list %}
+    {% set list_postfix = single_list_postfix %}
+{% endif %}
+{%- block title %}View Board{% endblock %}
+{%- block body %}
+    {{ mutual_prefix() }}
+    {{ prefix() }}
+    <div class="row">
+        {{ list_prefix() }}
+        {%- for board in boards %}
+            {{ board_in_list(board) }}
+        {%- endfor %}
+        {{ list_postfix() }}
+    </div>
+{%- endblock %}
