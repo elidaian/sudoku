@@ -43,10 +43,16 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="{{ get_url(print_func, is_solution) }}" target="_blank">Print</a>
+                    <a href="{{ get_url(print_func, is_solution) }}" target="_blank">
+                        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+                        Print
+                    </a>
                 </li>
                 <li>
-                    <a href="{{ get_url(pdf_func, is_solution) }}" target="_blank">PDF</a>
+                    <a href="{{ get_url(pdf_func, is_solution) }}" target="_blank">
+                        <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                        PDF
+                    </a>
                 </li>
             </ul>
         </div>
