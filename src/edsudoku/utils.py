@@ -1,6 +1,6 @@
-__author__ = 'Eli Daian <elidaian@gmail.com>'
-
 import itertools
+
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 def enum(*sequential, **named):

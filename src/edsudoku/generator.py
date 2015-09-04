@@ -7,11 +7,10 @@ This module generates sudoku boards.
 from random import choice
 
 from exceptions import NoPossibleSymbols
+from edsudoku.board import Board, SimpleBoard
 from edsudoku.impl.board import BoardImpl
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
-
-from board import Board, SimpleBoard
 
 DEFAULT_ALPHABET = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 """ Default alphabet to be used if no alphabet is given. """
