@@ -2,4 +2,4 @@ build
 .idea
 *.pyc
 *.swp
-src/sudoku/server/sudoku.db
+src/instance/sudoku.db

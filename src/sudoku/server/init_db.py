@@ -1,7 +1,8 @@
 from argparse import ArgumentParser
 from getpass import getuser, getpass
-from db import init_db
-from server import app
+
+from sudoku.server import app
+from sudoku.server.db import init_db
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
 

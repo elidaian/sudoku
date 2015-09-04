@@ -90,6 +90,7 @@ def connect_db(app):
     :return: A DB connection object.
     :rtype: :class:`sqlite3.Connection`
     """
+    print "connecting to %s" % app.config["DATABASE"]
     db = sqlite3.connect(app.config["DATABASE"])
     db.row_factory = sqlite3.Row
     db.text_factory = str
