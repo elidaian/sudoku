@@ -63,7 +63,7 @@ def manage_users():
     """
     users = db.list_users(g.db)
     user = db.get_user(g.db, session['user'])
-    return render_template('manage.html', function='main', users=users, user=user)
+    return render_template('list_users.html', users=users, user=user)
 
 
 @app.route('/manage/<int:user_id>', methods=['GET', 'POST'])
@@ -112,7 +112,7 @@ def edit_user(user_id):
         return redirect(url_for('manage_users'))
     edited_user, num_boards = user_details
 
-    return render_template('manage.html', function='edit', user=user, user_id=user_id, edited_user=edited_user,
+    return render_template('edit_user.html', user=user, user_id=user_id, edited_user=edited_user,
                            num_boards=num_boards, permissions=UserPermission.PERMISSIONS)
 
 
@@ -152,5 +152,5 @@ def delete_user(user_id):
         return redirect(url_for('manage_users'))
 
     user = db.get_user(g.db, session['user'])
-    return render_template('manage.html', function='delete', user=user, user_to_delete=user_to_delete,
-                           num_boards=num_boards, user_id=user_id)
+    return render_template('delete_user.html', user=user, user_to_delete=user_to_delete, num_boards=num_boards,
+                           user_id=user_id)
