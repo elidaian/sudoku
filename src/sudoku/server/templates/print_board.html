@@ -1,4 +1,4 @@
-{%- from "html_board.html" import html_board %}
+{%- from 'html_board.html' import html_board %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -6,14 +6,14 @@
     <meta charset="utf-8"/>
     <title>Eli Daian Sudoku</title>
     <!-- jQuery -->
-    <script src="{{ url_for("static", filename="jquery.min.js") }}"></script>
+    <script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{ url_for("static", filename="bootstrap.min.css") }}"/>
-    <link rel="stylesheet" href="{{ url_for("static", filename="bootstrap-theme.min.css") }}"/>
-    <script src="{{ url_for("static", filename="bootstrap.min.js") }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-theme.min.css') }}"/>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Board display -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="board.css") }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='board.css') }}"/>
 </head>
 <body>
 {%- if multi_board %}

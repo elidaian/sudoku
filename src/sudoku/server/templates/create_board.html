@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 {% block scripts %}
 <script type="text/javascript">
 <!--
@@ -22,11 +22,11 @@ $(document).ready(function () {
 {%- if just_created %}
 <div class="alert alert-info">
     Click here to
-    <a href="{{ url_for("view_last_boards") }}" class="alert-link">see</a>
+    <a href="{{ url_for('view_last_boards') }}" class="alert-link">see</a>
     the created board{% if session.last_boards|length != 1 %}s{% endif %}
 </div>
 {%- endif %}
-<form action="{{ url_for("create_board") }}" method="post" class="form-horizontal">
+<form action="{{ url_for('create_board') }}" method="post" class="form-horizontal">
 <div class="form-group">
     <label class="col-sm-2 control-label">Board Type</label>
 

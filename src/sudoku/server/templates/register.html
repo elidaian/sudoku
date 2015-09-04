@@ -1,10 +1,10 @@
-{% extends "layout.html" %}
+{% extends 'layout.html' %}
 {% block title %}Register a New User{% endblock %}
 {% block body %}
     {%- if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
     {%- endif %}
-    <form action="{{ url_for("register_user") }}" method="post">
+    <form action="{{ url_for('register_user') }}" method="post">
         Please specify the new user information:
         <dl>
             <dt>Username:</dt>
