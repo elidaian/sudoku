@@ -1,3 +1,4 @@
+from itertools import imap
 from werkzeug.routing import BaseConverter, ValidationError
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -41,3 +42,33 @@ class BooleanConverter(BaseConverter):
         :rtype: str
         """
         return "true" if value else "false"
+
+
+class IntegersListConverter(BaseConverter):
+    """
+    Convert a list of ints from the URL.
+    """
+
+    regex = r"[^/]?(/?\d+)+"
+
+    def to_python(self, value):
+        """
+        Convert a list from URL to Python.
+
+        :param value: The URL list.
+        :type value: str
+        :return: The Python list.
+        :rtype: list of ints
+        """
+        return map(int, value.split("/"))
+
+    def to_url(self, value):
+        """
+        Convert a list from python to url.
+
+        :param value: The Python list.
+        :type value: list of ints
+        :return: The URL list.
+        :rtype: str
+        """
+        return "/".join(imap(str, value))

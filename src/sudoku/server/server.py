@@ -11,7 +11,7 @@ from werkzeug.utils import redirect
 from sudoku.exceptions import ErrorWithMessage
 from sudoku.generator import generate
 from sudoku.server import db
-from sudoku.server.converters import BooleanConverter
+from sudoku.server.converters import BooleanConverter, IntegersListConverter
 from sudoku.server.users import PERM_CREATE_BOARD, PERM_MANAGE_USERS, UserPermission
 
 __author__ = "Eli Daian <elidaian@gmail.com>"
@@ -22,6 +22,7 @@ PRINT_BOARD_VIEW = 1
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("sudoku.cfg", silent=True)
 app.url_map.converters["bool"] = BooleanConverter
+app.url_map.converters["list"] = IntegersListConverter
 
 @app.before_request
 def open_db():
@@ -63,28 +64,6 @@ def must_login(permission=None):
     return wrapper
 
 
-def export_board_ids(board_ids):
-    """
-    Export a list of board IDs to an URL safe version.
-    :param board_ids: The list of board IDs.
-    :type board_ids: list
-    :return: The URL form of the board IDs.
-    :rtype: str
-    """
-    return "/".join(imap(str, board_ids))
-
-
-def import_board_ids(url_board_ids):
-    """
-    Import a list of board IDs from an URL safe version.
-    :param url_board_ids: The URL form of the board IDs.
-    :type url_board_ids: str
-    :return: A list of board IDs.
-    :rtype: list
-    """
-    return map(int, url_board_ids.split("/"))
-
-
 def view_one_board(board_id, solution, mode, root):
     """
     View a single board.
@@ -106,18 +85,17 @@ def view_one_board(board_id, solution, mode, root):
         return redirect(url_for("main_page"))
 
 
-def view_many_boards(url_board_ids, solution, mode, root):
+def view_many_boards(board_ids, solution, mode, root):
     """
     View many boards.
     """
-    board_ids = import_board_ids(url_board_ids)
     boards = [(db.get_user_board(g.db, board_id, session["user"]), board_id)
               for board_id in board_ids]
 
     if mode == INSITE_BOARD_VIEW:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards, is_solution=solution,
-                               root=root, user=user, url_board_ids=url_board_ids)
+                               root=root, user=user, board_ids=board_ids)
     elif mode == PRINT_BOARD_VIEW:
         return render_template("print_board.html", multi_board=True, boards=boards, is_solution=solution)
     else:
@@ -246,8 +224,7 @@ def view_last_boards():
     if "last_boards" not in session:
         flash("You have not created any board in this session", "info")
         return redirect(url_for("view_board"))
-    url_board_ids = export_board_ids(session["last_boards"])
-    return redirect(url_for("view_set_of_boards", url_board_ids=url_board_ids, solution=False))
+    return redirect(url_for("view_set_of_boards", board_ids=session["last_boards"], solution=False))
 
 
 @app.route("/view")
@@ -302,41 +279,39 @@ def view_set():
     """
     board_ids = [int(board_id) for board_id in request.form.iterkeys() if board_id.isdigit()]
     board_ids.sort()
-    url_board_ids = export_board_ids(board_ids)
 
     solution = "solution" in request.form
 
-    return redirect(url_for("view_set_of_boards", url_board_ids=url_board_ids, solution=solution))
+    return redirect(url_for("view_set_of_boards", board_ids=board_ids, solution=solution))
 
 
-@app.route("/view/custom/<path:url_board_ids>", defaults={"solution": False})
-@app.route("/view/solution/custom/<path:url_board_ids>", defaults={"solution": True})
+@app.route("/view/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/view/solution/custom/<list:board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def view_set_of_boards(url_board_ids, solution):
+def view_set_of_boards(board_ids, solution):
     """
     View a set of boards insite.
     """
-    return view_many_boards(url_board_ids, solution, INSITE_BOARD_VIEW, False)
+    return view_many_boards(board_ids, solution, INSITE_BOARD_VIEW, False)
 
 
-@app.route("/print/custom/<path:url_board_ids>", defaults={"solution": False})
-@app.route("/print/solution/custom/<path:url_board_ids>", defaults={"solution": True})
+@app.route("/print/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/print/solution/custom/<list:board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def print_set_of_boards(url_board_ids, solution):
+def print_set_of_boards(board_ids, solution):
     """
     View a set of boards insite.
     """
-    return view_many_boards(url_board_ids, solution, PRINT_BOARD_VIEW, False)
+    return view_many_boards(board_ids, solution, PRINT_BOARD_VIEW, False)
 
 
-@app.route("/pdf/custom/<path:url_board_ids>", defaults={"solution": False})
-@app.route("/pdf/solution/custom/<path:url_board_ids>", defaults={"solution": True})
+@app.route("/pdf/custom/<list:board_ids>", defaults={"solution": False})
+@app.route("/pdf/solution/custom/<list:board_ids>", defaults={"solution": True})
 @must_login(PERM_CREATE_BOARD)
-def pdf_set_of_boards(url_board_ids, solution):
+def pdf_set_of_boards(board_ids, solution):
     """
     View a set of boards insite.
     """
-    board_ids = import_board_ids(url_board_ids)
     return "Not implemented (yet)"
 
 

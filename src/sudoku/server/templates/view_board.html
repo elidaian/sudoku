@@ -212,13 +212,13 @@
                 </button>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ url_for(print_set_func, url_board_ids=url_board_ids, solution=is_solution) }}"
+                        <a href="{{ url_for(print_set_func, board_ids=board_ids, solution=is_solution) }}"
                            target="_blank">
                             Print
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url_for(pdf_set_func, url_board_ids=url_board_ids, solution=is_solution) }}"
+                        <a href="{{ url_for(pdf_set_func, board_ids=board_ids, solution=is_solution) }}"
                            target="_blank">
                             PDF
                         </a>
@@ -233,11 +233,11 @@
             <p>
                 You may always check out the
                 {% if is_solution -%}
-                    <a href="{{ url_for(view_set_func, url_board_ids=url_board_ids, solution=False) }}">
+                    <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=False) }}">
                         real problems
                     </a>
                 {%- else -%}
-                    <a href="{{ url_for(view_set_func, url_board_ids=url_board_ids, solution=True) }}">
+                    <a href="{{ url_for(view_set_func, board_ids=board_ids, solution=True) }}">
                         solutions
                     </a>
                 {%- endif -%}
