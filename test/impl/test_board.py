@@ -3,7 +3,7 @@ import pytest
 from sudoku.exceptions import InvalidAlphabet, NoPossibleSymbols
 from sudoku.impl.board import BoardImpl
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 def test_board_is_valid_empty(board):
@@ -13,44 +13,44 @@ def test_board_is_valid_empty(board):
 
 def test_board_invalid_alphabet():
     with pytest.raises(InvalidAlphabet):
-        board = BoardImpl(3, 3, "1234")
+        board = BoardImpl(3, 3, '1234')
 
 
 def test_board_is_valid_partially_empty_valid(board):
-    board[0, 0] = "2"
-    board[0, 1] = "1"
-    board[0, 2] = "3"
-    board[0, 3] = "4"
+    board[0, 0] = '2'
+    board[0, 1] = '1'
+    board[0, 2] = '3'
+    board[0, 3] = '4'
 
-    board[1, 0] = "3"
-    board[1, 1] = "4"
-    board[1, 2] = "2"
-    board[1, 3] = "1"
+    board[1, 0] = '3'
+    board[1, 1] = '4'
+    board[1, 2] = '2'
+    board[1, 3] = '1'
 
     assert board.is_valid()
     assert not board.is_final()
 
 
 def test_board_is_valid_no_empty_valid(board):
-    board[0, 0] = "2"
-    board[0, 1] = "1"
-    board[0, 2] = "3"
-    board[0, 3] = "4"
+    board[0, 0] = '2'
+    board[0, 1] = '1'
+    board[0, 2] = '3'
+    board[0, 3] = '4'
 
-    board[1, 0] = "3"
-    board[1, 1] = "4"
-    board[1, 2] = "2"
-    board[1, 3] = "1"
+    board[1, 0] = '3'
+    board[1, 1] = '4'
+    board[1, 2] = '2'
+    board[1, 3] = '1'
 
-    board[2, 0] = "1"
-    board[2, 1] = "2"
-    board[2, 2] = "4"
-    board[2, 3] = "3"
+    board[2, 0] = '1'
+    board[2, 1] = '2'
+    board[2, 2] = '4'
+    board[2, 3] = '3'
 
-    board[3, 0] = "4"
-    board[3, 1] = "3"
-    board[3, 2] = "1"
-    board[3, 3] = "2"
+    board[3, 0] = '4'
+    board[3, 1] = '3'
+    board[3, 2] = '1'
+    board[3, 3] = '2'
 
     assert board.is_valid()
     assert board.is_final()
@@ -63,15 +63,15 @@ def test_board_is_full_empty(board):
 
 
 def test_board_is_full_partially_empty(board):
-    board[0, 0] = "2"
-    board[0, 1] = "1"
-    board[0, 2] = "3"
-    board[0, 3] = "4"
+    board[0, 0] = '2'
+    board[0, 1] = '1'
+    board[0, 2] = '3'
+    board[0, 3] = '4'
 
-    board[1, 0] = "3"
-    board[1, 1] = "4"
-    board[1, 2] = "2"
-    board[1, 3] = "1"
+    board[1, 0] = '3'
+    board[1, 1] = '4'
+    board[1, 2] = '2'
+    board[1, 3] = '1'
 
     assert not board.is_full()
     assert not board.is_final()
@@ -79,25 +79,25 @@ def test_board_is_full_partially_empty(board):
 
 
 def test_board_is_full_full(board):
-    board[0, 0] = "2"
-    board[0, 1] = "1"
-    board[0, 2] = "3"
-    board[0, 3] = "4"
+    board[0, 0] = '2'
+    board[0, 1] = '1'
+    board[0, 2] = '3'
+    board[0, 3] = '4'
 
-    board[1, 0] = "3"
-    board[1, 1] = "4"
-    board[1, 2] = "2"
-    board[1, 3] = "1"
+    board[1, 0] = '3'
+    board[1, 1] = '4'
+    board[1, 2] = '2'
+    board[1, 3] = '1'
 
-    board[2, 0] = "1"
-    board[2, 1] = "2"
-    board[2, 2] = "4"
-    board[2, 3] = "3"
+    board[2, 0] = '1'
+    board[2, 1] = '2'
+    board[2, 2] = '4'
+    board[2, 3] = '3'
 
-    board[3, 0] = "4"
-    board[3, 1] = "3"
-    board[3, 2] = "1"
-    board[3, 3] = "2"
+    board[3, 0] = '4'
+    board[3, 1] = '3'
+    board[3, 2] = '1'
+    board[3, 3] = '2'
 
     assert board.is_full()
     assert board.is_final()
@@ -122,9 +122,9 @@ def test_board_solve_possible_partial1(board):
      [ ,  ,  ,  ],
      [ ,  ,  ,  ]]
     """
-    board[0, 0] = "1"
-    board[0, 2] = "2"
-    board[0, 3] = "3"
+    board[0, 0] = '1'
+    board[0, 2] = '2'
+    board[0, 3] = '3'
 
     board.solve_possible()
 
@@ -132,10 +132,10 @@ def test_board_solve_possible_partial1(board):
     assert not board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "1"
-    assert board[0, 1] == "4"
-    assert board[0, 2] == "2"
-    assert board[0, 3] == "3"
+    assert board[0, 0] == '1'
+    assert board[0, 1] == '4'
+    assert board[0, 2] == '2'
+    assert board[0, 3] == '3'
     assert board[1, 0] is None
     assert board[1, 1] is None
     assert board[1, 2] is None
@@ -163,9 +163,9 @@ def test_board_solve_possible_partial2(board):
      [ ,  ,  ,  ],
      [ ,  ,  ,  ]]
     """
-    board[0, 0] = "1"
-    board[1, 0] = "2"
-    board[1, 1] = "3"
+    board[0, 0] = '1'
+    board[1, 0] = '2'
+    board[1, 1] = '3'
 
     board.solve_possible()
 
@@ -173,12 +173,12 @@ def test_board_solve_possible_partial2(board):
     assert not board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "1"
-    assert board[0, 1] == "4"
+    assert board[0, 0] == '1'
+    assert board[0, 1] == '4'
     assert board[0, 2] is None
     assert board[0, 3] is None
-    assert board[1, 0] == "2"
-    assert board[1, 1] == "3"
+    assert board[1, 0] == '2'
+    assert board[1, 1] == '3'
     assert board[1, 2] is None
     assert board[1, 3] is None
     assert board[2, 0] is None
@@ -204,9 +204,9 @@ def test_board_solve_possible_partial3(board):
      [3,  ,  ,  ],
      [4,  ,  ,  ]]
     """
-    board[0, 0] = "1"
-    board[1, 0] = "2"
-    board[2, 0] = "3"
+    board[0, 0] = '1'
+    board[1, 0] = '2'
+    board[2, 0] = '3'
 
     board.solve_possible()
 
@@ -214,19 +214,19 @@ def test_board_solve_possible_partial3(board):
     assert not board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "1"
+    assert board[0, 0] == '1'
     assert board[0, 1] is None
     assert board[0, 2] is None
     assert board[0, 3] is None
-    assert board[1, 0] == "2"
+    assert board[1, 0] == '2'
     assert board[1, 1] is None
     assert board[1, 2] is None
     assert board[1, 3] is None
-    assert board[2, 0] == "3"
+    assert board[2, 0] == '3'
     assert board[2, 1] is None
     assert board[2, 2] is None
     assert board[2, 3] is None
-    assert board[3, 0] == "4"
+    assert board[3, 0] == '4'
     assert board[3, 1] is None
     assert board[3, 2] is None
     assert board[3, 3] is None
@@ -245,11 +245,11 @@ def test_board_solve_possible_partial4(board):
      [3,  ,  , 4],
      [4,  ,  ,  ]]
     """
-    board[0, 0] = "1"
-    board[1, 1] = "3"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[3, 0] = "4"
+    board[0, 0] = '1'
+    board[1, 1] = '3'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[3, 0] = '4'
 
     board.solve_possible()
 
@@ -257,19 +257,19 @@ def test_board_solve_possible_partial4(board):
     assert not board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "1"
-    assert board[0, 1] == "4"
+    assert board[0, 0] == '1'
+    assert board[0, 1] == '4'
     assert board[0, 2] is None
     assert board[0, 3] is None
-    assert board[1, 0] == "2"
-    assert board[1, 1] == "3"
-    assert board[1, 2] == "4"
-    assert board[1, 3] == "1"
-    assert board[2, 0] == "3"
+    assert board[1, 0] == '2'
+    assert board[1, 1] == '3'
+    assert board[1, 2] == '4'
+    assert board[1, 3] == '1'
+    assert board[2, 0] == '3'
     assert board[2, 1] is None
     assert board[2, 2] is None
-    assert board[2, 3] == "4"
-    assert board[3, 0] == "4"
+    assert board[2, 3] == '4'
+    assert board[3, 0] == '4'
     assert board[3, 1] is None
     assert board[3, 2] is None
     assert board[3, 3] is None
@@ -288,13 +288,13 @@ def test_board_solve_possible_full1(board):
      [3, 1, 2, 4],
      [4, 2, 3, 1]]
     """
-    board[0, 1] = "4"
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 3] = "2"
-    board[2, 1] = "1"
-    board[3, 0] = "4"
-    board[3, 1] = "2"
+    board[0, 1] = '4'
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 3] = '2'
+    board[2, 1] = '1'
+    board[3, 0] = '4'
+    board[3, 1] = '2'
 
     board.solve_possible()
 
@@ -302,22 +302,22 @@ def test_board_solve_possible_full1(board):
     assert board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "2"
-    assert board[0, 1] == "4"
-    assert board[0, 2] == "1"
-    assert board[0, 3] == "3"
-    assert board[1, 0] == "1"
-    assert board[1, 1] == "3"
-    assert board[1, 2] == "4"
-    assert board[1, 3] == "2"
-    assert board[2, 0] == "3"
-    assert board[2, 1] == "1"
-    assert board[2, 2] == "2"
-    assert board[2, 3] == "4"
-    assert board[3, 0] == "4"
-    assert board[3, 1] == "2"
-    assert board[3, 2] == "3"
-    assert board[3, 3] == "1"
+    assert board[0, 0] == '2'
+    assert board[0, 1] == '4'
+    assert board[0, 2] == '1'
+    assert board[0, 3] == '3'
+    assert board[1, 0] == '1'
+    assert board[1, 1] == '3'
+    assert board[1, 2] == '4'
+    assert board[1, 3] == '2'
+    assert board[2, 0] == '3'
+    assert board[2, 1] == '1'
+    assert board[2, 2] == '2'
+    assert board[2, 3] == '4'
+    assert board[3, 0] == '4'
+    assert board[3, 1] == '2'
+    assert board[3, 2] == '3'
+    assert board[3, 3] == '1'
 
 
 def test_board_solve_possible_full2(board):
@@ -333,11 +333,11 @@ def test_board_solve_possible_full2(board):
      [2, 1, 3, 4],
      [4, 3, 1, 2]]
     """
-    board[0, 2] = "2"
-    board[0, 3] = "1"
-    board[2, 1] = "1"
-    board[2, 3] = "4"
-    board[3, 1] = "3"
+    board[0, 2] = '2'
+    board[0, 3] = '1'
+    board[2, 1] = '1'
+    board[2, 3] = '4'
+    board[3, 1] = '3'
 
     board.solve_possible()
 
@@ -345,22 +345,22 @@ def test_board_solve_possible_full2(board):
     assert board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "3"
-    assert board[0, 1] == "4"
-    assert board[0, 2] == "2"
-    assert board[0, 3] == "1"
-    assert board[1, 0] == "1"
-    assert board[1, 1] == "2"
-    assert board[1, 2] == "4"
-    assert board[1, 3] == "3"
-    assert board[2, 0] == "2"
-    assert board[2, 1] == "1"
-    assert board[2, 2] == "3"
-    assert board[2, 3] == "4"
-    assert board[3, 0] == "4"
-    assert board[3, 1] == "3"
-    assert board[3, 2] == "1"
-    assert board[3, 3] == "2"
+    assert board[0, 0] == '3'
+    assert board[0, 1] == '4'
+    assert board[0, 2] == '2'
+    assert board[0, 3] == '1'
+    assert board[1, 0] == '1'
+    assert board[1, 1] == '2'
+    assert board[1, 2] == '4'
+    assert board[1, 3] == '3'
+    assert board[2, 0] == '2'
+    assert board[2, 1] == '1'
+    assert board[2, 2] == '3'
+    assert board[2, 3] == '4'
+    assert board[3, 0] == '4'
+    assert board[3, 1] == '3'
+    assert board[3, 2] == '1'
+    assert board[3, 3] == '2'
 
 
 def test_board_solve_possible_full3(board):
@@ -376,12 +376,12 @@ def test_board_solve_possible_full3(board):
      [3, 1, 2, 4],
      [2, 4, 1, 3]]
     """
-    board[0, 3] = "2"
-    board[1, 0] = "4"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[2, 1] = "1"
-    board[3, 1] = "4"
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[3, 1] = '4'
 
     board.solve_possible()
 
@@ -389,22 +389,22 @@ def test_board_solve_possible_full3(board):
     assert board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "1"
-    assert board[0, 1] == "3"
-    assert board[0, 2] == "4"
-    assert board[0, 3] == "2"
-    assert board[1, 0] == "4"
-    assert board[1, 1] == "2"
-    assert board[1, 2] == "3"
-    assert board[1, 3] == "1"
-    assert board[2, 0] == "3"
-    assert board[2, 1] == "1"
-    assert board[2, 2] == "2"
-    assert board[2, 3] == "4"
-    assert board[3, 0] == "2"
-    assert board[3, 1] == "4"
-    assert board[3, 2] == "1"
-    assert board[3, 3] == "3"
+    assert board[0, 0] == '1'
+    assert board[0, 1] == '3'
+    assert board[0, 2] == '4'
+    assert board[0, 3] == '2'
+    assert board[1, 0] == '4'
+    assert board[1, 1] == '2'
+    assert board[1, 2] == '3'
+    assert board[1, 3] == '1'
+    assert board[2, 0] == '3'
+    assert board[2, 1] == '1'
+    assert board[2, 2] == '2'
+    assert board[2, 3] == '4'
+    assert board[3, 0] == '2'
+    assert board[3, 1] == '4'
+    assert board[3, 2] == '1'
+    assert board[3, 3] == '3'
 
 
 def test_board_solve_possible_full4(board):
@@ -420,12 +420,12 @@ def test_board_solve_possible_full4(board):
      [3, 2, 4, 1],
      [4, 1, 3, 2]]
     """
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 1] = "3"
-    board[2, 1] = "2"
-    board[3, 0] = "4"
-    board[3, 1] = "1"
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 1] = '3'
+    board[2, 1] = '2'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
 
     board.solve_possible()
 
@@ -433,22 +433,22 @@ def test_board_solve_possible_full4(board):
     assert board.is_full()
     assert board.is_valid()
 
-    assert board[0, 0] == "2"
-    assert board[0, 1] == "4"
-    assert board[0, 2] == "1"
-    assert board[0, 3] == "3"
-    assert board[1, 0] == "1"
-    assert board[1, 1] == "3"
-    assert board[1, 2] == "2"
-    assert board[1, 3] == "4"
-    assert board[2, 0] == "3"
-    assert board[2, 1] == "2"
-    assert board[2, 2] == "4"
-    assert board[2, 3] == "1"
-    assert board[3, 0] == "4"
-    assert board[3, 1] == "1"
-    assert board[3, 2] == "3"
-    assert board[3, 3] == "2"
+    assert board[0, 0] == '2'
+    assert board[0, 1] == '4'
+    assert board[0, 2] == '1'
+    assert board[0, 3] == '3'
+    assert board[1, 0] == '1'
+    assert board[1, 1] == '3'
+    assert board[1, 2] == '2'
+    assert board[1, 3] == '4'
+    assert board[2, 0] == '3'
+    assert board[2, 1] == '2'
+    assert board[2, 2] == '4'
+    assert board[2, 3] == '1'
+    assert board[3, 0] == '4'
+    assert board[3, 1] == '1'
+    assert board[3, 2] == '3'
+    assert board[3, 3] == '2'
 
 
 def test_board_solve_regular_full1(board9):
@@ -1013,10 +1013,10 @@ def test_board_solve_possible_impossible(board):
      [ ,  ,  ,  ]]
      Since this board is impossible to get solved, an exception is expected to be raised.
     """
-    board[0, 0] = "1"
-    board[0, 2] = "2"
-    board[0, 3] = "3"
-    board[1, 1] = "4"
+    board[0, 0] = '1'
+    board[0, 2] = '2'
+    board[0, 3] = '3'
+    board[1, 1] = '4'
 
     with pytest.raises(NoPossibleSymbols):
         board.solve_possible()
@@ -1031,12 +1031,12 @@ def test_board_copy_empty(board):
 
 
 def test_board_copy1(board):
-    board[0, 3] = "2"
-    board[1, 0] = "4"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[2, 1] = "1"
-    board[3, 1] = "4"
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[3, 1] = '4'
 
     board2 = board.copy()
 
@@ -1046,22 +1046,22 @@ def test_board_copy1(board):
 
 
 def test_board_copy2(board):
-    board[0, 0] = "1"
-    board[0, 1] = "3"
-    board[0, 2] = "4"
-    board[0, 3] = "2"
-    board[1, 0] = "4"
-    board[1, 1] = "2"
-    board[1, 2] = "3"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[2, 1] = "1"
-    board[2, 2] = "2"
-    board[2, 3] = "4"
-    board[3, 0] = "2"
-    board[3, 1] = "4"
-    board[3, 2] = "1"
-    board[3, 3] = "3"
+    board[0, 0] = '1'
+    board[0, 1] = '3'
+    board[0, 2] = '4'
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 1] = '2'
+    board[1, 2] = '3'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[2, 2] = '2'
+    board[2, 3] = '4'
+    board[3, 0] = '2'
+    board[3, 1] = '4'
+    board[3, 2] = '1'
+    board[3, 3] = '3'
 
     board2 = board.copy()
 
@@ -1071,12 +1071,12 @@ def test_board_copy2(board):
 
 
 def test_board_copy3(board):
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 1] = "3"
-    board[2, 1] = "2"
-    board[3, 0] = "4"
-    board[3, 1] = "1"
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 1] = '3'
+    board[2, 1] = '2'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
 
     board2 = board.copy()
 
@@ -1086,22 +1086,22 @@ def test_board_copy3(board):
 
 
 def test_board_copy4(board):
-    board[0, 0] = "2"
-    board[0, 1] = "4"
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 0] = "1"
-    board[1, 1] = "3"
-    board[1, 2] = "2"
-    board[1, 3] = "4"
-    board[2, 0] = "3"
-    board[2, 1] = "2"
-    board[2, 2] = "4"
-    board[2, 3] = "1"
-    board[3, 0] = "4"
-    board[3, 1] = "1"
-    board[3, 2] = "3"
-    board[3, 3] = "2"
+    board[0, 0] = '2'
+    board[0, 1] = '4'
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 0] = '1'
+    board[1, 1] = '3'
+    board[1, 2] = '2'
+    board[1, 3] = '4'
+    board[2, 0] = '3'
+    board[2, 1] = '2'
+    board[2, 2] = '4'
+    board[2, 3] = '1'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
+    board[3, 2] = '3'
+    board[3, 3] = '2'
 
     board2 = board.copy()
 
@@ -1111,104 +1111,104 @@ def test_board_copy4(board):
 
 
 def test_board_str_empty(board):
-    assert " " * 16 == str(board)
+    assert ' ' * 16 == str(board)
 
 
 def test_board_str1(board):
-    board[0, 3] = "2"
-    board[1, 0] = "4"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[2, 1] = "1"
-    board[3, 1] = "4"
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[3, 1] = '4'
 
-    assert "   24  131   4  " == str(board)
+    assert '   24  131   4  ' == str(board)
 
 
 def test_board_str2(board):
-    board[0, 0] = "1"
-    board[0, 1] = "3"
-    board[0, 2] = "4"
-    board[0, 3] = "2"
-    board[1, 0] = "4"
-    board[1, 1] = "2"
-    board[1, 2] = "3"
-    board[1, 3] = "1"
-    board[2, 0] = "3"
-    board[2, 1] = "1"
-    board[2, 2] = "2"
-    board[2, 3] = "4"
-    board[3, 0] = "2"
-    board[3, 1] = "4"
-    board[3, 2] = "1"
-    board[3, 3] = "3"
+    board[0, 0] = '1'
+    board[0, 1] = '3'
+    board[0, 2] = '4'
+    board[0, 3] = '2'
+    board[1, 0] = '4'
+    board[1, 1] = '2'
+    board[1, 2] = '3'
+    board[1, 3] = '1'
+    board[2, 0] = '3'
+    board[2, 1] = '1'
+    board[2, 2] = '2'
+    board[2, 3] = '4'
+    board[3, 0] = '2'
+    board[3, 1] = '4'
+    board[3, 2] = '1'
+    board[3, 3] = '3'
 
-    assert "1342423131242413" == str(board)
+    assert '1342423131242413' == str(board)
 
 
 def test_board_str3(board):
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 1] = "3"
-    board[2, 1] = "2"
-    board[3, 0] = "4"
-    board[3, 1] = "1"
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 1] = '3'
+    board[2, 1] = '2'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
 
-    assert "  13 3   2  41  " == str(board)
+    assert '  13 3   2  41  ' == str(board)
 
 
 def test_board_str4(board):
-    board[0, 0] = "2"
-    board[0, 1] = "4"
-    board[0, 2] = "1"
-    board[0, 3] = "3"
-    board[1, 0] = "1"
-    board[1, 1] = "3"
-    board[1, 2] = "2"
-    board[1, 3] = "4"
-    board[2, 0] = "3"
-    board[2, 1] = "2"
-    board[2, 2] = "4"
-    board[2, 3] = "1"
-    board[3, 0] = "4"
-    board[3, 1] = "1"
-    board[3, 2] = "3"
-    board[3, 3] = "2"
+    board[0, 0] = '2'
+    board[0, 1] = '4'
+    board[0, 2] = '1'
+    board[0, 3] = '3'
+    board[1, 0] = '1'
+    board[1, 1] = '3'
+    board[1, 2] = '2'
+    board[1, 3] = '4'
+    board[2, 0] = '3'
+    board[2, 1] = '2'
+    board[2, 2] = '4'
+    board[2, 3] = '1'
+    board[3, 0] = '4'
+    board[3, 1] = '1'
+    board[3, 2] = '3'
+    board[3, 3] = '2'
 
-    assert "2413132432414132" == str(board)
+    assert '2413132432414132' == str(board)
 
 # def test_board_is_valid_partially_empty_invalid(board):
-#     board[0, 0] = "2"
-#     board[0, 1] = "1"
-#     board[0, 2] = "3"
-#     board[0, 3] = "4"
+#     board[0, 0] = '2'
+#     board[0, 1] = '1'
+#     board[0, 2] = '3'
+#     board[0, 3] = '4'
 #
-#     board[1, 0] = "1"
+#     board[1, 0] = '1'
 #
 #     assert not board.is_valid()
 #     assert not board.is_final()
 
 
 # def test_board_is_valid_no_empty_invalid(board):
-#     board[0, 0] = "2"
-#     board[0, 1] = "1"
-#     board[0, 2] = "3"
-#     board[0, 3] = "4"
+#     board[0, 0] = '2'
+#     board[0, 1] = '1'
+#     board[0, 2] = '3'
+#     board[0, 3] = '4'
 #
-#     board[1, 0] = "3"
-#     board[1, 1] = "4"
-#     board[1, 2] = "2"
-#     board[1, 3] = "1"
+#     board[1, 0] = '3'
+#     board[1, 1] = '4'
+#     board[1, 2] = '2'
+#     board[1, 3] = '1'
 #
-#     board[2, 0] = "1"
-#     board[2, 1] = "2"
-#     board[2, 2] = "4"
-#     board[2, 3] = "3"
+#     board[2, 0] = '1'
+#     board[2, 1] = '2'
+#     board[2, 2] = '4'
+#     board[2, 3] = '3'
 #
-#     board[3, 0] = "4"
-#     board[3, 1] = "3"
-#     board[3, 2] = "3"
-#     board[3, 3] = "2"
+#     board[3, 0] = '4'
+#     board[3, 1] = '3'
+#     board[3, 2] = '3'
+#     board[3, 3] = '2'
 #
 #     assert not board.is_valid()
 #     assert not board.is_final()

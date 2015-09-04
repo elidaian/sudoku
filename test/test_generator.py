@@ -1,6 +1,6 @@
 import pytest
 
-__author__ = "Eli Daian <elidaian@gmail.com>"
+__author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
 def _assign_board_from_generated_board(board, board_impl):
@@ -16,7 +16,7 @@ def _assign_board_from_generated_board(board, board_impl):
 
     for row in xrange(board.rows):
         for col in xrange(board.cols):
-            if board[row, col] != " ":
+            if board[row, col] != ' ':
                 board_impl[row, col] = board[row, col]
 
 
@@ -26,7 +26,7 @@ def test_generator_solution_of_problem(generated_board):
     """
     for row in xrange(generated_board.rows):
         for col in xrange(generated_board.cols):
-            if generated_board.problem[row, col] != " ":
+            if generated_board.problem[row, col] != ' ':
                 assert generated_board.problem[row, col] == generated_board.solution[row, col]
 
 
@@ -53,7 +53,7 @@ def test_generator_problem_not_full(generated_board, board):
     assert not board.is_empty()
 
 
-@pytest.mark.parametrize("count", xrange(64))
+@pytest.mark.parametrize('count', xrange(64))
 def test_generator_stress_test(generated_board, count):
     """
     This test is intended to find exceptions that are raised rarely.
@@ -61,7 +61,7 @@ def test_generator_stress_test(generated_board, count):
     pass
 
 
-@pytest.mark.parametrize("count", xrange(32))
+@pytest.mark.parametrize('count', xrange(32))
 def test_generator_stress_test_regular_size(generated_board9, count):
     """
     This test is intended to find exceptions that are raised rarely.
@@ -69,8 +69,8 @@ def test_generator_stress_test_regular_size(generated_board9, count):
     pass
 
 
-@pytest.mark.skipif(True, reason="Too slow")
-@pytest.mark.parametrize("count", xrange(16))
+@pytest.mark.skipif(True, reason='Too slow')
+@pytest.mark.parametrize('count', xrange(16))
 def test_generator_stress_test_dodeka(generated_dodeka, count):
     """
     This test is intended to find exception that are raised rarely.
