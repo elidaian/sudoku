@@ -70,6 +70,7 @@ solves only cells that have a certain value.
 * Run in a loop, until no change is done or the board is fully solved:
 
   #. | Fill cells that have only one possible symbol with the only possible symbol.
+     | If there is a cell without an assigned symbol and without any possible symbol, then this board has no solution.
      | See :meth:`~edsudoku.impl.board.BoardImpl._fill_one_possible` for implementation.
   #. | Split groups when possible.
      | A group of size :math:`n` can be split if there is a subgroup of size :math:`0 < k < n` cells in this group,
@@ -90,9 +91,46 @@ solves only cells that have a certain value.
        groups.
      | See :meth:`~edsudoku.impl.board.BoardImpl._remove_empty_groups` for implementation.
 
-The logic of this implementation is available at :meth:`~edsudoku.impl.board.BoardImpl.solve_possible`.
+The implementation of this algorithm is available at :meth:`~edsudoku.impl.board.BoardImpl.solve_possible`.
 
 Generating a Board
 ==================
 
-TODO.
+This algorithm aims to generate a problem board, next to a solution board.
+
+The problem board should be solved completely without guessing, and its solution should be the generated solution
+board.
+
+The algorithm steps:
+
+#. Start with an empty board.
+#. Start with an empty list of assignments.
+#. Until the board is completely solvable:
+
+   #. Pick a random cell without an assigned value in the board.
+   #. Assign a random symbol in this cell. This symbol must be one of its possible symbols.
+   #. Append this assignment to the list of assignments.
+   #. Try to solve this board. There are few options:
+
+      * | The board was not solved completely.
+        | Continue to the next iteration.
+      * | The board was solved completely.
+        | Go to the next step (after the loop).
+      * | The board has no possible solution.
+        | Roll back the current assignment, and try another assignment in the next iteration. If this problem happens
+          too many times (say 10), then start over with an empty board.
+
+#. For every assignment in the list of assignments:
+
+  #. Create an empty board.
+  #. Assign values in the board as described in the list of assignments, except for the current assignment.
+  #. Try to solve the board.
+
+    * If the board was not solved completely, continue to the next iteration.
+    * If the board was solved completely, remove this assignment from the list of assignments. This assignment is not
+      necessary for creating a completely solvable board.
+
+#. Construct the problem board from the list of assignments.
+#. Construct the solution board as the solution of the problem board.
+
+The implementation of this algorithm is available at :func:`~edsudoku.generator.generate`.
