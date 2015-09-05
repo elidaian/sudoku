@@ -68,4 +68,4 @@ the operating system username (as obtained by :func:`getpass.getuser`). The pass
     maintain it as secure as possible.
 
 The DB will never store your password in plaintext. It will be hashed using the `SHA-512
-<https://en.wikipedia.org/wiki/SHA-2>`_ algorithm. In the future, the password will also be salted.
+<https://en.wikipedia.org/wiki/SHA-2>`_ algorithm, and 16 bytes of salt will be added to the password.
