@@ -60,7 +60,7 @@ def login():
 def logout():
     """
     Log out and end the current session (if any).
-    Later redirect to the main page (see :meth:`~edsudoku.server.login.main_page`).
+    Later redirect to the main page (see :func:`~edsudoku.server.login.main_page`).
 
     :return: A redirection.
     :rtype: flask.Response

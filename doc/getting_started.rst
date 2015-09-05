@@ -33,7 +33,7 @@ This is an example for generating a regular sudoku board, and printing it:
             print board.solution[row, col],
         print
 
-Note that the arguments ``3, 3`` that were passed to :meth:`~edsudoku.generator.generate` indicates the block
+Note that the arguments ``3, 3`` that were passed to :func:`~edsudoku.generator.generate` indicates the block
 dimensions in the board. The board dimensions are later derived from the block dimensions.
 
 Also note that the returned board contains both the problem and the solution for this problem, and it is easy to get

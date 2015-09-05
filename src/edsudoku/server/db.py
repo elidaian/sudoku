@@ -10,26 +10,31 @@ LOGIN_QUERY = """
 select id, display, permissions from users
 where username = :username and password = :password
 """
+""" Query for logging in. """
 
 USER_QUERY = """
 select username, display, permissions from users
 where id = :id
 """
+""" Query for details about a user. """
 
 REGISTER_USER = """
 insert into users(username, password, display, permissions)
 values (:username, :password, :display, :permissions)
 """
+""" Query for registering a new user. """
 
 LIST_USERS = """
 select id, username, display, permissions from users
 """
+""" Query for listing all registered users. """
 
 GET_USER_DETAILS = """
 select id, username, display, permissions,
     (select count(*) from boards where uid = users.id) as num_boards from users
 where users.id = :user_id
 """
+""" Query for user details, including his/her amout of generated boards. """
 
 EDIT_USER_WITH_PASSWORD = """
 update users
@@ -38,6 +43,7 @@ set password = :password,
     permissions = :permissions
 where id = :user_id
 """
+""" Update a user, including setting a new password for him/her. """
 
 EDIT_USER_WITHOUT_PASSWORD = """
 update users
@@ -45,41 +51,49 @@ set display = :display,
     permissions = :permissions
 where id = :user_id
 """
+""" Update a user without setting a new password. """
 
 DELETE_USER = """
 delete from users
 where id = :user_id
 """
+""" Delete an existing user. """
 
 DELETE_USER_BOARDS = """
 delete from boards
 where uid = :user_id
 """
+""" Delete all boards of a specific user. """
 
 INSERT_BOARD = """
 insert into boards(uid, problem, solution, block_width, block_height)
 values (:uid, :problem, :solution, :block_width, :block_height)
 """
+""" Insert a new board. """
 
 LIST_USER_BOARDS = """
 select id, create_time, block_width, block_height from boards
 where uid = :uid
 """
+""" List all boards of a user. """
 
 GET_USER_BOARD = """
 select problem, solution, block_width, block_height from boards
 where id = :id and uid = :uid
 """
+""" Get a board, only of a specific user. """
 
 LIST_ALL_BOARDS = """
 select boards.id, create_time, block_width, block_height, users.username, users.display
 from boards join users on boards.uid = users.id
 """
+""" List all boards in the DB (not only of the current user). """
 
 GET_BOARD = """
 select problem, solution, block_width, block_height from boards
 where id = :id
 """
+""" Get a board (not only of the current user). """
 
 
 def connect_db(app):
@@ -115,6 +129,8 @@ def login(db, username, password):
     Get user information (if available) given the username and password,
     or ``None`` if the login credentials are invalid.
 
+    :see: :data:`~edsudoku.server.db.LOGIN_QUERY`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param username: The username.
@@ -139,6 +155,8 @@ def get_user(db, user_id):
     Get user information (if available) given the user id, or ``None`` if
     this user does not exist.
 
+    :see: :data:`~edsudoku.server.db.USER_QUERY`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -158,6 +176,8 @@ def get_user(db, user_id):
 def register_user(db, username, password, display, permissions):
     """
     Register a new user given its details.
+
+    :see: :data:`~edsudoku.server.REGISTER_USER`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
@@ -189,6 +209,8 @@ def list_users(db):
     """
     List the existing users in the DB.
 
+    :see: :data:`~edsudoku.server.db.LIST_USERS`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :return: A list of registered users.
@@ -206,6 +228,8 @@ def get_user_details(db, user_id):
     The details of a user, consists, in addition to the username and display, of the following information:
 
     * The number of boards this user has.
+
+    :see: :data:`~edsudoku.server.db.GET_USER_DETAILS`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
@@ -226,6 +250,8 @@ def get_user_details(db, user_id):
 def edit_user_with_password(db, user_id, password, display, permissions):
     """
     Edit a user and set his new password.
+
+    :see: :data:`~edsudoku.server.db.EDIT_USER_WITH_PASSWORD`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
@@ -250,6 +276,8 @@ def edit_user_without_password(db, user_id, display, permissions):
     """
     Edit a user without changing his password.
 
+    :see: :data:`~edsudoku.server.db.EDIT_USER_WITHOUT_PASSWORD`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -270,6 +298,9 @@ def delete_user(db, user_id):
     """
     Delete a user and all his boards.
 
+    :see: :data:`~edsudoku.server.db.DELETE_USER`
+    :see: :data:`~edsudoku.server.db.DELETE_USER_BOARDS`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -285,6 +316,8 @@ def delete_user(db, user_id):
 def insert_board(db, user_id, board):
     """
     Insert a new board to the DB, and return its ID.
+
+    :see: :data:`~edsudoku.server.db.INSERT_BOARD`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
@@ -310,6 +343,8 @@ def list_user_boards(db, user_id):
     """
     List all boards of a user.
 
+    :see: :data:`~edsudoku.server.db.LIST_USER_BOARDS`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :param user_id: The user ID in the DB.
@@ -328,6 +363,8 @@ def get_user_board(db, board_id, user_id):
     Get a board of a specific user.
 
     :note: The user ID is given here to protect this user from getting other user's boards.
+
+    :see: :data:`~edsudoku.server.db.GET_USER_BOARD`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
@@ -359,6 +396,8 @@ def list_all_boards(db):
     """
     List all boards (of all users) in the DB.
 
+    :see: :data:`~edsudoku.server.db.LIST_ALL_BOARDS`
+
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`
     :return: The boards (as dicts).
@@ -372,6 +411,8 @@ def list_all_boards(db):
 def get_board(db, board_id):
     """
     Get a board from the DB.
+
+    :see: :data:`~edsudoku.server.db.GET_BOARD`
 
     :param db: The DB connection object.
     :type db: :class:`sqlite3.Connection`

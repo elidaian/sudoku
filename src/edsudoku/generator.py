@@ -10,7 +10,7 @@ from edsudoku.impl.board import BoardImpl
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
 DEFAULT_ALPHABET = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-""" Default alphabet to be used if no alphabet is given to :meth:`~edsudoku.generator.generate`. """
+""" Default alphabet to be used if no alphabet is given to :func:`~edsudoku.generator.generate`. """
 
 
 def _find_next_symbol_to_assign(board, possible_positions):
@@ -101,7 +101,7 @@ def _construct_from_assignments(block_width, block_height, alphabet, assignments
     :type block_height: int
     :param alphabet: The symbols for use in the board.
     :type alphabet: str
-    :param assignments: The assignments series, as returned from :meth:`__construct_assignments`.
+    :param assignments: The assignments series, as returned from :func:`_construct_assignments`.
     :type assignments: list
     :return: The constructed board.
     :rtype: :class:`~impl.BoardImpl`.
@@ -124,7 +124,7 @@ def _remove_unneeded_assignments(block_width, block_height, alphabet, assignment
     :type block_height: int
     :param alphabet: The symbols for use in the board.
     :type alphabet: str
-    :param assignments: The assignments series, as returned from :meth:`__construct_assignments`.
+    :param assignments: The assignments series, as returned from :func:`_construct_assignments`.
     :type assignments: list
     :return: The assignments with the unneeded assignments removed.
     :rtype: list

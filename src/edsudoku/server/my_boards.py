@@ -91,7 +91,7 @@ def view_last_boards():
     """
     View the last created boards.
 
-    Actually, this function redirects to :meth:`~edsudoku.server.my_boards.view_set_of_boards` in such way that the last
+    Actually, this function redirects to :func:`~edsudoku.server.my_boards.view_set_of_boards` in such way that the last
     generated board/s will be viewd.
 
     :return: A redirection.
@@ -185,8 +185,8 @@ def pdf_specific_board(board_id, solution):
 @must_login(PERM_CREATE_BOARD)
 def view_set():
     """
-    Process the results of the 'View set of boards' form (see :meth:`~edsudoku.server.my_boards.list_boards`), and
-    redirect to the right location (:meth:`~edsudoku.server.my_boards.view_set_of_boards`).
+    Process the results of the 'View set of boards' form (see :func:`~edsudoku.server.my_boards.list_boards`), and
+    redirect to the right location (:func:`~edsudoku.server.my_boards.view_set_of_boards`).
 
     :return: A redirection.
     :rtype: flask.Response

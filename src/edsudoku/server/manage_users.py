@@ -76,7 +76,7 @@ def edit_user(user_id):
     * If this page was requested with a POST method, a user editing is processed.
 
       * If the form was processed successfully, the user is redirected to the management page
-        (see :meth:`~edsudoku.server.manage_users.manage_users`).
+        (see :func:`~edsudoku.server.manage_users.manage_users`).
       * Otherwise, the form is returned with an error explanation.
 
     :param user_id: The user ID to edit.
