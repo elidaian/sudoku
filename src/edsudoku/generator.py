@@ -1,8 +1,5 @@
 """
 This module generates sudoku boards.
-
-:var DEFAULT_ALPHABET: The default alphabet used when no alphabet is given for generating the board.
-:type DEFAULT_ALPHABET: str
 """
 from random import choice
 
@@ -13,7 +10,7 @@ from edsudoku.impl.board import BoardImpl
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
 DEFAULT_ALPHABET = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-""" Default alphabet to be used if no alphabet is given. """
+""" Default alphabet to be used if no alphabet is given to :meth:`~edsudoku.generator.generate`. """
 
 
 def _find_next_symbol_to_assign(board, possible_positions):
