@@ -66,9 +66,14 @@ class UserPermission(object):
 
 # Define the permissions
 PERM_CREATE_BOARD = UserPermission('CREATE_BOARD', 'Create boards', True)
+""" Allow the user to create his/her own sudoku boards. """
+
 PERM_MANAGE_USERS = UserPermission('MANAGE_USERS', 'Manage users', False)
+""" Allow the user to manage the users in the server. """
+
 PERM_SHOW_OTHER_USER_BOARDS = UserPermission('SHOW_OTHER_USERS_BOARDS',
                                              'Show other user\'s boards', False)
+""" Allow the user to view the generated boards of other users. """
 
 
 class User(object):
@@ -108,6 +113,8 @@ class User(object):
 
     def allow_create_board(self):
         """
+        :see: :data:`~edsudoku.server.users.PERM_CREATE_BOARD`
+
         :return: ``True`` iff this user is allowed to create boards.
         :rtype: bool
         """
@@ -115,6 +122,8 @@ class User(object):
 
     def allow_manage_users(self):
         """
+        :see: :data:`~edsudoku.server.users.PERM_MANAGE_USERS`
+
         :return: ``True`` iff this user is allowed to manage other users.
         :rtype: bool
         """
@@ -122,7 +131,9 @@ class User(object):
 
     def allow_other_user_boards(self):
         """
-        :return: ``True` iff this user is allowed to see other users boards.
+        :see: :data:`~edsudoku.server.users.PERM_SHOW_OTHER_USER_BOARDS`
+
+        :return: ``True`` iff this user is allowed to see other users boards.
         :rtype: bool
         """
         return self.has_permission(PERM_SHOW_OTHER_USER_BOARDS)
