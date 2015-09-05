@@ -1,14 +1,16 @@
 from contextlib import closing
 import hashlib
 import sqlite3
+from os import urandom
+
 from edsudoku.board import SimpleBoard, Board
 from edsudoku.server.users import User, UserPermission
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
 LOGIN_QUERY = """
-select id, display, permissions from users
-where username = :username and password = :password
+select id, display, permissions, password, salt from users
+where username = :username
 """
 """ Query for logging in. """
 
@@ -19,8 +21,8 @@ where id = :id
 """ Query for details about a user. """
 
 REGISTER_USER = """
-insert into users(username, password, display, permissions)
-values (:username, :password, :display, :permissions)
+insert into users(username, password, salt, display, permissions)
+values (:username, :password, :salt, :display, :permissions)
 """
 """ Query for registering a new user. """
 
@@ -39,6 +41,7 @@ where users.id = :user_id
 EDIT_USER_WITH_PASSWORD = """
 update users
 set password = :password,
+    salt = :salt,
     display = :display,
     permissions = :permissions
 where id = :user_id
@@ -112,16 +115,26 @@ def connect_db(app):
     return db
 
 
-def hash_password(password):
+def hash_password(password, salt):
     """
-    Hash a password to protect it.
+    Hash a password with a salt to protect it.
 
     :param password: The password.
     :type password: str
+    :param salt: The password salt.
+    :type salt: buffer
     :return: The hashed password.
     :rtype: buffer
     """
-    return buffer(hashlib.sha512(password).digest())
+    return buffer(hashlib.sha512(buffer(password.encode('ascii')) + salt).digest())
+
+
+def generate_salt():
+    """
+    :return: A strong random salt, for salting passwords.
+    :rtype: buffer
+    """
+    return buffer(urandom(16))
 
 
 def login(db, username, password):
@@ -140,11 +153,10 @@ def login(db, username, password):
     :return: The user object, or ``None`` if not found.
     :rtype: :class:`~users.User`
     """
-    info = {'username': username,
-            'password': hash_password(password)}
+    info = {'username': username}
     cur = db.execute(LOGIN_QUERY, info)
     entry = cur.fetchone()
-    if entry is not None:
+    if entry is not None and hash_password(password, entry['salt']) == entry['password']:
         return User(entry['id'], username, entry['display'], entry['permissions'])
     else:
         return None
@@ -194,8 +206,10 @@ def register_user(db, username, password, display, permissions):
     """
 
     try:
+        salt = generate_salt()
         details = {'username': username,
-                   'password': hash_password(password),
+                   'password': hash_password(password, salt),
+                   'salt': salt,
                    'display': display,
                    'permissions': UserPermission.get_mask(permissions)}
         db.execute(REGISTER_USER, details)
@@ -264,8 +278,10 @@ def edit_user_with_password(db, user_id, password, display, permissions):
     :param permissions: The new user permissions.
     :type permissions: list of :class:`~users.UserPermission`-s
     """
+    salt = generate_salt()
     details = {'user_id': user_id,
-               'password': hash_password(password),
+               'password': hash_password(password, salt),
+               'salt': salt,
                'display': display,
                'permissions': UserPermission.get_mask(permissions)}
     db.execute(EDIT_USER_WITH_PASSWORD, details)

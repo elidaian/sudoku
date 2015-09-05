@@ -3,6 +3,7 @@ create table users (
     id integer primary key autoincrement,
     username text unique not null,
     password blob not null,
+    salt blob not null,
     display text,
     permissions integer not null
 );
