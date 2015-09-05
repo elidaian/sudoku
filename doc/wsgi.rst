@@ -69,3 +69,15 @@ the operating system username (as obtained by :func:`getpass.getuser`). The pass
 
 The DB will never store your password in plaintext. It will be hashed using the `SHA-512
 <https://en.wikipedia.org/wiki/SHA-2>`_ algorithm, and 16 bytes of salt will be added to the password.
+
+Generating PDF Boards
+=====================
+
+PDF board generation is done using `PDFLaTeX <http://www.latex-project.org/>`_, so an existing installation of PDFLaTeX
+should exist in order to support this feature.
+
+The PDF Generation creates a temporary directory on the filesystem per request. This directory is deleted and assured
+to be deleted using ``try: ... finally: delete`` code. However, failures may occur, so this should be taken into
+account.
+
+For more information, refer to :mod:`edsudoku.server.pdf`.

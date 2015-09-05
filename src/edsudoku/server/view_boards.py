@@ -4,11 +4,20 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.server import db
+from edsudoku.server.pdf import render_pdf_template
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
+# Board viewing modes
+
 INSITE_BOARD_VIEW = 0
+""" The board will be viewed inside the website. """
+
 PRINT_BOARD_VIEW = 1
+""" The board will be viewed in a printable format. """
+
+PDF_BOARD_VIEW = 2
+""" The board will be viewed as a PDF file. """
 
 
 def view_one_board(board_id, solution, mode, root):
@@ -29,7 +38,12 @@ def view_one_board(board_id, solution, mode, root):
         return render_template('view_board.html', many=False, board=board, board_id=board_id, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
-        return render_template('print_board.html', multi_board=False, board=board, board_id=board_id, is_solution=solution)
+        return render_template('print_board.html', multi_board=False, board=board, board_id=board_id,
+                               is_solution=solution)
+    elif mode == PDF_BOARD_VIEW:
+        filename = 'solution.pdf' if solution else 'board.pdf'
+        return render_pdf_template('pdf_board.tex', filename, multi_board=False, board=board, board_id=board_id,
+                                   is_solution=solution)
     else:
         flash('Invalid mode', 'warning')
         return redirect(url_for('main_page'))
@@ -51,6 +65,9 @@ def view_many_boards(board_ids, solution, mode, root):
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
         return render_template('print_board.html', multi_board=True, boards=boards, is_solution=solution)
+    elif mode == PDF_BOARD_VIEW:
+        filename = 'solution.pdf' if solution else 'board.pdf'
+        return render_pdf_template('pdf_board.tex', filename, multi_board=True, boards=boards, is_solution=solution)
     else:
         flash('Invalid mode', 'warning')
         return redirect(url_for('main_page'))

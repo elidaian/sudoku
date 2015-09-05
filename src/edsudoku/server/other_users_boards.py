@@ -6,7 +6,8 @@ from werkzeug.utils import redirect
 from edsudoku.server import db, app
 from edsudoku.server.misc import must_login
 from edsudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD
-from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards
+from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards, \
+    PDF_BOARD_VIEW
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -90,8 +91,6 @@ def pdf_specific_other_board(board_id, solution):
     """
     Get the PDF of one board.
 
-    :note: This feature is currently not supported.
-
     :param board_id: The board ID to view.
     :type board_id: int
     :param solution: ``True`` iff the solution is requested.
@@ -99,7 +98,7 @@ def pdf_specific_other_board(board_id, solution):
     :return: A PDF containing the requested board.
     :rtype: flask.Response
     """
-    return 'Not supported (yet)'
+    return view_one_board(board_id, solution, PDF_BOARD_VIEW, True)
 
 
 @app.route('/other/view/custom', methods=['POST'])
@@ -167,8 +166,6 @@ def pdf_set_of_other_boards(board_ids, solution):
     """
     Get the PDF of multiple boards.
 
-    :note: This feature is currently not supported.
-
     :param board_ids: The board IDs to view.
     :type board_ids: list of ints
     :param solution: ``True`` iff the solutions are requested.
@@ -176,4 +173,4 @@ def pdf_set_of_other_boards(board_ids, solution):
     :return: A PDF containing the requested boards.
     :rtype: flask.Response
     """
-    return 'Not implemented (yet)'
+    return view_many_boards(board_ids, solution, PDF_BOARD_VIEW, True)

@@ -64,6 +64,8 @@ The available templates:
 :``html_board.html``: Provides a macro that generates a board template. Used by ``view_board.html`` and
     ``print_board.html``.
 
+:``pdf_board.tex``: Generates LaTeX for creating PDF of a single or multiple boards.
+
 :``view_board.html``: Responsible for displaying a single board, or of multiple boards insite the website (see
     :func:`~edsudoku.server.view_boards.view_one_board` and :func:`~edsudoku.server.view_boards.view_many_boards`).
 
@@ -167,7 +169,7 @@ Generating and Viewing Boards
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The generic functions for viewing a single board or multiple boards are defined in :mod:`edsudoku.server.view_boards`.
-This functionality includes viewing boards inside the website, or in a printable version.
+This functionality includes viewing boards inside the website, in a printable version or as a PDF.
 
 .. automodule:: edsudoku.server.view_boards
     :members:
@@ -181,6 +183,11 @@ Viewing the boards of the current logged in user, and generating new board(s) fo
 Viewing the boards of all users is implemented in :mod:`edsudoku.server.other_users_boards`.
 
 .. automodule:: edsudoku.server.other_users_boards
+    :members:
+
+Rendering PDF templates is implemented in :mod:`edsudoku.server.pdf`.
+
+.. automodule:: edsudoku.server.pdf
     :members:
 
 Managing Users
