@@ -1,4 +1,5 @@
 from functools import wraps
+from os.path import join, dirname
 
 from flask.globals import session, request, g
 from flask.helpers import url_for, flash, send_from_directory
@@ -63,4 +64,4 @@ def get_font(filename):
     :return: The font file.
     :rtype: flask.Response
     """
-    return send_from_directory('fonts', filename)
+    return send_from_directory(join(dirname(__file__), 'fonts'), filename)

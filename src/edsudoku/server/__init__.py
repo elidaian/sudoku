@@ -17,5 +17,6 @@ if not os.path.isfile(app.config['DATABASE']):
 # Import the modules that contain the pages
 import edsudoku.server.login
 import edsudoku.server.manage_users
+import edsudoku.server.misc
 import edsudoku.server.my_boards
 import edsudoku.server.other_users_boards
