@@ -4,8 +4,9 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.server import db, app
+from edsudoku.server.database import commit
 from edsudoku.server.misc import must_login
-from edsudoku.server.users import PERM_MANAGE_USERS, UserPermission
+from edsudoku.server.users import PERM_MANAGE_USERS, UserPermission, User
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -24,7 +25,7 @@ def register_user():
     :return: The registration form.
     :rtype: flask.Response
     """
-    user = db.get_user(g.db, session['user'])
+    user = User.get_by_id(session['user'])
 
     if request.method == 'POST':
         username = request.form.get('username', None)
@@ -44,8 +45,14 @@ def register_user():
         display = request.form.get('display', None)
         permissions = [permission for permission in UserPermission.PERMISSIONS
                        if request.form.get(permission.name, None) == str(permission.flag)]
-        message, status = db.register_user(g.db, username, password, display, permissions)
-        flash(message, 'success' if status else 'danger')
+
+        try:
+            User.new_user(username, password, permission, display).add()
+            commit()
+        except:
+            flash('Unable to register %s' % username, 'danger')
+        else:
+            flash('User %s successfully created!' % username, 'success')
 
     return render_template('register.html', user=user, permissions=UserPermission.PERMISSIONS)
 
@@ -61,8 +68,8 @@ def manage_users():
     :return: The page.
     :rtype: flask.Response
     """
-    users = db.list_users(g.db)
-    user = db.get_user(g.db, session['user'])
+    users = User.query().all()
+    user = User.get_by_id(session['user'])
     return render_template('list_users.html', users=users, user=user)
 
 
@@ -84,7 +91,7 @@ def edit_user(user_id):
     :return: As explained above.
     :rtype: flask.Response
     """
-    user = db.get_user(g.db, session['user'])
+    user = User.get_by_id(session['user'])
 
     if request.method == 'POST':
         password = request.form.get('password', None)
@@ -151,6 +158,6 @@ def delete_user(user_id):
             flash('User not deleted', 'warning')
         return redirect(url_for('manage_users'))
 
-    user = db.get_user(g.db, session['user'])
+    user = User.get_by_id(session['user'])
     return render_template('delete_user.html', user=user, user_to_delete=user_to_delete, num_boards=num_boards,
                            user_id=user_id)

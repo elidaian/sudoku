@@ -34,7 +34,7 @@ setup(
     ],
     keywords='sudoku server',
     packages=find_packages(),
-    install_requires=['flask'],
+    install_requires=['flask', 'sqlalchemy'],
     entry_points={
         'console_scripts': [
             'edsudoku-server=edsudoku.runserver:main',

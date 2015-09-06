@@ -7,7 +7,7 @@ from edsudoku.exceptions import ErrorWithMessage
 from edsudoku.generator import generate
 from edsudoku.server import db, app
 from edsudoku.server.misc import must_login
-from edsudoku.server.users import PERM_CREATE_BOARD
+from edsudoku.server.users import PERM_CREATE_BOARD, User
 from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards, \
     PDF_BOARD_VIEW
 
@@ -63,7 +63,7 @@ def create_board():
             if app.debug:
                 raise
             flash('Internal server error', 'danger')
-    user = db.get_user(g.db, session['user'])
+    user = User.get_by_id(session['user'])
     return render_template('create_board.html', just_created=just_created,
                            user=user)
 
@@ -82,7 +82,7 @@ def list_boards(many):
     """
 
     boards = db.list_user_boards(g.db, session['user'])
-    user = db.get_user(g.db, session['user'])
+    user = User.get_by_id(session['user'])
     return render_template('list_boards.html', boards=boards, many=many, root=False, user=user)
 
 

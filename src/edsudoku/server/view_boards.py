@@ -5,6 +5,7 @@ from werkzeug.utils import redirect
 
 from edsudoku.server import db
 from edsudoku.server.pdf import render_pdf_template
+from edsudoku.server.users import User
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -34,7 +35,7 @@ def view_one_board(board_id, solution, mode, root):
         return redirect(url_for('main_page'))
 
     if mode == INSITE_BOARD_VIEW:
-        user = db.get_user(g.db, session['user'])
+        user = User.get_by_id(session['user'])
         return render_template('view_board.html', many=False, board=board, board_id=board_id, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
@@ -60,7 +61,7 @@ def view_many_boards(board_ids, solution, mode, root):
                   for board_id in board_ids]
 
     if mode == INSITE_BOARD_VIEW:
-        user = db.get_user(g.db, session['user'])
+        user = User.get_by_id(session['user'])
         return render_template('view_board.html', many=True, boards=boards, board_ids=board_ids, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
