@@ -121,12 +121,12 @@ def hash_password(password, salt):
 
     :param password: The password.
     :type password: str
-    :param salt: The password salt.
+    :param salt: The password salt, or ``None`` if no salt.
     :type salt: buffer
     :return: The hashed password.
     :rtype: buffer
     """
-    return buffer(hashlib.sha512(buffer(password.encode('ascii')) + salt).digest())
+    return buffer(hashlib.sha512(buffer(password.encode('ascii')) + (salt or '')).digest())
 
 
 def generate_salt():
