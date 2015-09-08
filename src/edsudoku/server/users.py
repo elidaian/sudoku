@@ -237,7 +237,10 @@ class User(Base):
         :param permissions: The permissions to add.
         :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
         """
-        self.permissions_mask |= UserPermission.get_mask(permissions)
+        if self.permissions_mask is None:
+            self.permissions_mask = UserPermission.get_mask(permissions)
+        else:
+           self.permissions_mask |= UserPermission.get_mask(permissions)
 
     def remove_permission(self, permission):
         """

@@ -27,16 +27,13 @@
         </a>
     </span>
 {% endmacro %}
-{%- macro disp_user(display, username) -%}
-    {% if display %}{{ display }}{% else %}{{ username }}{% endif %}
-{%- endmacro %}
 {% macro board_details(board) %}
     <p class="list-group-item-text">
         {{ board.block_width }} &times; {{ board.block_height }} board, created
-        on {{ board.create_time }}
+        on {{ board.create_time.strftime('%H:%M:%S %d.%m.%Y') }}.
         {%- if root -%}
             <br/>
-            [Created by {{ disp_user(board.display, board.username) }}]
+            [Created by {{ board.user.display }}]
         {%- endif -%}
     </p>
 {% endmacro %}

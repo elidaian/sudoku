@@ -1,8 +1,8 @@
-((* macro pdf_board(board, id, is_solution) *))
+((* macro pdf_board(board, is_solution) *))
     ((* if is_solution *))
-        ((* set data = board.solution *))
+        ((* set data = board.board.solution *))
     ((* else *))
-        ((* set data = board.problem *))
+        ((* set data = board.board.problem *))
     ((* endif *))
     ((*- set total_size = board.block_width * board.block_height *))
 
@@ -27,7 +27,7 @@
     ((*- endfor *))
     \end{tikzpicture}
 
-    \emph{\#((( id )))}
+    \emph{\#((( board.id )))}
     \end{center}
 ((* endmacro *))
 
@@ -38,12 +38,12 @@
 \begin{document}
 
 ((*- if multi_board *))
-    ((*- for board, id in boards *))
-        ((( pdf_board(board, id, is_solution) )))
+    ((*- for board in boards *))
+        ((( pdf_board(board, is_solution) )))
         \pagebreak
     ((*- endfor *))
 ((*- else *))
-    ((( pdf_board(board, board_id, is_solution) )))
+    ((( pdf_board(board, is_solution) )))
 ((*- endif *))
 
 \end{document}

@@ -47,7 +47,7 @@ def register_user():
                        if request.form.get(permission.name, None) == str(permission.flag)]
 
         try:
-            User.new_user(username, password, permission, display).add()
+            User.new_user(username, password, permissions, display).add()
             commit()
         except:
             flash('Unable to register %s' % username, 'danger')

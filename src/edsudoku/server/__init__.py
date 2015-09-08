@@ -12,7 +12,7 @@ app.url_map.converters['bool'] = BooleanConverter
 app.url_map.converters['list'] = IntegersListConverter
 
 if not os.path.isfile(app.config['DATABASE']):
-    app.config['DATABASE'] = os.path.join(app.instance_path, app.config['DATABASE'])
+    app.config['DATABASE'] = app.config['DATABASE']
 
 # Import the modules that contain the pages
 import edsudoku.server.login

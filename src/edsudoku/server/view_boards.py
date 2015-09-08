@@ -53,14 +53,14 @@ def view_many_boards(board_ids, solution, mode, root):
     View many boards.
     """
     user = User.get_by_id(session['user'])
-    query = DBBoard.query().filter(DBBoard.id in board_ids)
+    query = DBBoard.query().filter(DBBoard.id.in_(board_ids))
     if not root:
-        query = query.filter(user=user)
+        query = query.filter_by(user=user)
     boards = query.all()
 
     if mode == INSITE_BOARD_VIEW:
-        return render_template('view_board.html', many=True, boards=boards, board_ids=board_ids, is_solution=solution,
-                               root=root, user=user)
+        return render_template('view_board.html', many=True, boards=boards, board_ids=board_ids,
+                               is_solution=solution, root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
         return render_template('print_board.html', multi_board=True, boards=boards, is_solution=solution)
     elif mode == PDF_BOARD_VIEW:

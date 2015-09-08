@@ -10,7 +10,7 @@ engine = create_engine(app.config['DATABASE'], convert_unicode=True)
 db_session = scoped_session(sessionmaker(bind=engine))
 
 
-@as_declarative
+@as_declarative()
 class Base(object):
     """
     Base class for all ORM classes.
