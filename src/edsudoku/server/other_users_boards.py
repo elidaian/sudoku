@@ -4,8 +4,9 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.server import db, app
+from edsudoku.server.boards import DBBoard
 from edsudoku.server.misc import must_login
-from edsudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD
+from edsudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD, User
 from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards, \
     PDF_BOARD_VIEW
 
@@ -24,8 +25,8 @@ def list_other_boards(many):
     :return: A list of boards.
     :rtype: flask.Response
     """
-    boards = db.list_all_boards(g.db)
-    user = db.get_user(g.db, session['user'])
+    boards = DBBoard.query().all()
+    user = User.get_by_id(session['user'])
     return render_template('list_boards.html', boards=boards, many=many, root=True, user=user)
 
 

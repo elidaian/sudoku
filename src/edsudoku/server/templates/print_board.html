@@ -17,11 +17,11 @@
 </head>
 <body>
 {%- if multi_board %}
-    {%- for board, id in boards %}
-        {{ html_board(board, id, True, is_solution) }}
+    {%- for board in boards %}
+        {{ html_board(board, True, is_solution) }}
     {%- endfor %}
 {%- else %}
-    {{ html_board(board, id, True, is_solution) }}
+    {{ html_board(board, True, is_solution) }}
 {%- endif %}
 </body>
 </html>

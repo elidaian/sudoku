@@ -6,16 +6,10 @@ from flask.helpers import url_for, flash, send_from_directory
 from werkzeug.utils import redirect
 
 from edsudoku.server import db, app
+from edsudoku.server.database import db_session
+from edsudoku.server.users import User
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
-
-
-@app.before_request
-def open_db():
-    """
-    Initialize a DB connection before any request.
-    """
-    g.db = db.connect_db(app)
 
 
 @app.teardown_request
@@ -23,9 +17,7 @@ def close_db(exception):
     """
     Close the DB connection after any request.
     """
-    conn = getattr(g, 'db', None)
-    if conn is not None:
-        conn.close()
+    db_session.remove()
 
 
 def must_login(permission=None):
@@ -43,7 +35,7 @@ def must_login(permission=None):
         def wrapped(*args, **kwargs):
             if not session.get('logged_in'):
                 return redirect(url_for('login', next=request.url))
-            elif permission is not None and not db.get_user(g.db, session['user']).has_permission(permission):
+            elif permission is not None and not User.get_by_id(session['user']).has_permission(permission):
                 flash('Permission denied', 'danger')
                 return redirect(url_for('main_page'))
             else:

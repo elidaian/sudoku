@@ -2,8 +2,8 @@
 {% block title %}Edit a User{% endblock %}
 {% block body %}
     <div class="alert alert-info">Editing {{ edited_user.display }}.</div>
-    <div class="row">This user has {{ num_boards }} boards.</div>
-    <form action="{{ url_for('edit_user', user_id=user_id) }}" method="post" class="form-horizontal">
+    <div class="row">This user has {{ edited_user.boards|length }} boards.</div>
+    <form action="{{ url_for('edit_user', user_id=edited_user.id) }}" method="post" class="form-horizontal">
         <div class="row">This is the user information:</div>
         <div class="form-group">
             <label for="username" class="col-sm-2 control-label">Username</label>
@@ -58,6 +58,6 @@
         </div>
     </form>
     <div class="row">
-        In addition, you may also <a href="{{ url_for('delete_user', user_id=user_id) }}">delete</a> this user.
+        In addition, you may also <a href="{{ url_for('delete_user', user_id=edited_user.id) }}">delete</a> this user.
     </div>
 {% endblock %}

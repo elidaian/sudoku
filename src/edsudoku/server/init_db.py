@@ -2,7 +2,9 @@ from argparse import ArgumentParser
 from getpass import getuser, getpass
 
 from edsudoku.server import app
-from edsudoku.server.db import init_db
+
+from edsudoku.server.database import Base, engine, commit
+from edsudoku.server.users import User, UserPermission
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -39,7 +41,10 @@ def main():
     password = args.password or getpass()
 
     print 'Initializing DB...'
-    init_db(app, user, password)
+    Base.metadata.create_all(bind=engine)
+    with app.app_context():
+        User.new_user(user, password, UserPermission.PERMISSIONS).add()
+        commit()
     print 'Done!'
 
 

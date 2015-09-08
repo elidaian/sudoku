@@ -75,11 +75,11 @@
 {%- block body %}
     {{ prefix() }}
     {% if many %}
-        {% for board, board_id in boards %}
-            {{ html_board(board, board_id, False, is_solution) }}
+        {% for board in boards %}
+            {{ html_board(board, False, is_solution) }}
         {% endfor %}
     {% else %}
-        {{ html_board(board, board_id, False, is_solution) }}
+        {{ html_board(board, False, is_solution) }}
     {% endif %}
     {{ postfix() }}
     {% if not many %}

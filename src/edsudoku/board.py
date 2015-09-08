@@ -149,9 +149,9 @@ class Board(object):
         :param block_height: The block height in the board.
         :type block_height: int
         :param problem: The board problem.
-        :type problem: SimpleBoard
+        :type problem: :class:`~edsudoku.board.SimpleBoard`
         :param solution: The board solution, or ``None`` if unknown.
-        :type solution: SimpleBoard
+        :type solution: :class:`~edsudoku.board.SimpleBoard`
         """
         assert problem.block_width == block_width, self.DIMENSION_MISMATCH_ERROR
         assert problem.block_height == block_height, self.DIMENSION_MISMATCH_ERROR
@@ -162,6 +162,27 @@ class Board(object):
         self._block_height = block_height
         self._problem = problem
         self._solution = solution or problem
+
+    @staticmethod
+    def from_strings(block_width, block_height, problem, solution=None):
+        """
+        Construct a new :class:`~edsudoku.board.Board` from strings representing the problem and the solution.
+        The solution string may be ``None`` if the solution is unknown.
+
+        :param block_width: The block width in the board.
+        :type block_width: int
+        :param block_height: The block height in the board.
+        :type block_height: int
+        :param problem: The board problem.
+        :type problem: str
+        :param solution: The board solution, or ``None`` if unknown.
+        :type solution: str
+        :return: The constructed board.
+        :rtype: :class:`~edsudoku.board.Board`
+        """
+        problem = SimpleBoard(block_width, block_height, problem)
+        solution = SimpleBoard(block_width, block_height, solution) if solution else None
+        return Board(block_width, block_height, problem, solution)
 
     @property
     def block_height(self):

@@ -4,6 +4,7 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.server import db, app
+from edsudoku.server.users import User
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -17,7 +18,7 @@ def main_page():
     :rtype: flask.Response
     """
     if session.get('logged_in', False):
-        user = db.get_user(g.db, session['user'])
+        user = User.get_by_id(session['user'])
     else:
         user = None
     return render_template('main_page.html', user=user)
@@ -40,7 +41,7 @@ def login():
                 flash('Invalid data', 'danger')
                 return redirect(url_for('login'))
 
-            user = db.login(g.db, username, password)
+            user = User.query().filter_by(username=username).first()
             if user is None:
                 flash('Invalid login credentials', 'danger')
             else:

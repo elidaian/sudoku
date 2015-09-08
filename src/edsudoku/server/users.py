@@ -1,3 +1,12 @@
+from hashlib import sha512
+from os import urandom
+
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.schema import Column
+from sqlalchemy.sql.sqltypes import Integer, String, BLOB
+
+from edsudoku.server.database import Base
+
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
 
@@ -76,29 +85,180 @@ PERM_SHOW_OTHER_USER_BOARDS = UserPermission('SHOW_OTHER_USERS_BOARDS',
 """ Allow the user to view the generated boards of other users. """
 
 
-class User(object):
+class User(Base):
     """
     Represents a logged in user.
+
+    :cvar id: The user ID in the DB.
+    :type id: int
+    :cvar username: The username.
+    :type username: str
+    :cvar _password: The password (as stored in the DB).
+    :type _password: buffer
+    :cvar _salt: The password salt.
+    :type _salt: buffer
+    :cvar _display: The user display, or ``None``.
+    :type _display: str
+    :cvar permissions_mask: The permissions mask of this user.
+    :type permissions_mask: int
+    :cvar boards: The list of this user's boards.
+    :type boards: list of :class:`~edsudoku.server.boards.DBBoard`-s
     """
 
-    def __init__(self, id, username, display, permissions):
-        """
-        Initialize a user given its ID, username, display name and permissions.
+    HASH_SIZE = 64
+    SALT_SIZE = 16
 
-        :param id: The user ID.
-        :type id: int
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, nullable=False, unique=True)
+    _password = Column(BLOB(HASH_SIZE), nullable=False)
+    _salt = Column(BLOB(SALT_SIZE))
+    _display = Column(String)
+    permissions_mask = Column(Integer, nullable=False, default=0)
+
+    @staticmethod
+    def new_user(username, password, permissions, display=None):
+        """
+        Create a new user (and commit it).
+
         :param username: The username.
         :type username: str
-        :param display: The user display (nickname).
+        :param password: The user password.
+        :type password: str
+        :param permissions: The user permissions.
+        :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
+        :param display: The user display, or ``None``.
         :type display: str
-        :param permissions: Mask of permissions granted to the user.
-        :type permissions: int
+        :return: The new registered user.
+        :rtype: :class:`~edsudoku.server.users.User`
         """
-        super(User, self).__init__()
-        self.id = id
-        self.username = username
-        self.display = display or username
-        self.permissions = UserPermission.parse_mask(permissions)
+        user = User(username=username)
+        user.set_password(password)
+        user.add_permissions(permissions)
+        user.display = display
+        return user
+
+    @hybrid_property
+    def permissions(self):
+        """
+        :return: The list of permissions of this user, given its permissions mask.
+        :rtype: list of :class:`~edsudoku.server.users.UserPermission`-s
+        """
+        return UserPermission.parse_mask(self.permissions_mask)
+
+    @hybrid_property
+    def display(self):
+        """
+        :return: The display of this user, if any, or the username.
+        :rtype: str
+        """
+        return self._display or self.username
+
+    @display.setter
+    def display(self, new_display):
+        """
+        Set a new display for this user.
+
+        :param new_display: The new display of this user.
+        :type new_display: str
+        """
+        if new_display:
+            self._display = new_display
+        else:
+            self._display = None
+
+    @staticmethod
+    def _hash_password(password, salt):
+        """
+        Hash a password with a salt to protect it.
+
+        :param password: The password.
+        :type password: str
+        :param salt: The password salt, or ``None`` if no salt.
+        :type salt: buffer
+        :return: The hashed password.
+        :rtype: buffer
+        """
+        return buffer(sha512(buffer(password.encode('ascii')) + (salt or '')).digest())
+
+    @staticmethod
+    def _generate_salt():
+        """
+        :return: A strong random salt, for salting passwords.
+        :rtype: buffer
+        """
+        return buffer(urandom(User.SALT_SIZE))
+
+    def check_password(self, password):
+        """
+        Check a password for authenticating the user.
+
+        :param password: The password to check.
+        :type password: str
+        :return: ``True`` iff the password matches.
+        :rtype: bool
+        """
+        return self._hash_password(password, self._salt) == self._password
+
+    def set_password(self, new_password):
+        """
+        Set a new password for this user.
+
+        :param new_password: The new user password.
+        :type new_password: str
+        """
+        self._salt = self._generate_salt()
+        self._password = self._hash_password(new_password, self._salt)
+
+    def set_permissions(self, permissions):
+        """
+        Set a set of permissions to this user.
+        The permissions that were not passed won't be given to this user.
+
+        :param permissions: The permissions to set.
+        :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
+        """
+        self.permissions_mask = UserPermission.get_mask(permissions)
+
+    def add_permission(self, permission):
+        """
+        Add a permission to this user.
+
+        :param permission: The permission to add.
+        :type permission: :class:`~edsudoku.server.users.UserPermission`
+        """
+        self.add_permissions([permission])
+
+    def add_permissions(self, permissions):
+        """
+        Add some permissions to this user.
+
+        :param permissions: The permissions to add.
+        :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
+        """
+        if self.permissions_mask is None:
+            self.permissions_mask = UserPermission.get_mask(permissions)
+        else:
+           self.permissions_mask |= UserPermission.get_mask(permissions)
+
+    def remove_permission(self, permission):
+        """
+        Remove a permission of this user.
+
+        :param permission: The permission to remove.
+        :type permission: :class:`~edsudoku.server.users.UserPermission`
+        """
+        self.remove_permissions([permission])
+
+    def remove_permissions(self, permissions):
+        """
+        Remove some permissions of this user.
+
+        :param permissions: The permissions to remove.
+        :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
+        """
+        self.permissions_mask &= ~UserPermission.get_mask(permissions)
 
     def has_permission(self, permission):
         """
@@ -109,7 +269,7 @@ class User(object):
         :return: ``True`` iff this user has the requested permission.
         :rtype: bool
         """
-        return permission in self.permissions
+        return bool(self.permissions_mask & permission.flag)
 
     def allow_create_board(self):
         """
@@ -137,25 +297,3 @@ class User(object):
         :rtype: bool
         """
         return self.has_permission(PERM_SHOW_OTHER_USER_BOARDS)
-
-    def to_json(self):
-        """
-        :return: jsonable object with the same data as this user.
-        :rtype: bool
-        """
-        return {'id': self.id,
-                'username': self.username,
-                'display': self.display,
-                'permisions': UserPermission.get_mask(self.permissions)}
-
-    @staticmethod
-    def from_json(json):
-        """
-        Create a :class:`~users.User` object fom its representing json.
-
-        :param json: The json data.
-        :type json: dict
-        :return: The corresponding :class:`~users.User` object.
-        :rtype: :class:`~users.User`
-        """
-        return User(json['id'], json['username'], json['display'], json['permissions'])

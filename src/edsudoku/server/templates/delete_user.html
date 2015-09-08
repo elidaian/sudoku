@@ -2,13 +2,13 @@
 {% block title %}Delete a User{% endblock %}
 {% block body %}
     <div class="alert alert-warning">Deleting {{ user_to_delete.display }}.</div>
-    <div class="alert alert-info">This user has {{ num_boards }} boards.</div>
-    <form action="{{ url_for('delete_user', user_id=user_id) }}" method="post">
+    <div class="alert alert-info">This user has {{ user_to_delete.boards|length }} boards.</div>
+    <form action="{{ url_for('delete_user', user_id=user_to_delete.id) }}" method="post">
         <div class="alert alert-danger">
             <span class="glyphicon glyphicon-question-sign"></span>
-            Are you sure you want to delete {{ user.display }}?
+            Are you sure you want to delete {{ user_to_delete.display }}?
         </div>
-        <input type="hidden" name="user_id" value="{{ user_id }}"/>
+        <input type="hidden" name="user_id" value="{{ user_to_delete.id }}"/>
         <input type="hidden" name="approved" value="1"/>
         <input type="submit" value="Delete user" class="btn btn-danger" />
         <a class="btn btn-info" href="{{ url_for('manage_users') }}">Cancel</a>
