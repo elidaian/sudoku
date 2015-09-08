@@ -3,15 +3,23 @@ from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from edsudoku.exceptions import ErrorWithMessage
 from edsudoku.generator import generate
 from edsudoku.server import db, app
+from edsudoku.server.boards import DBBoard
+from edsudoku.server.database import commit
 from edsudoku.server.misc import must_login
 from edsudoku.server.users import PERM_CREATE_BOARD, User
 from edsudoku.server.view_boards import view_one_board, INSITE_BOARD_VIEW, PRINT_BOARD_VIEW, view_many_boards, \
     PDF_BOARD_VIEW
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
+
+BOARD_TO_DIMENSION = {
+    'regular': lambda form: (3, 3),
+    'dodeka': lambda form: (4, 3),
+    'custom': lambda form: (int(form['width']), int(form['height']))
+}
+""" Dictionary to determine board dimensions. """
 
 
 @app.route('/create_board', methods=['GET', 'POST'])
@@ -29,43 +37,30 @@ def create_board():
     :rtype: flask.Response
     """
     just_created = False
+    user = User.get_by_id(session['user'])
+
     if request.method == 'POST':
         try:
             board_type = request.form['type']
-            if board_type == 'regular':
-                width = 3
-                height = 3
-            elif board_type == 'dodeka':
-                width = 4
-                height = 3
-            elif board_type == 'custom':
-                width = int(request.form['width'])
-                height = int(request.form['height'])
-            else:
-                raise ErrorWithMessage('Invalid board type')
+            width, height = BOARD_TO_DIMENSION[board_type](request.form)
             count = int(request.form['count'])
 
-            boards = [generate(width, height) for i in xrange(count)]
-            board_ids = [db.insert_board(g.db, session['user'], board)
-                         for board in boards]
-            g.db.commit()
+            boards = [DBBoard.create_board(user, generate(width, height)) for _ in xrange(count)]
+            commit()
+
+            board_ids = [board.id for board in boards]
             session['last_boards'] = board_ids
+
             if len(board_ids) == 1:
                 flash('Created one board', 'success')
             else:
                 flash('Created %d boards' % len(board_ids), 'success')
             just_created = True
-        except ErrorWithMessage as e:
-            flash(e.message, 'danger')
         except (KeyError, ValueError):
             flash('Invalid request data', 'danger')
         except:
-            if app.debug:
-                raise
             flash('Internal server error', 'danger')
-    user = User.get_by_id(session['user'])
-    return render_template('create_board.html', just_created=just_created,
-                           user=user)
+    return render_template('create_board.html', just_created=just_created, user=user)
 
 
 @app.route('/view/list', defaults={'many': False})
@@ -81,8 +76,8 @@ def list_boards(many):
     :rtype: flask.Response
     """
 
-    boards = db.list_user_boards(g.db, session['user'])
     user = User.get_by_id(session['user'])
+    boards = DBBoard.query().filter_by(user=user).all()
     return render_template('list_boards.html', boards=boards, many=many, root=False, user=user)
 
 

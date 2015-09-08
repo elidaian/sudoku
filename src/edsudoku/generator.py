@@ -199,7 +199,4 @@ def generate(block_width, block_height, alphabet=None):
         alphabet = DEFAULT_ALPHABET[:board_size]
 
     problem, solution = _construct_board(block_width, block_height, alphabet)
-
-    problem_board = SimpleBoard(block_width, block_height, problem)
-    solution_board = SimpleBoard(block_width, block_height, solution)
-    return Board(block_width, block_height, problem_board, solution_board)
+    return Board.from_strings(block_width, block_height, problem, solution)

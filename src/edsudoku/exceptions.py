@@ -24,12 +24,3 @@ class InvalidAlphabet(ValueError):
     Usually, this means that the alphabet length does not match the board dimensions.
     """
     pass
-
-
-class ErrorWithMessage(Exception):
-    """
-    This exception is raised inside the server.
-
-    It contains a message that should be sent to the client.
-    """
-    pass

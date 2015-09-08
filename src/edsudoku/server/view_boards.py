@@ -4,6 +4,7 @@ from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.server import db
+from edsudoku.server.boards import DBBoard
 from edsudoku.server.pdf import render_pdf_template
 from edsudoku.server.users import User
 
@@ -25,17 +26,14 @@ def view_one_board(board_id, solution, mode, root):
     """
     View a single board.
     """
-    if root:
-        board = db.get_board(g.db, board_id)
-    else:
-        board = db.get_user_board(g.db, board_id, session['user'])
+    user = User.get_by_id(session['user'])
+    board = DBBoard.get_by_id(board_id)
 
-    if board is None:
+    if board is None or (board.user != user and not root):
         flash('Board not found', 'warning')
         return redirect(url_for('main_page'))
 
     if mode == INSITE_BOARD_VIEW:
-        user = User.get_by_id(session['user'])
         return render_template('view_board.html', many=False, board=board, board_id=board_id, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:
@@ -54,14 +52,13 @@ def view_many_boards(board_ids, solution, mode, root):
     """
     View many boards.
     """
-    if root:
-        boards = [(db.get_board(g.db, board_id), board_id) for board_id in board_ids]
-    else:
-        boards = [(db.get_user_board(g.db, board_id, session['user']), board_id)
-                  for board_id in board_ids]
+    user = User.get_by_id(session['user'])
+    query = DBBoard.query().filter(DBBoard.id in board_ids)
+    if not root:
+        query = query.filter(user=user)
+    boards = query.all()
 
     if mode == INSITE_BOARD_VIEW:
-        user = User.get_by_id(session['user'])
         return render_template('view_board.html', many=True, boards=boards, board_ids=board_ids, is_solution=solution,
                                root=root, user=user)
     elif mode == PRINT_BOARD_VIEW:

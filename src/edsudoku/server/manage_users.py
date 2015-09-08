@@ -1,9 +1,9 @@
-from flask.globals import g, session, request
+from flask.globals import session, request
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from edsudoku.server import db, app
+from edsudoku.server import app
 from edsudoku.server.database import commit
 from edsudoku.server.misc import must_login
 from edsudoku.server.users import PERM_MANAGE_USERS, UserPermission, User
@@ -93,6 +93,11 @@ def edit_user(user_id):
     """
     user = User.get_by_id(session['user'])
 
+    edited_user = User.get_by_id(user_id)
+    if not edited_user:
+        flash('User not found', 'danger')
+        return redirect(url_for('manage_users'))
+
     if request.method == 'POST':
         password = request.form.get('password', None)
         display = request.form.get('display', None)
@@ -100,27 +105,21 @@ def edit_user(user_id):
                        if request.form.get(permission.name, None) == str(permission.flag)]
 
         if password:
-            password2 = request.form.get('password2', None)
-
-            if password != password2:
+            if password != request.form.get('password2', None):
                 flash('Passwords mismatch', 'warning')
                 return redirect(url_for('edit_user', user_id=user_id))
+            edit_user.set_password(password)
 
-            db.edit_user_with_password(g.db, user_id, password, display, permissions)
-        else:
-            db.edit_user_without_password(g.db, user_id, display, permissions)
+        edited_user.display = display
+        edited_user.set_permissions(permissions)
+
+        commit()
 
         flash('User updated successfully', 'success')
         return redirect(url_for('manage_users'))
 
-    user_details = db.get_user_details(g.db, user_id)
-    if not user_details:
-        flash('User not found', 'danger')
-        return redirect(url_for('manage_users'))
-    edited_user, num_boards = user_details
-
-    return render_template('edit_user.html', user=user, user_id=user_id, edited_user=edited_user,
-                           num_boards=num_boards, permissions=UserPermission.PERMISSIONS)
+    return render_template('edit_user.html', user=user, edited_user=edited_user,
+                           permissions=UserPermission.PERMISSIONS)
 
 
 @app.route('/manage/delete/<int:user_id>', methods=['GET', 'POST'])
@@ -141,23 +140,22 @@ def delete_user(user_id):
     :return: As explained above.
     :rtype: flask.Response
     """
-    user_details = db.get_user_details(g.db, user_id)
-    if not user_details:
+    user_to_delete = User.get_by_id(user_id)
+    if not user_to_delete:
         flash('User not found', 'danger')
         return redirect(url_for('manage_users'))
-    user_to_delete, num_boards = user_details
 
     if request.method == 'POST':
         user_id2 = int(request.form.get('user_id', -1))
         approved = bool(request.form.get('approved', False))
 
         if approved and user_id == user_id2:
-            db.delete_user(g.db, user_id)
+            user_to_delete.delete()
+            commit()
             flash('User %s has been deleted successfully' % user_to_delete.display, 'success')
         else:
             flash('User not deleted', 'warning')
         return redirect(url_for('manage_users'))
 
     user = User.get_by_id(session['user'])
-    return render_template('delete_user.html', user=user, user_to_delete=user_to_delete, num_boards=num_boards,
-                           user_id=user_id)
+    return render_template('delete_user.html', user=user, user_to_delete=user_to_delete)

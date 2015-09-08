@@ -163,7 +163,10 @@ class User(Base):
         :param new_display: The new display of this user.
         :type new_display: str
         """
-        self._display = new_display
+        if new_display:
+            self._display = new_display
+        else:
+            self._display = None
 
     @staticmethod
     def _hash_password(password, salt):
@@ -207,6 +210,16 @@ class User(Base):
         """
         self._salt = self._generate_salt()
         self._password = self._hash_password(new_password, self._salt)
+
+    def set_permissions(self, permissions):
+        """
+        Set a set of permissions to this user.
+        The permissions that were not passed won't be given to this user.
+
+        :param permissions: The permissions to set.
+        :type permissions: list of :class:`~edsudoku.server.users.UserPermission`-s
+        """
+        self.permissions_mask = UserPermission.get_mask(permissions)
 
     def add_permission(self, permission):
         """
