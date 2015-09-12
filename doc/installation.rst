@@ -6,7 +6,7 @@ Installation
 Installing from PyPI
 ====================
 
-``edsudoku`` should be available on `PyPI <https://pypi.python.org/pypi>`_.
+``edsudoku`` is available on `PyPI <https://pypi.python.org/pypi>`_.
 It can be simply installed using:
 
 .. code-block:: shell
