@@ -1,5 +1,3 @@
-import os
-
 from flask.app import Flask
 
 from edsudoku.server.converters import BooleanConverter, IntegersListConverter
@@ -10,9 +8,6 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('sudoku.cfg', silent=True)
 app.url_map.converters['bool'] = BooleanConverter
 app.url_map.converters['list'] = IntegersListConverter
-
-if not os.path.isfile(app.config['DATABASE']):
-    app.config['DATABASE'] = app.config['DATABASE']
 
 # Import the modules that contain the pages
 import edsudoku.server.login
