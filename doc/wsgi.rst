@@ -52,7 +52,7 @@ root user, since the website is not usable without it.
 
 The signature of the ``edsudoku-init-db`` command is as follows::
 
-    usage: edsudoku-init-db [-h] [-u USERNAME] [-p PASSWORD]
+    usage: init_db.py [-h] [-u USERNAME] [-p PASSWORD] [-d]
 
     Initialize an empty DB
 
@@ -62,10 +62,14 @@ The signature of the ``edsudoku-init-db`` command is as follows::
                             Root user name
       -p PASSWORD, --password PASSWORD
                             Root user password
+      -d, --drop-old        Use for dropping all information in the DB
 
 This command creates an empty DB, with the given root user configured. The root user name is the given username, or
 the operating system username (as obtained by :func:`getpass.getuser`). The password could be passed as an argument to
 ``edsudoku-init-db``, or could be given to the process in the standard input.
+
+If the ``-d`` option is passed, then all information in the DB will be dropped (deleted), and a new DB will replace the
+existing one.
 
 The DB is accessed by using the WSGI application configuration file, so don't forger to configure the DB connection
 string before initializing the DB.

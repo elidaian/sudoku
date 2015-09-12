@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from getpass import getuser, getpass
+from sys import stderr
 
 from edsudoku.server import app
 from edsudoku.server.database import Base, engine, commit
@@ -27,6 +28,10 @@ def _parse_args():
                         metavar='PASSWORD',
                         dest='password',
                         help='Root user password')
+    parser.add_argument('-d', '--drop-old',
+                        action='store_true',
+                        dest='drop',
+                        help='Use for dropping all information in the DB')
     return parser.parse_args()
 
 
@@ -40,6 +45,9 @@ def main():
     password = args.password or getpass()
 
     print 'Initializing DB...'
+    if args.drop:
+        print >> stderr, 'WARNING: All information is being dropped.'
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     with app.app_context():
         User.new_user(user, password, UserPermission.PERMISSIONS).add()
