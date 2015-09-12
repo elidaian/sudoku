@@ -1,0 +1,3 @@
+recursive-include edsudoku/server/fonts *
+recursive-include edsudoku/server/static *
+recursive-include edsudoku/server/templates *
