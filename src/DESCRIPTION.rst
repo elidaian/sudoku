@@ -7,19 +7,15 @@ Usage
 -----
 
 This utility can be used as a Python package, simply using `import edsudoku`.
-For example, a regular sudoku board can be generated as follows:
+For example, a regular sudoku board can be generated as follows::
 
-```
-import edsudoku
-board = edsudoku.generate(3, 3)
-```
+    import edsudoku
+    board = edsudoku.generate(3, 3)
 
 In addition, edsudoku provides a WSGI web server application.
-This application can be used using the following script:
+This application can be used using the following script::
 
-```
-from edsudoku.server import app as application.
-```
+    from edsudoku.server import app as application.
 
 Contact
 -------
