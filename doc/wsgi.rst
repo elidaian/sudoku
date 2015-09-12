@@ -13,7 +13,7 @@ A complete WSGI application could be:
 
     from edsudoku.server import app as application
 
-And that's it!
+Or simply using the provided :mod:`edsudoku.wsgi` module, and that's it!
 
 Configuring the WSGI Application
 ================================
