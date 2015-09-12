@@ -2,8 +2,10 @@ from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 from shutil import rmtree
 from os.path import join, isfile
+
 from flask.helpers import send_file
 from werkzeug.exceptions import InternalServerError
+
 from edsudoku.server import app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'

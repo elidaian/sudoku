@@ -1,10 +1,10 @@
-from flask.globals import request, session, g
+from flask.globals import request, session
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
 from edsudoku.generator import generate
-from edsudoku.server import db, app
+from edsudoku.server import app
 from edsudoku.server.boards import DBBoard
 from edsudoku.server.database import commit
 from edsudoku.server.misc import must_login

@@ -1,11 +1,12 @@
 from functools import wraps
 from os.path import join, dirname
 
-from flask.globals import session, request, g
+from flask.globals import session, request
 from flask.helpers import url_for, flash, send_from_directory
+
 from werkzeug.utils import redirect
 
-from edsudoku.server import db, app
+from edsudoku.server import app
 from edsudoku.server.database import db_session
 from edsudoku.server.users import User
 

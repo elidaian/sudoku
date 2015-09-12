@@ -1,9 +1,9 @@
-from flask.globals import g, session, request
+from flask.globals import session, request
 from flask.helpers import url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from edsudoku.server import db, app
+from edsudoku.server import app
 from edsudoku.server.boards import DBBoard
 from edsudoku.server.misc import must_login
 from edsudoku.server.users import PERM_SHOW_OTHER_USER_BOARDS, PERM_CREATE_BOARD, User

@@ -2,6 +2,7 @@ from sqlalchemy.engine import create_engine
 from sqlalchemy.ext.declarative.api import as_declarative
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.orm.session import sessionmaker
+
 from edsudoku.server import app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'

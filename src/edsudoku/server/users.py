@@ -240,7 +240,7 @@ class User(Base):
         if self.permissions_mask is None:
             self.permissions_mask = UserPermission.get_mask(permissions)
         else:
-           self.permissions_mask |= UserPermission.get_mask(permissions)
+            self.permissions_mask |= UserPermission.get_mask(permissions)
 
     def remove_permission(self, permission):
         """

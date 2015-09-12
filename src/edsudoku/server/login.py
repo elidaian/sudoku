@@ -1,9 +1,9 @@
-from flask.globals import session, g, request
+from flask.globals import session, request
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from edsudoku.server import db, app
+from edsudoku.server import app
 from edsudoku.server.users import User
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'

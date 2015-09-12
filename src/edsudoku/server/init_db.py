@@ -2,7 +2,6 @@ from argparse import ArgumentParser
 from getpass import getuser, getpass
 
 from edsudoku.server import app
-
 from edsudoku.server.database import Base, engine, commit
 from edsudoku.server.users import User, UserPermission
 

@@ -1,7 +1,10 @@
 from datetime import datetime
+
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.schema import Column, ForeignKey
+
 from sqlalchemy.sql.sqltypes import Integer, DateTime, String
+
 from edsudoku.board import Board
 from edsudoku.server.database import Base
 

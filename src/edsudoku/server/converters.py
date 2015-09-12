@@ -1,4 +1,5 @@
 from itertools import imap
+
 from werkzeug.routing import BaseConverter, ValidationError
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'

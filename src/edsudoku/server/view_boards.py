@@ -1,9 +1,8 @@
-from flask.globals import session, g
+from flask.globals import session
 from flask.helpers import flash, url_for
 from flask.templating import render_template
 from werkzeug.utils import redirect
 
-from edsudoku.server import db
 from edsudoku.server.boards import DBBoard
 from edsudoku.server.pdf import render_pdf_template
 from edsudoku.server.users import User
