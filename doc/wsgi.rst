@@ -25,14 +25,17 @@ A sample file would look like:
 
 .. code-block:: python
 
-    # This is the file name that SQLite uses
-    DATABASE = "sudoku.db"
+    from os.path import dirname, join
 
-    # Turned on when debug is enabled
-    DEBUG = False
+    # DB connection string, to be passed to SQLAlchemy
+    DATABASE = 'sqlite:///{}'.format(join(dirname(__file__), 'sudoku.db'))
+
+    # Set this flag to True in order to display Flask's debug page when
+    # internal server errors occur.
+    DEBUG = True
 
     # Secret key (generated using os.urandom). Regenerate for your configuration
-    SECRET_KEY = "\x11\x96<\xdb\xd3$/\xc7\x82\xb3\xf7Zj\xe0n\\"
+    SECRET_KEY = '\x11\x96<\xdb\xd3$/\xc7\x82\xb3\xf7Zj\xe0n\\'
 
 In newer versions, this file will be supplied with ``edsudoku`` package installation.
 
@@ -63,6 +66,9 @@ The signature of the ``edsudoku-init-db`` command is as follows::
 This command creates an empty DB, with the given root user configured. The root user name is the given username, or
 the operating system username (as obtained by :func:`getpass.getuser`). The password could be passed as an argument to
 ``edsudoku-init-db``, or could be given to the process in the standard input.
+
+The DB is accessed by using the WSGI application configuration file, so don't forger to configure the DB connection
+string before initializing the DB.
 
 :Tip: It is more recommended that the password will not be passed as a command line argument if possible, in order to
     maintain it as secure as possible.

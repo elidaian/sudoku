@@ -128,20 +128,24 @@ Backend Server Implementation
 The WSGI application is defined directly under the ``__init__.py`` file of :mod:`edsudoku.server`.
 This file is responsible for defining, importing and loading the important functions of the web server.
 
+DB Access
+^^^^^^^^^
+
+The ORM declarative base, engine and session are declared in the module :mod:`edsudoku.server.database`.
+Some convenience boards representation is defined in the module :mod:`edsudoku.server.boards`.
+
+.. automodule:: edsudoku.server.database
+    :members:
+
+.. automodule:: edsudoku.server.boards
+    :members:
+
 Users
 ^^^^^
 
 Some convenience objects for representing users and their permissions are defined in :mod:`edsudoku.server.users`.
 
 .. automodule:: edsudoku.server.users
-    :members:
-
-DB Access
-^^^^^^^^^
-
-Some convenience DB functions for queries and updates are defined in the module :mod:`edsudoku.server.db`.
-
-.. automodule:: edsudoku.server.db
     :members:
 
 Converters
@@ -204,8 +208,7 @@ Miscellaneous
 Some miscellaneous functionality of the web server is implemented in :mod:`edsudoku.server.misc`.
 Some of its functionality includes:
 
-* Opening and closing the DB connection (see :func:`~edsudoku.server.misc.open_db` and
-  :func:`~edsudoku.server.misc.close_db`, respectively).
+* Closing the DB connection in the session tear-down (see :func:`~edsudoku.server.misc.close_db`).
 * Making sure that there is a logged in user, with the correct permissions for this page (see
   :func:`~edsudoku.server.misc.must_login`).
 * Getting a font from :ref:`fonts-dir` (see :func:`~edsudoku.server.misc.get_font`).

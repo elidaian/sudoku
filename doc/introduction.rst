@@ -35,16 +35,12 @@ Current technologies being used:
 
 * The web server is implemented on top of the `Flask <http://flask.pocoo.org/>`_ framework, that implements the
   `Web Server Gateway Interface (WSGI) <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_.
-* The boards are stored in an `SQLite <https://www.sqlite.org/>`_ database, powered on Python's |sqlite3 module|_.
+* The boards are stored in a DB, and accessed using |sqlalchemy|_ ORM.
 * The website uses `bootstrap <http://getbootstrap.com/>`_ as a good CSS infrastructure.
 * The website uses `jQuery <https://jquery.com/>`_ as a basic JavaScript library.
 
-.. |sqlite3 module| replace:: ``sqlite3`` module
-.. _sqlite3 module: https://docs.python.org/2/library/sqlite3.html
-
 Future plans:
 
-* Use |sqlalchemy|_ for DB usage, in order to support any DB engine.
 * Add an accelerator C module, and thus provide cross compatibility with any Python interpreter, and allowing faster
   computations.
 * Use `Jade <http://jade-lang.com/>`_ and `Stylus <https://learnboost.github.io/stylus/>`_ for easier development of
