@@ -15,33 +15,48 @@ class DBBoard(Base):
     """
     Boards representation in the DB.
 
-    :cvar id: The board ID in the DB.
-    :type id: int
+    :cvar ~edsudoku.server.boards.DBBoard.id: The board ID in the DB.
+    :vartype ~edsudoku.server.boards.DBBoard.id: int
     :cvar user_id: The ID of the owner of this board.
-    :type user_id: int
+    :vartype user_id: int
     :cvar user: The owner of this board.
-    :type user: :class:`~edsudoku.server.users.User`
+    :vartype user: :class:`~edsudoku.server.users.User`
     :cvar create_time: The creation time of this board.
-    :type create_time: datetime.datetime
-    :cvar block_width: The block width in this board.
-    :type block_width: int
-    :cvar block_height: The block height in this board.
-    :type block_height: int
+    :vartype create_time: :class:`datetime.datetime`
+    :cvar ~edsudoku.server.boards.DBBoard.block_width: The block width in this board.
+    :vartype ~edsudoku.server.boards.DBBoard.block_width: int
+    :cvar ~edsudoku.server.boards.DBBoard.block_height: The block height in this board.
+    :vartype ~edsudoku.server.boards.DBBoard.block_height: int
     :cvar _problem: A representation of the problem of this board.
-    :type _problem: str
+    :vartype _problem: str
     :cvar _solution: A representation of the solution of this board, or ``None`` if not available.
-    :type _solution: str
+    :vartype _solution: str
     """
 
     __tablename__ = 'boards'
 
+    #: The board ID in the DB.
     id = Column(Integer, primary_key=True)
+
+    #: The ID of the owner of this board.
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    #: The owner of this board.
     user = relationship('User', backref=backref('boards', cascade='all, delete, delete-orphan'))
+
+    #: The creation time of this board.
     create_time = Column(DateTime, nullable=False, default=datetime.now)
+
+    #: The block width in this board.
     block_width = Column(Integer, nullable=False)
+
+    #: The block height in the board.
     block_height = Column(Integer, nullable=False)
+
+    #: A representation of the problem of this board.
     _problem = Column(String, nullable=False)
+
+    #: A representation of the solution of this board, or ``None`` if not available.
     _solution = Column(String)
 
     @staticmethod

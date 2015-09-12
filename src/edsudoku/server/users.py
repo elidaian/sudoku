@@ -89,20 +89,20 @@ class User(Base):
     """
     Represents a logged in user.
 
-    :cvar id: The user ID in the DB.
-    :type id: int
+    :cvar ~edsudoku.server.users.User.id: The user ID in the DB.
+    :vartype ~edsudoku.server.users.User.id: int
     :cvar username: The username.
-    :type username: str
+    :vartype username: str
     :cvar _password: The password (as stored in the DB).
-    :type _password: buffer
+    :vartype _password: buffer
     :cvar _salt: The password salt.
-    :type _salt: buffer
+    :vartype _salt: buffer
     :cvar _display: The user display, or ``None``.
-    :type _display: str
+    :vartype _display: str
     :cvar permissions_mask: The permissions mask of this user.
-    :type permissions_mask: int
+    :vartype permissions_mask: int
     :cvar boards: The list of this user's boards.
-    :type boards: list of :class:`~edsudoku.server.boards.DBBoard`-s
+    :vartype boards: list of :class:`~edsudoku.server.boards.DBBoard`-s
     """
 
     HASH_SIZE = 64
@@ -110,11 +110,22 @@ class User(Base):
 
     __tablename__ = 'users'
 
+    #: The user ID in the DB.
     id = Column(Integer, primary_key=True)
+
+    #: The username.
     username = Column(String, nullable=False, unique=True)
+
+    #: The password (as stored in the DB).
     _password = Column(BLOB(HASH_SIZE), nullable=False)
+
+    #: The password salt.
     _salt = Column(BLOB(SALT_SIZE))
+
+    #: The user display, or ``None``.
     _display = Column(String)
+
+    #: The permissions mask of this user.
     permissions_mask = Column(Integer, nullable=False, default=0)
 
     @staticmethod
