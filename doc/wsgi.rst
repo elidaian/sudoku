@@ -18,8 +18,16 @@ And that's it!
 Configuring the WSGI Application
 ================================
 
-The WSGI ``edsudoku`` application reads its configuration from a file named ``sudoku.cfg``.
-Currently, this file is not supplied with the package distribution of ``edsudoku``.
+The WSGI application must receive two configuration variables:
+
+:``'DATABASE'``: A DB connection string, to be passed to SQLAlchemy.
+
+:``'SECRET_KEY'``: | A secret key for session management.
+                   | This secret key should be generated using a cryptographic random generator, such as
+                     :func:`os.urandom`.
+
+All other `Builtin Configuration Values <http://flask.pocoo.org/docs/0.10/config/#builtin-configuration-values>`_ can
+also be given.
 
 A sample file would look like:
 
@@ -37,7 +45,13 @@ A sample file would look like:
     # Secret key (generated using os.urandom). Regenerate for your configuration
     SECRET_KEY = '\x11\x96<\xdb\xd3$/\xc7\x82\xb3\xf7Zj\xe0n\\'
 
-In newer versions, this file will be supplied with ``edsudoku`` package installation.
+The location of this configuration file should be passed in the environment argument ``EDSUDOKU_CONF_FILE``.
+
+If the configuration file is not passed, the application will use its default configuration. The default configuration
+uses in-memory SQLite3 DB, with the debug option turned off and a default secret key. The server might not usable using
+this configuration.
+
+:Note: Using the default configuration in a production server might be a security risk. **Use your own configuration**.
 
 Initializing the DB
 ===================
