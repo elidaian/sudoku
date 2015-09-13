@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+{% block scripts %}
+    <script type="text/javascript">
+        <!--
+        function update_options() {
+            if ($("#regular").prop("checked") || $("#dodeka").prop("checked")) {
+                $("#custom-dimensions").hide("fast");
+            } else {
+                $("#custom-dimensions").show("fast");
+            }
+        }
+        $(document).ready(function () {
+            update_options();
+            $("div.radio").click(update_options);
+        });
+        //-->
+
+    </script>
+{%- endblock %}
+{% block title %}Create a New Board{% endblock %}
+{% block body %}
+    {%- if just_created %}
+        <div class="alert alert-info">
+            Click here to
+            <a href="{{ url_for('view_last_boards') }}" class="alert-link">see</a>
+            the created board{% if session.last_boards|length != 1 %}s{% endif %}
+        </div>
+    {%- endif %}
+    <form action="{{ url_for('create_board') }}" method="post" class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Board Type</label>
+
+            <div class="col-sm-10">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="type" value="regular" checked="true" id="regular"/>
+                        Regular board
+                        <small>3 &times; 3 blocks, each 3 &times; 3 cells</small>
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="type" value="dodeka" id="dodeka"/>
+                        Dodeka board
+                        <small>3 &times; 4 blocks, each 4 &times; 3 cells</small>
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="type" value="custom" id="custom"/>
+                        Custom board:
+                        <div class="container" id="custom-dimensions" hidden="hidden">
+                            <div class="form-group">
+                                <label for="width" class="col-sm-2 control-label">Block width</label>
+
+                                <div class="col-sm-10">
+                                    <input type="number" name="width" id="width"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="height" class="col-sm-2 control-label">Block height</label>
+
+                                <div class="col-sm-10">
+                                    <input type="number" name="height" id="height"/>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="count" class="col-sm-2 control-label">Number of boards to create</label>
+
+            <div class="col-sm-10">
+                <input type="number" name="count" id="count" value="1"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" value="Create"/>
+            </div>
+        </div>
+    </form>
+{%- endblock %}

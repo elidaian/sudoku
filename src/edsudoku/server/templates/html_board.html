@@ -1,0 +1,41 @@
+{%- macro html_board(board, to_print, is_solution) %}
+    {%- if is_solution %}
+        {%- set data = board.board.solution %}
+    {%- else %}
+        {%- set data = board.board.problem %}
+    {%- endif %}
+    {%- if to_print -%}
+        <div class="row head">Eli Daian's Sudoku</div>
+    {%- endif -%}
+    <div class="row text-center">
+        <table class="board">
+            {%- for blocks_row in range(board.block_width) %}
+                {%- set row1 = board.block_height * blocks_row %}
+                <tr>
+                    {%- for blocks_col in range(board.block_height) %}
+                        {%- set col1 = board.block_width * blocks_col %}
+                        <td>
+                            <table class="inboard">
+                                {%- for inblock_row in range(board.block_height) %}
+                                    {%- set row = row1 + inblock_row %}
+                                    <tr>
+                                        {%- for inblock_col in range(board.block_width) %}
+                                            {%- set col = col1 + inblock_col %}
+                                            <td>{{ (data[col, row].strip() or '&nbsp;')|safe }}</td>
+                                        {%- endfor %}
+                                    </tr>
+                                {%- endfor %}
+                            </table>
+                        </td>
+                    {%- endfor %}
+                </tr>
+            {%- endfor %}
+        </table>
+    </div>
+    <div class="row">
+        <p class="text-center"><em>#{{ board.id }}</em></p>
+    </div>
+    {%- if to_print %}
+        <p class="pagebreak"></p>
+    {%- endif %}
+{%- endmacro %}
