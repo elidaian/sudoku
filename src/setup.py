@@ -10,7 +10,7 @@ with open(path.join(here, 'DESCRIPTION.rst'), 'r') as f:
 
 setup(
     name='edsudoku',
-    version='2.0.rc',
+    version='2.0',
     description='Utility and website for generating solvable sudoku puzzles',
     long_description=long_description,
     url='https://github.com/elidaian/edsudoku',
@@ -39,7 +39,8 @@ setup(
     entry_points={
         'console_scripts': [
             'edsudoku-server=edsudoku.runserver:main',
-            'edsudoku-init-db=edsudoku.server.init_db:main'
+            'edsudoku-init-db=edsudoku.server.init_db:main',
+            'edsudoku-upgrade-db=edsudoku.server.upgrade_db:main'
         ]
     }
 )
