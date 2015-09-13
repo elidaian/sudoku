@@ -189,17 +189,17 @@ class User(Base):
         :param salt: The password salt, or ``None`` if no salt.
         :type salt: buffer
         :return: The hashed password.
-        :rtype: buffer
+        :rtype: str
         """
-        return buffer(sha512(buffer(password.encode('ascii')) + (salt or '')).digest())
+        return sha512(buffer(password.encode('ascii')) + (salt or '')).digest()
 
     @staticmethod
     def _generate_salt():
         """
         :return: A strong random salt, for salting passwords.
-        :rtype: buffer
+        :rtype: str
         """
-        return buffer(urandom(User.SALT_SIZE))
+        return urandom(User.SALT_SIZE)
 
     def check_password(self, password):
         """
@@ -210,6 +210,10 @@ class User(Base):
         :return: ``True`` iff the password matches.
         :rtype: bool
         """
+        print 'hashed:', str(self._hash_password(password, self._salt)).encode('base64')
+        print 'stored:', str(self._password).encode('base64')
+        print 'result:', self._hash_password(password, self._salt) == self._password
+        print type(self._password)
         return self._hash_password(password, self._salt) == self._password
 
     def set_password(self, new_password):

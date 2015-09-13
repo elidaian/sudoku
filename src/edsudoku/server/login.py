@@ -42,7 +42,7 @@ def login():
                 return redirect(url_for('login'))
 
             user = User.query().filter_by(username=username).first()
-            if user is None:
+            if user is None or not user.check_password(password):
                 flash('Invalid login credentials', 'danger')
             else:
                 flash('You were logged in successfully!', 'success')
