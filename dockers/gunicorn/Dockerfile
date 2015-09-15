@@ -10,5 +10,4 @@ ADD requirements.txt /var/edsudoku/requirements.txt
 RUN pip install -r /var/edsudoku/requirements.txt
 
 EXPOSE 8000
-ENTRYPOINT gunicorn
-CMD -w 4 -b 0.0.0.0:8000 edsudoku.wsgi:application
+ENTRYPOINT gunicorn -w 4 -b 0.0.0.0:8000 edsudoku.wsgi:application
