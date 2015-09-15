@@ -5,7 +5,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import Integer, String, BLOB
 
-from edsudoku.server.database import Base
+from edsudoku.server.database import Base, DB_STRING_SIZE
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
@@ -114,7 +114,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
 
     #: The username.
-    username = Column(String, nullable=False, unique=True)
+    username = Column(String(DB_STRING_SIZE), nullable=False, unique=True)
 
     #: The password (as stored in the DB).
     _password = Column(BLOB(HASH_SIZE), nullable=False)
