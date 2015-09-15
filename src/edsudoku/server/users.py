@@ -123,7 +123,7 @@ class User(Base):
     _salt = Column(BLOB(SALT_SIZE))
 
     #: The user display, or ``None``.
-    _display = Column(String)
+    _display = Column(String(DB_STRING_SIZE))
 
     #: The permissions mask of this user.
     permissions_mask = Column(Integer, nullable=False, default=0)
