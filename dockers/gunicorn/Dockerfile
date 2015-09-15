@@ -6,9 +6,8 @@ MAINTAINER Eli Daian "elidaian@gmail.com"
 ENV PYTHONUNBUFFERED 1
 ENV EDSUDOKU_CONF_FILE /var/edsudoku/edsudoku.cfg
 RUN mkdir /var/edsudoku
-WORKDIR /var/edsudoku
-ADD requirements.txt
-RUN pip install -r requirements.txt
+ADD requirements.txt /var/edsudoku/requirements.txt
+RUN pip install -r /var/edsudoku/requirements.txt
 
 EXPOSE 8000
 ENTRY_POINT gunicorn
