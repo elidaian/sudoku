@@ -10,7 +10,7 @@ with open(path.join(here, 'DESCRIPTION.rst'), 'r') as f:
 
 setup(
     name='edsudoku',
-    version='2.0',
+    version='2.0.1',
     description='Utility and website for generating solvable sudoku puzzles',
     long_description=long_description,
     url='https://github.com/elidaian/edsudoku',

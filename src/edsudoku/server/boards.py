@@ -2,8 +2,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql.schema import Column, ForeignKey
-
-from sqlalchemy.sql.sqltypes import Integer, DateTime, String
+from sqlalchemy.sql.sqltypes import Integer, DateTime, Text
 
 from edsudoku.board import Board
 from edsudoku.server.database import Base
@@ -54,10 +53,10 @@ class DBBoard(Base):
     block_height = Column(Integer, nullable=False)
 
     #: A representation of the problem of this board.
-    _problem = Column(String, nullable=False)
+    _problem = Column(Text, nullable=False)
 
     #: A representation of the solution of this board, or ``None`` if not available.
-    _solution = Column(String)
+    _solution = Column(Text)
 
     @staticmethod
     def create_board(user, board):

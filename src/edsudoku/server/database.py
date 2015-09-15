@@ -7,6 +7,9 @@ from edsudoku.server import app
 
 __author__ = 'Eli Daian <elidaian@gmail.com>'
 
+DB_STRING_SIZE = 64
+""" String size to use in DB strings. """
+
 engine = create_engine(app.config['DATABASE'], convert_unicode=True)
 db_session = scoped_session(sessionmaker(bind=engine))
 
