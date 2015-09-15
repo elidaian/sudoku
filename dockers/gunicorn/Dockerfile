@@ -1,0 +1,15 @@
+FROM python:2.7
+
+MAINTAINER Eli Daian "elidaian@gmail.com"
+
+# Install requirements
+ENV PYTHONUNBUFFERED 1
+ENV EDSUDOKU_CONF_FILE /var/edsudoku/edsudoku.cfg
+RUN mkdir /var/edsudoku
+WORKDIR /var/edsudoku
+ADD requirements.txt
+RUN pip install -r requirements.txt
+
+EXPOSE 8000
+ENTRY_POINT gunicorn
+CMD -w 4 -b 0.0.0.0:8000 edsudoku.wsgi:application
