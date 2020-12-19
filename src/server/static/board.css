@@ -9,4 +9,3 @@
 .inboard tr     { height: 33%; }
 .inboard td     { border: 1pt solid black; padding: 0pt; font-size: 20pt;
                   text-align: center; width: 25%; }
-.pagebreak      { page-break-before: always; }

@@ -1,0 +1,3 @@
+@page           { size: A4; margin: 0.75cm; }
+.pagebreak      { page-break-before: always; }
+.upsidedown     { transform: rotate(180deg); }
