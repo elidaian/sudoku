@@ -20,6 +20,7 @@
 {%- if multi_board %}
 {%- for board, id in boards %}
 {{ html_board(board, id, True, is_solution) }}
+<p class="pagebreak"></p>
 {%- endfor %}
 {%- else %}
 {{ html_board(board, id, True, is_solution) }}
