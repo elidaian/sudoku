@@ -64,9 +64,9 @@ def main():
     args, _ = create_parser().parse_args()
     user, password = get_username_and_password(args)
     
-    print "Initializing DB..."
+    print("Initializing DB...")
     init_db(user, password)
-    print "Done!"    
+    print("Done!")
 
 if __name__ == "__main__":
     main()

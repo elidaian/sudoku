@@ -5,7 +5,9 @@ server.py
      Author: eli
 """
 
-import cPickle
+import base64
+import pickle
+import zlib
 from flask import Flask
 from flask import flash
 from flask import g
@@ -41,6 +43,21 @@ def get_board_from_board_row(board_row):
     """
     return pysudoku.Board(board_row["problem"], board_row["solution"],
                           board_row["block_width"], board_row["block_height"])
+
+
+def create_boards_string(boards):
+    """
+    Returns a base-64 compressed pickle of the boards.
+    """
+    return base64.b64encode(zlib.compress(pickle.dumps(boards)))
+
+
+def read_boards_string(boards_string):
+    """
+    A reversed function to create_boards_string.
+    """
+    return pickle.loads(zlib.decompress(base64.b64decode(boards_string)))
+
 
 @app.before_request
 def open_db():
@@ -124,13 +141,12 @@ def parse_board_ids(list_func):
     Parse the requested board IDs.
     """
     if request.method == "POST":
-        board_ids = [int(board_id) for board_id in request.form.iterkeys()
+        board_ids = [int(board_id) for board_id in request.form.keys()
                      if board_id.isdigit()]
         board_ids.sort()
-    elif request.args.has_key("boards"):
+    elif "boards" in request.args:
         try:
-            pickled = request.args["boards"].decode('base64').decode('zlib')
-            board_ids = cPickle.loads(pickled)
+            board_ids = read_boards_string(request.args["boards"])
         except:
             flash("Unknown boards", "warning")
             return redirect(url_for(list_func, many=1))
@@ -145,16 +161,16 @@ def view_many_boards(board_ids, board_rows, solution, mode, root):
     solution = bool(solution)
     boards = [(get_board_from_board_row(board_row), board_id)
               for board_row, board_id in board_rows if board_row]
-    boards_str = cPickle.dumps(board_ids).encode('zlib').encode('base64')
+    boards_str = create_boards_string(board_ids)
     
     if mode == BOARD_MODES.INSITE:
         user = db.get_user(g.db, session["user"])
         return render_template("view_board.html", function="view_many", boards=boards,
-                               id=board_id, is_solution=solution, modes=BOARD_MODES,
+                               is_solution=solution, modes=BOARD_MODES,
                                boards_str=boards_str, root=root, curr_user=user)
     elif mode == BOARD_MODES.PRINT:
         return render_template("print_board.html", multi_board=True, boards=boards,
-                               id=board_id, is_solution=solution)
+                               is_solution=solution)
     elif mode == BOARD_MODES.PDF:
         filename = "solutions.pdf" if solution else "boards.pdf"
         return pdf_renderer.render_pdf_template("pdf_board.tex", texenv,
@@ -211,7 +227,7 @@ def logout():
     """
     Log out and end the current session (if any).
     """
-    if session.has_key("user"):
+    if "users" in session:
         flash("You have been logged out", "success")
         del session["user"]
     session["logged_in"] = False
@@ -238,7 +254,7 @@ def create_board():
                 width = int(request.form["width"])
                 height = int(request.form["height"])
             else:
-                raise util.ErrorWithMessage, "Invalid board type"
+                raise util.ErrorWithMessage("Invalid board type")
             count = int(request.form["count"])
             
             boards = pysudoku.create_board(width, height, count)
@@ -268,7 +284,7 @@ def view_board():
     """
     View a board.
     """
-    if request.args.has_key("board_id"):
+    if "board_id" in request.args:
         return redirect(url_for("view_specific_board",
                                 board_id=request.args["board_id"],
                                 solution=request.args.get("solution", "0")))
@@ -299,10 +315,10 @@ def view_last_boards():
     """
     View the last created boards.
     """
-    if not session.has_key("last_boards"):
+    if "last_boards" not in session:
         flash("You have not created any board in this session", "info")
         return redirect(url_for("view_board"))
-    boards = cPickle.dumps(session["last_boards"]).encode('zlib').encode('base64')
+    boards = create_boards_string(session["last_boards"])
     return redirect(url_for("view_board_set", boards=boards))
 
 @app.route("/view/<int:board_id>",
@@ -365,7 +381,7 @@ def register_user():
             
             permissions = []
             for permission in users.UserPermission.PERMISSIONS:
-                if request.form.has_key(permission.name) and \
+                if permission.name in request.form and \
                         request.form[permission.name] == str(permission.flag):
                     permissions.append(permission)
             
@@ -413,7 +429,7 @@ def edit_user(user_id):
             
             permissions = []
             for permission in users.UserPermission.PERMISSIONS:
-                if request.form.has_key(permission.name) and \
+                if permission.name in request.form and \
                         request.form[permission.name] == str(permission.flag):
                     permissions.append(permission)
             
@@ -478,7 +494,7 @@ def other_user():
     """
     View other user's boards.
     """
-    if request.args.has_key("board_id"):
+    if "board_id" in request.args:
         return redirect(url_for("other_specific_board",
                                 board_id=request.args["board_id"],
                                 solution=request.args.get("solution", "0")))

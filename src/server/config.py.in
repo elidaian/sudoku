@@ -1,7 +1,7 @@
 
 def readfile(filename):
     try:
-        with open(filename, "r") as f:
+        with open(filename, "rb") as f:
             return f.read()
     except:
         return "" # The key must be configured!

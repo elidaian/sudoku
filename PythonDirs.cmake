@@ -27,7 +27,7 @@ function (add_python_executable exec source)
         file (APPEND ${SCRIPT} "import os\n")
         file (APPEND ${SCRIPT} "os.environ['PATH'] = os.environ.get('PATH', '') + ':${DEP_DIRS}'.replace(';', ':')\n")
     endif ()
-    file (APPEND ${SCRIPT} "execfile('${ABS_SOURCE}')\n")
+    file (APPEND ${SCRIPT} "exec(open('${ABS_SOURCE}').read())\n")
 
     execute_process (COMMAND chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/${EXEC_NAME})
 

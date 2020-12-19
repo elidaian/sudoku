@@ -10,7 +10,7 @@ set_if_unset (LIB_DIR lib)
 
 add_dependency_dir (${CMAKE_CURRENT_BINARY_DIR}/core)
 add_python_dir (${CMAKE_CURRENT_BINARY_DIR}/python)
-add_python_dir (${CMAKE_CURRENT_BINARY_DIR}/server)
+add_python_dir (${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory (core)
 add_subdirectory (python)

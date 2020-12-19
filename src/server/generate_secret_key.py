@@ -42,10 +42,11 @@ def main():
     """
     args, _ = create_parser().parse_args()
     
-    print "Generating a secret key with %d bytes..." % args.length
+    print(SECRET_KEY_FILE)
+    print("Generating a secret key with %d bytes..." % args.length)
     with open(SECRET_KEY_FILE, "wb") as f:
         f.write(os.urandom(args.length))
-    print "Done!"    
+    print("Done!")
 
 if __name__ == "__main__":
     main()

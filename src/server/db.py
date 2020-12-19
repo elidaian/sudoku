@@ -96,7 +96,7 @@ def connect_db(app):
     return db
 
 def hash_password(password):
-    return buffer(hashlib.sha512(password).digest())
+    return hashlib.sha512(password.encode('utf8')).digest()
 
 def login(db, username, password):
     """
