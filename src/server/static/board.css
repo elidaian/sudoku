@@ -3,7 +3,8 @@
                   margin: 0 auto; float: none }
 .board tr       { height: 4%; }
 .board td       { width: 33%; padding: 0pt; }
-.head           { font-size: 20pt; font-weight: bold; text-align: center; }
+.head           { font-size: 20pt; font-weight: bold; text-align: center;
+                  padding-top: 1em; }
 .inboard        { border-collapse: collapse; border: 2pt solid black;
                   width: 100%; height: 100%; line-height: 1.24; }
 .inboard tr     { height: 33%; }
